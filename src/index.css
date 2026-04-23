@@ -1,0 +1,437 @@
+@import "tailwindcss";
+
+/* ══════════════════════════════════════════════════════════
+   RITGate Design System — Adaptive Foundation
+   Mobile: PWA-quality app experience
+   Desktop: Premium SaaS dashboard
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Design Tokens ─────────────────────────────────────── */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  --text-caption: clamp(0.6875rem, 0.65rem + 0.15vw, 0.75rem);
+  --text-sm: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);
+  --text-base: clamp(0.9375rem, 0.9rem + 0.2vw, 1rem);
+  --text-lg: clamp(1.0625rem, 1rem + 0.3vw, 1.125rem);
+  --text-xl: clamp(1.1875rem, 1.1rem + 0.4vw, 1.375rem);
+  --text-2xl: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
+  --text-3xl: clamp(1.75rem, 1.5rem + 1.2vw, 2.25rem);
+
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f1f5f9;
+  --color-border: #e2e8f0;
+  --color-border-subtle: #f1f5f9;
+  --color-text: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94a3b8;
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-primary-subtle: rgba(79, 70, 229, 0.08);
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.1);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 0.08s;
+  --duration-normal: 0.15s;
+  --duration-slow: 0.25s;
+  --duration-premium: 0.35s;
+
+  --sidebar-width: 256px;
+  --sidebar-collapsed: 68px;
+  --header-height: 60px;
+  --mobile-nav-height: 60px;
+  --container-max: 1280px;
+}
+
+/* ── Dark Mode ─────────────────────────────────────────── */
+.dark {
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-surface-raised: #334155;
+  --color-border: #334155;
+  --color-border-subtle: #1e293b;
+  --color-text: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+  --color-primary: #6366f1;
+  --color-primary-hover: #818cf8;
+  --color-primary-subtle: rgba(99, 102, 241, 0.12);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Base Reset ────────────────────────────────────────── */
+*, *::before, *::after {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  /* Fix iOS Safari 100vh bug */
+  height: -webkit-fill-available;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: var(--text-base);
+  line-height: 1.5;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 100%;
+  min-height: -webkit-fill-available;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--duration-slow) var(--ease),
+              color var(--duration-slow) var(--ease);
+}
+
+/* ── Scroll System ─────────────────────────────────────── */
+
+/* Natural browser scrolling — no nested overflow containers */
+html, body {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Desktop: natural page scroll, no nested overflow */
+@media (min-width: 1025px) {
+  html, body {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  /* Remove any fixed-height wrappers that cause nested scroll */
+  .page-scroll-container {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  /* Main content area should not have overflow */
+  main {
+    overflow: visible !important;
+  }
+}
+
+/* Tablet: natural browser scroll */
+@media (min-width: 769px) and (max-width: 1024px) {
+  html, body {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+/* Mobile: natural browser scroll with momentum */
+@media (max-width: 768px) {
+  html, body {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  /* Content areas scroll naturally */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+  /* Prevent double scrollbars on mobile */
+  .mobile-page {
+    overflow: visible !important;
+  }
+}
+
+/* ── iOS Safari Viewport Fix ───────────────────────────── */
+.full-height {
+  height: 100vh;
+  height: 100dvh; /* dynamic viewport height — fixes iOS Safari */
+}
+
+.min-full-height {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* ── Safe Areas ────────────────────────────────────────── */
+.safe-area {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+.safe-area-top    { padding-top: env(safe-area-inset-top); }
+.safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.pt-safe          { padding-top: env(safe-area-inset-top); }
+.pb-safe          { padding-bottom: env(safe-area-inset-bottom); }
+
+/* ── Touch Targets ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  button, a, [role="button"] {
+    min-height: 44px;
+  }
+}
+
+/* ── Input Zoom Prevention (iOS) ───────────────────────── */
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* ── Desktop Hover Effects ─────────────────────────────── */
+/* ONLY apply hover on devices that support it (not touch) */
+@media (hover: hover) and (pointer: fine) {
+  /* Card hover elevation */
+  .hover-card {
+    transition: transform var(--duration-normal) var(--ease),
+                box-shadow var(--duration-normal) var(--ease);
+  }
+  .hover-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Button hover */
+  .hover-btn {
+    transition: background-color var(--duration-fast) var(--ease),
+                transform var(--duration-fast) var(--ease),
+                box-shadow var(--duration-fast) var(--ease);
+  }
+  .hover-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  .hover-btn:active {
+    transform: translateY(0);
+  }
+
+  /* Table row hover */
+  .hover-row {
+    transition: background-color var(--duration-fast) var(--ease);
+  }
+  .hover-row:hover {
+    background-color: var(--color-surface-raised);
+  }
+
+  /* Sidebar item hover */
+  .sidebar-item {
+    transition: background-color var(--duration-fast) var(--ease),
+                color var(--duration-fast) var(--ease),
+                padding-left var(--duration-normal) var(--ease);
+  }
+  .sidebar-item:hover {
+    padding-left: 14px;
+  }
+
+  /* Link hover */
+  .hover-link {
+    transition: color var(--duration-fast) var(--ease);
+  }
+  .hover-link:hover {
+    color: var(--color-primary);
+  }
+}
+
+/* ── Selection ─────────────────────────────────────────── */
+::selection {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+/* ── Focus ─────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Scrollbar (Desktop) ───────────────────────────────── */
+@media (min-width: 769px) {
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+}
+
+/* ── Momentum Scrolling ────────────────────────────────── */
+.scroll-momentum {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* ── Glassmorphism ─────────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.dark .glass {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── Skeleton Shimmer ──────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-border-subtle) 25%,
+    var(--color-surface-raised) 50%,
+    var(--color-border-subtle) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Scan Line ─────────────────────────────────────────── */
+@keyframes scan {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  50%  { opacity: 1; }
+  100% { transform: translateY(300%); opacity: 0; }
+}
+.scan-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  box-shadow: 0 0 20px var(--color-primary);
+  animation: scan 3s infinite var(--ease);
+}
+
+/* ── Pulse Dot ─────────────────────────────────────────── */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(1.5); }
+}
+.animate-pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+
+/* ── Desktop Premium Animations ────────────────────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fade-up   { animation: fade-up   var(--duration-premium) var(--ease) both; }
+.animate-fade-in   { animation: fade-in   var(--duration-normal)  var(--ease) both; }
+.animate-slide-in  { animation: slide-in-left var(--duration-slow) var(--ease) both; }
+
+/* Stagger children */
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 60ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 120ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 180ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 240ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 300ms; }
+
+/* ── Desktop Table ─────────────────────────────────────── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+.data-table th {
+  text-align: left;
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  color: var(--color-text);
+  vertical-align: middle;
+}
+@media (hover: hover) and (pointer: fine) {
+  .data-table tbody tr {
+    transition: background-color var(--duration-fast) var(--ease);
+    cursor: pointer;
+  }
+  .data-table tbody tr:hover {
+    background-color: var(--color-surface-raised);
+  }
+}
+
+/* ── Perspective ───────────────────────────────────────── */
+.perspective-1000 { perspective: 1000px; }
+
+/* ── Custom Scrollbar (Sidebar) ────────────────────────── */
+.sidebar-scroll::-webkit-scrollbar { width: 3px; }
+.sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 99px;
+}
+
+/* ── Mobile: remove h-screen overflow-hidden pattern ───── */
+/* Pages should NOT use h-screen overflow-hidden on mobile web */
+/* All pages use natural browser scrolling */
+@media (max-width: 768px) {
+  .mobile-page {
+    min-height: 100dvh;
+    overflow: visible !important;
+  }
+  /* Prevent nested scroll containers */
+  .scroll-container {
+    overflow: visible !important;
+    height: auto !important;
+  }
+}
+
+/* ── Prevent Horizontal Scroll ─────────────────────────── */
+* {
+  max-width: 100%;
+}
+
+/* Allow specific elements to exceed viewport width when needed */
+.allow-overflow {
+  max-width: none;
+}
+
+/* ── Smooth Scroll Behavior ────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

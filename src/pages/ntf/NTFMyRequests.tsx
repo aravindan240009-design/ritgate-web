@@ -1,11 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { QrCode, Search, FileText, Users, AlertCircle, RefreshCw, Clock } from 'lucide-react';
+import { QrCode, Search, FileText, Clock, RefreshCw, AlertCircle, Calendar } from 'lucide-react';
 import { SkeletonList, Skeleton } from '../../components/ui/Skeleton';
-import QRCodeModal from '../../components/common/QRCodeModal';
-import Modal from '../../components/ui/Modal';
-import RequestTimeline from '../../components/common/RequestTimeline';
-import Badge from '../../components/ui/Badge';
+import SinglePassDetailsModal from '../../components/common/SinglePassDetailsModal';
+import GatePassQRModal from '../../components/common/GatePassQRModal';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import { useAuth } from '../../context/AuthContext';
@@ -13,10 +11,8 @@ import { useToast } from '../../context/ToastContext';
 import { getNTFOwnRequests, getGatePassQRCode } from '../../services/api.service';
 import { cn } from '../../utils/cn';
 import { transitions } from '../../design-system/animations';
+import { formatDateTime, relativeTime } from '../../utils/dateUtils';
 import type { GatePassRequest } from '../../types';
-
-const formatDateShortLocal = (d: string) => { try { return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); } catch { return d; } };
-const getRelativeTimeLocal = (d: string) => { try { const s = Math.floor((Date.now() - new Date(d).getTime()) / 1000); if (s < 60) return `${s}s ago`; if (s < 3600) return `${Math.floor(s/60)}m ago`; if (s < 86400) return `${Math.floor(s/3600)}h ago`; return `${Math.floor(s/86400)}d ago`; } catch { return ''; } };
 
 export default function NTFMyRequests() {
   const { getUserId, user } = useAuth();
@@ -29,18 +25,23 @@ export default function NTFMyRequests() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showQR, setShowQR] = useState(false);
-  const [qrData, setQrData] = useState({ qrCode: '', manualCode: '' });
+
   const [selectedRequest, setSelectedRequest] = useState<GatePassRequest | null>(null);
-  const [showDetail, setShowDetail] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [qrData, setQrData] = useState<{ code: string; manual: string | undefined; expires: string | undefined } | null>(null);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     setHasError(false);
     try {
       const res = await getNTFOwnRequests(staffCode);
-      if (res.success) setRequests(res.requests || []);
-      else setHasError(true);
+      if (res.success) {
+        const sorted = (res.requests || []).sort(
+          (a: any, b: any) => new Date(b.createdAt || b.requestDate).getTime() - new Date(a.createdAt || a.requestDate).getTime()
+        );
+        setRequests(sorted);
+      } else setHasError(true);
     } catch { setHasError(true); }
     finally { setIsLoading(false); }
   }, [staffCode]);
@@ -56,17 +57,21 @@ export default function NTFMyRequests() {
 
   const handleViewQR = async (req: GatePassRequest) => {
     if (req.status !== 'APPROVED') return;
-    setQrData({ qrCode: '', manualCode: '' });
-    setShowQR(true);
-    const res = await getGatePassQRCode(req.id!, staffCode);
-    if (res.success && res.qrCode) setQrData({ qrCode: res.qrCode, manualCode: res.manualCode || '' });
-    else { setShowQR(false); showError('Access Blocked', res.message || 'QR not ready.'); }
+    setSelectedRequest(req);
+    setShowQRModal(true);
+    try {
+      const res = await getGatePassQRCode(req.id!, staffCode);
+      if (res.success && res.qrCode) {
+        setQrData({ code: res.qrCode, manual: res.manualCode, expires: res.qrExpiresAt });
+      } else {
+        setShowQRModal(false);
+        showError('Access Blocked', res.message || 'QR not ready.');
+      }
+    } catch {
+      setShowQRModal(false);
+      showError('Error', 'Network error while fetching QR');
+    }
   };
-
-  const getRequestDate = (req: GatePassRequest) =>
-    (req as any).passType === 'BULK'
-      ? ((req as any).exitDateTime || req.createdAt || req.requestDate)
-      : (req.requestDate || req.createdAt);
 
   if (isLoading && requests.length === 0) {
     return (
@@ -126,52 +131,51 @@ export default function NTFMyRequests() {
         ) : (
           <AnimatePresence mode="popLayout">
             {filtered.map((req, i) => {
-              const isBulk = (req as any).passType === 'BULK';
-              const dateStr = getRequestDate(req) || '';
-              const badge = req.status === 'APPROVED' ? { text: 'ACTIVE', color: 'bg-emerald-500' }
-                : req.status === 'REJECTED' ? { text: 'REJECTED', color: 'bg-rose-500' }
-                : { text: 'PENDING', color: 'bg-amber-500' };
+              const dateStr = req.createdAt || req.requestDate || '';
+              const isApproved = req.status === 'APPROVED';
+              const isRejected = req.status === 'REJECTED';
 
               return (
                 <motion.div key={req.id || i} layout initial={transitions.page.initial} animate={transitions.page.animate}>
-                  <Card hover onClick={() => { setSelectedRequest(req); setShowDetail(true); }}>
+                  <Card hover onClick={() => { setSelectedRequest(req); setShowDetailModal(true); }}>
                     <div className="flex items-start gap-3 mb-3">
                       <div className="w-11 h-11 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-700 font-bold text-sm shrink-0">{initials}</div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           <span className="text-sm font-bold text-slate-900 dark:text-white truncate">{staffName}</span>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">{isBulk ? 'Bulk Pass' : 'Single Pass'}</span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">Single Pass</span>
                         </div>
                         <p className="text-xs text-slate-400">NTF • {(user as any)?.department || 'Department'}</p>
                       </div>
-                      <span className="text-[10px] text-slate-400 shrink-0">{getRelativeTimeLocal(dateStr)}</span>
+                      <span className="text-[10px] text-slate-400 shrink-0">{relativeTime(dateStr)}</span>
                     </div>
+
                     <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 mb-3 space-y-2">
                       <div className="flex items-center gap-2">
                         <FileText className="w-4 h-4 text-slate-400 shrink-0" />
                         <span className="text-sm text-slate-700 dark:text-slate-300 truncate">{req.purpose || req.reason || 'Gate Pass Request'}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-slate-400 shrink-0" />
-                        <span className="text-xs text-slate-500">{formatDateShortLocal(dateStr)}</span>
+                        <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
+                        <span className="text-xs text-slate-500">{formatDateTime(dateStr)}</span>
                       </div>
-                      {isBulk && (
-                        <div className="flex items-center gap-2">
-                          <Users className="w-4 h-4 text-slate-400 shrink-0" />
-                          <span className="text-xs text-slate-500">
-                            {[(req as any).staffCount > 0 ? `Staff - ${(req as any).staffCount}` : '', (req as any).studentCount > 0 ? `Students - ${(req as any).studentCount}` : ''].filter(Boolean).join(', ') || `${(req as any).participantCount || 0} Participants`}
-                          </span>
-                        </div>
-                      )}
                     </div>
+
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className={cn('w-2 h-2 rounded-full', badge.color)} />
-                        <span className={cn('text-xs font-bold uppercase', badge.color.replace('bg-', 'text-'))}>{badge.text}</span>
+                      <div className={cn(
+                        'flex items-center gap-2 px-3 py-1.5 rounded-full',
+                        isApproved ? 'bg-emerald-500/10' : isRejected ? 'bg-rose-500/10' : 'bg-amber-500/10'
+                      )}>
+                        <div className={cn('w-1.5 h-1.5 rounded-full', isApproved ? 'bg-emerald-500' : isRejected ? 'bg-rose-500' : 'bg-amber-500')} />
+                        <span className={cn('text-[10px] font-black uppercase tracking-widest',
+                          isApproved ? 'text-emerald-600' : isRejected ? 'text-rose-600' : 'text-amber-600'
+                        )}>
+                          {isApproved ? 'APPROVED' : isRejected ? 'REJECTED' : 'PENDING'}
+                        </span>
                       </div>
-                      {req.status === 'APPROVED' && (
+                      {isApproved && (
                         <button onClick={e => { e.stopPropagation(); handleViewQR(req); }}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 rounded-xl text-white text-[11px] font-bold shadow-sm">
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 rounded-xl text-white text-[11px] font-bold shadow-sm active:scale-95 transition-transform">
                           <QrCode className="w-3.5 h-3.5" /> VIEW QR
                         </button>
                       )}
@@ -184,27 +188,28 @@ export default function NTFMyRequests() {
         )}
       </div>
 
-      {/* Detail Modal */}
-      <Modal isOpen={showDetail} onClose={() => setShowDetail(false)} title="Request Details" size="lg">
-        {selectedRequest && (
-          <div className="space-y-5 pt-2">
-            <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-4 space-y-3">
-              <div><span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Purpose</span><span className="text-sm font-bold text-slate-900 dark:text-white">{selectedRequest.purpose}</span></div>
-              <div><span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Reason</span><span className="text-sm text-slate-600 dark:text-slate-300">{selectedRequest.reason}</span></div>
-            </div>
-            <RequestTimeline request={selectedRequest} />
-            {selectedRequest.status === 'APPROVED' && (
-              <button onClick={() => { setShowDetail(false); handleViewQR(selectedRequest); }}
-                className="w-full flex items-center justify-center gap-2 py-4 bg-indigo-600 rounded-2xl text-white font-bold text-sm">
-                <QrCode className="w-5 h-5" /> View QR Code
-              </button>
-            )}
-          </div>
+      {/* Modals */}
+      <AnimatePresence>
+        {selectedRequest && showDetailModal && (
+          <SinglePassDetailsModal
+            isOpen={showDetailModal}
+            onClose={() => setShowDetailModal(false)}
+            request={selectedRequest}
+          />
         )}
-      </Modal>
 
-      <QRCodeModal isOpen={showQR} onClose={() => setShowQR(false)} qrCode={qrData.qrCode} manualCode={qrData.manualCode}
-        userName={staffName} idNumber={staffCode} title="NTF Gate Pass" />
+        {selectedRequest && showQRModal && (
+          <GatePassQRModal
+            isOpen={showQRModal}
+            onClose={() => setShowQRModal(false)}
+            qrCodeData={qrData?.code || ''}
+            personName={staffName}
+            personId={staffCode}
+            manualCode={qrData?.manual}
+            validUntil={qrData?.expires}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

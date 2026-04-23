@@ -20,7 +20,10 @@ import { cn } from '../../utils/cn';
 import { formatDate } from '../../utils/date';
 import Button from '../ui/Button';
 import ConfirmationModal from './ConfirmationModal';
+import GatePassQRModal from './GatePassQRModal';
 import Badge from '../ui/Badge';
+import { useAuth } from '../../context/AuthContext';
+import { getGatePassQRCode } from '../../services/api.service';
 
 interface TimelineStep {
   label: string;
@@ -53,6 +56,7 @@ export default function SinglePassDetailsModal({
   viewerRole,
   processing: externalProcessing,
 }: SinglePassDetailsModalProps) {
+  const { getUserId } = useAuth();
   const [remark, setRemark] = useState('');
   const [processing, setProcessing] = useState(false);
   const isProcessing = externalProcessing ?? processing;
@@ -62,11 +66,46 @@ export default function SinglePassDetailsModal({
   const [showRejectConfirm, setShowRejectConfirm] = useState(false);
   const [showRemarkError, setShowRemarkError] = useState(false);
 
+  // Internal QR state
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [qrData, setQrData] = useState<{ code: string; manual: string | undefined; expires: string | undefined } | null>(null);
+  const [qrError, setQrError] = useState('');
+
   useEffect(() => {
     if (isOpen && request?.id) {
       setRemark('');
+      setQrData(null);
+      setQrError('');
     }
   }, [isOpen, request?.id]);
+
+  const handleViewQR = async () => {
+    if (onViewQR) { onClose(); onViewQR(request); return; }
+    setQrLoading(true);
+    setQrError('');
+    try {
+      // Use the requester's own ID — the API only authorises the pass owner
+      const requesterId =
+        request.regNo ||
+        request.staffCode ||
+        request.hodCode ||
+        request.hrCode ||
+        request.requestedByStaffCode ||
+        getUserId();
+      const res = await getGatePassQRCode(request.id, requesterId);
+      if (res.success && res.qrCode) {
+        setQrData({ code: res.qrCode, manual: res.manualCode, expires: res.qrExpiresAt });
+        setShowQRModal(true);
+      } else {
+        setQrError(res.message || 'QR not available yet.');
+      }
+    } catch {
+      setQrError('Network error. Please try again.');
+    } finally {
+      setQrLoading(false);
+    }
+  };
 
   if (!request || !isOpen) return null;
 
@@ -321,27 +360,43 @@ export default function SinglePassDetailsModal({
               </div>
             </div>
           ) : (
-            <div className="flex gap-3">
-              {isApproved && onViewQR ? (
-                <Button
-                  variant="success"
-                  fullWidth
-                  size="xl"
-                  icon={<QrCode className="w-5 h-5" />}
-                  onClick={() => { onClose(); onViewQR(request); }}
-                >
-                  View QR Code
-                </Button>
-              ) : (
-                <Button
-                  variant="primary"
-                  fullWidth
-                  size="xl"
-                  onClick={onClose}
-                >
-                  Close
-                </Button>
+            <div className="space-y-2">
+              {qrError && (
+                <p className="text-xs font-bold text-rose-500 text-center">{qrError}</p>
               )}
+              <div className="flex gap-3">
+                {isApproved ? (
+                  <>
+                    <Button
+                      variant="primary"
+                      fullWidth
+                      size="xl"
+                      onClick={onClose}
+                    >
+                      Close
+                    </Button>
+                    <Button
+                      variant="success"
+                      fullWidth
+                      size="xl"
+                      icon={qrLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <QrCode className="w-5 h-5" />}
+                      onClick={handleViewQR}
+                      disabled={qrLoading}
+                    >
+                      {qrLoading ? 'Loading...' : 'View QR'}
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    variant="primary"
+                    fullWidth
+                    size="xl"
+                    onClick={onClose}
+                  >
+                    Close
+                  </Button>
+                )}
+              </div>
             </div>
           )}
         </footer>
@@ -411,6 +466,19 @@ export default function SinglePassDetailsModal({
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Internal QR Modal */}
+        {qrData && (
+          <GatePassQRModal
+            isOpen={showQRModal}
+            onClose={() => setShowQRModal(false)}
+            qrCodeData={qrData.code}
+            personName={request.studentName || request.staffName || request.regNo || ''}
+            personId={request.regNo || request.staffCode || ''}
+            manualCode={qrData.manual}
+            validUntil={qrData.expires}
+          />
+        )}
       </motion.div>
     </AnimatePresence>
   );

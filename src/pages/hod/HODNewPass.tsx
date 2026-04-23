@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -8,12 +8,20 @@ import {
   ArrowLeft,
   ChevronRight,
   ShieldCheck,
-  Plus
+  Plus,
+  Ban
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../utils/cn';
 import HODNewPassRequest from './HODNewPassRequest';
 import HODBulkPass from './HODBulkPass';
+
+/** Returns current hour in IST (UTC+5:30) */
+const getISTHour = () => {
+  const now = new Date();
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  return new Date(utcMs + 5.5 * 60 * 60 * 1000).getHours();
+};
 
 type Stage = 'SELECT' | 'SINGLE' | 'BULK' | 'GUEST';
 
@@ -26,6 +34,15 @@ export default function HODNewPass() {
   const params = new URLSearchParams(location.search);
   const stageParam = params.get('stage')?.toUpperCase() as Stage | null;
   const stage: Stage = (stageParam && ['SINGLE', 'BULK', 'GUEST'].includes(stageParam)) ? stageParam : 'SELECT';
+
+  const passDisabled = getISTHour() >= 17;
+
+  // Redirect if trying to access SINGLE or BULK after 17:00 IST
+  useEffect(() => {
+    if (passDisabled && (stage === 'SINGLE' || stage === 'BULK')) {
+      navigate('/new-pass', { replace: true });
+    }
+  }, [stage, passDisabled]);
 
   const handleBack = () => {
     if (stage === 'SELECT') navigate(-1);
@@ -72,29 +89,43 @@ export default function HODNewPass() {
 
                <div className="grid gap-4">
                   {[
-                    { id: 'SINGLE', title: 'Personal Pass', sub: 'For your official/personal exit', icon: UserPlus, color: 'text-violet-600', bg: 'bg-violet-50' },
-                    { id: 'BULK', title: 'Bulk Gate Pass', sub: 'For students/staff group movement', icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-                    { id: 'GUEST', title: 'Guest Pass', sub: 'Pre-register visitors for entry', icon: FileText, color: 'text-amber-600', bg: 'bg-amber-50' },
+                    { id: 'SINGLE', title: 'Personal Pass', sub: 'For your official/personal exit', icon: UserPlus, color: 'text-violet-600', bg: 'bg-violet-50', restricted: true },
+                    { id: 'BULK', title: 'Bulk Gate Pass', sub: 'For students/staff group movement', icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-50', restricted: true },
+                    { id: 'GUEST', title: 'Guest Pass', sub: 'Pre-register visitors for entry', icon: FileText, color: 'text-amber-600', bg: 'bg-amber-50', restricted: false },
                   ].map((card) => {
                     const Icon = card.icon;
+                    const isDisabled = card.restricted && passDisabled;
                     return (
                       <motion.button
                         key={card.id}
-                        whileTap={{ scale: 0.98 }}
+                        whileTap={{ scale: isDisabled ? 1 : 0.98 }}
+                        disabled={isDisabled}
                         onClick={() => {
+                          if (isDisabled) return;
                           if (card.id === 'GUEST') navigate('/guest-register');
                           else navigate(`/new-pass?stage=${card.id.toLowerCase()}`);
                         }}
-                        className="w-full p-6 bg-white dark:bg-slate-900 rounded-[32px] border border-slate-100 dark:border-slate-800 flex items-center gap-5 text-left shadow-sm transition-all active:shadow-none"
+                        className={cn(
+                          "w-full p-6 rounded-[32px] border flex items-center gap-5 text-left shadow-sm transition-all",
+                          isDisabled
+                            ? "bg-slate-50 dark:bg-slate-900/40 border-slate-100 dark:border-slate-800 opacity-60 cursor-not-allowed"
+                            : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 active:shadow-none"
+                        )}
                       >
-                         <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg", card.bg)}>
-                            <Icon className={cn("w-7 h-7", card.color)} />
+                         <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg", isDisabled ? "bg-slate-200 dark:bg-slate-800" : card.bg)}>
+                            <Icon className={cn("w-7 h-7", isDisabled ? "text-slate-400" : card.color)} />
                          </div>
                          <div className="flex-1">
-                            <h3 className="text-[17px] font-black text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">{card.title}</h3>
-                            <p className="text-[13px] font-bold text-slate-400">{card.sub}</p>
+                            <h3 className={cn("text-[17px] font-black tracking-tight leading-none mb-1.5", isDisabled ? "text-slate-400" : "text-slate-900 dark:text-white")}>{card.title}</h3>
+                            <p className="text-[13px] font-bold text-slate-400">
+                              {isDisabled ? 'Not available after 5:00 PM' : card.sub}
+                            </p>
                          </div>
-                         <ChevronRight className="w-5 h-5 text-slate-200" />
+                         {isDisabled ? (
+                           <Ban className="w-5 h-5 text-rose-400 shrink-0" />
+                         ) : (
+                           <ChevronRight className="w-5 h-5 text-slate-200" />
+                         )}
                       </motion.button>
                     );
                   })}

@@ -199,7 +199,7 @@ export default function LoginPage() {
           </p>
 
           {!otpSent ? (
-            <div className="space-y-6">
+            <form onSubmit={e => { e.preventDefault(); handleSendOTP(); }} className="space-y-6">
               <div className="space-y-2.5">
                 <label className="block text-[11px] font-black text-slate-950 dark:text-slate-400 uppercase tracking-[0.1em] px-1">
                   IDENTIFICATION
@@ -209,6 +209,7 @@ export default function LoginPage() {
                       <ShieldCheck className="w-5 h-5" />
                    </div>
                    <input 
+                    ref={inputRef}
                     type="text" 
                     placeholder="Staff ID / Student Roll No"
                     value={userId}
@@ -219,7 +220,7 @@ export default function LoginPage() {
               </div>
 
               <button 
-                onClick={handleSendOTP}
+                type="submit"
                 disabled={loading || !userId.trim()}
                 className={cn(
                   "w-full h-15 bg-slate-950 dark:bg-indigo-600 rounded-2xl flex items-center justify-center gap-3 text-white active:scale-95 transition-all shadow-xl shadow-slate-200 dark:shadow-none",
@@ -243,6 +244,7 @@ export default function LoginPage() {
               </div>
 
               <button 
+                type="button"
                 onClick={() => navigate('/login-scan')}
                 className="w-full flex items-center gap-4 px-5 py-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 active:scale-95 transition-transform group"
               >
@@ -252,9 +254,9 @@ export default function LoginPage() {
                 <span className="flex-1 text-left text-[15px] font-bold text-slate-900 dark:text-white">Scan QR / Barcode</span>
                 <ChevronRight className="w-5 h-5 text-slate-300 shrink-0" />
               </button>
-            </div>
+            </form>
           ) : (
-            <div className="space-y-6">
+            <form onSubmit={e => { e.preventDefault(); handleVerifyOTP(); }} className="space-y-6">
               <div className="space-y-2.5 text-center">
                 <label className="block text-[11px] font-black text-slate-950 dark:text-slate-400 uppercase tracking-[0.1em] mb-4">
                   VERIFICATION CODE
@@ -290,17 +292,17 @@ export default function LoginPage() {
                     Resend in {Math.floor(otpTimer / 60)}:{(otpTimer % 60).toString().padStart(2, '0')}
                   </span>
                 ) : (
-                  <button onClick={handleResendOTP} className="text-[13px] font-black text-indigo-600 underline underline-offset-4">
+                  <button type="button" onClick={handleResendOTP} className="text-[13px] font-black text-indigo-600 underline underline-offset-4">
                     Resend OTP
                   </button>
                 )}
-                <button onClick={() => setOtpSent(false)} className="text-[13px] font-bold text-slate-500">
+                <button type="button" onClick={() => setOtpSent(false)} className="text-[13px] font-bold text-slate-500">
                   Change ID
                 </button>
               </div>
 
               <button 
-                onClick={handleVerifyOTP}
+                type="submit"
                 disabled={loading || otpDigits.join('').length !== 6}
                 className={cn(
                   "w-full h-15 bg-slate-900 dark:bg-emerald-600 rounded-2xl flex items-center justify-center text-white active:scale-95 transition-all shadow-xl shadow-slate-200 dark:shadow-none",
@@ -309,7 +311,7 @@ export default function LoginPage() {
               >
                 {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <span className="text-[16px] font-black uppercase tracking-widest">Verify & Login</span>}
               </button>
-            </div>
+            </form>
           )}
         </div>
 

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Bell, ArrowLeft } from 'lucide-react';
 import { useNotifications } from '../../context/NotificationContext';
 import { useProfile } from '../../context/ProfileContext';
+import { useAdaptive } from '../../utils/useAdaptive';
 
 interface TopMenuBarProps {
   greeting: string;
@@ -27,6 +28,10 @@ export default function TopMenuBar({
   const navigate = useNavigate();
   const { unreadCount } = useNotifications();
   const { profileImage } = useProfile();
+  const { isMobile } = useAdaptive();
+
+  // Only render on mobile — desktop/tablet use the AppLayout Header
+  if (!isMobile) return null;
 
   const initials = title
     ? title.split(' ').map(p => p.charAt(0)).join('').toUpperCase().substring(0, 2)

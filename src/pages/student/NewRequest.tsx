@@ -25,10 +25,26 @@ import { cn } from '../../utils/cn';
 import { getRequestDate } from '../../utils/dateUtils';
 import type { Student } from '../../types';
 
+/** Returns current hour in IST (UTC+5:30) */
+const getISTHour = () => {
+  const now = new Date();
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  return new Date(utcMs + 5.5 * 60 * 60 * 1000).getHours();
+};
+
 export default function NewRequest() {
   const navigate = useNavigate();
   const { user: rawUser } = useAuth();
   const user = rawUser as Student;
+  const { success: showToastSuccess, error: showToastError } = useToast();
+  const { withLock, isLocked } = useActionLock();
+
+  // Block access after 15:00 IST
+  useEffect(() => {
+    if (getISTHour() >= 15) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, []);
   const { success: showToastSuccess, error: showToastError } = useToast();
   const { withLock, isLocked } = useActionLock();
 

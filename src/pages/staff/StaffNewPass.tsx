@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -9,7 +9,8 @@ import {
   X,
   Plus,
   ChevronRight,
-  LayoutGrid
+  LayoutGrid,
+  Ban
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -22,6 +23,13 @@ import GatePassQRModal from '../../components/common/GatePassQRModal';
 import StaffBulkPass from './StaffBulkPass';
 import HRNewPass from '../hr/HRNewPass';
 import AdminNewPass from '../admin/AdminNewPass';
+
+/** Returns current hour in IST (UTC+5:30) */
+const getISTHour = () => {
+  const now = new Date();
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  return new Date(utcMs + 5.5 * 60 * 60 * 1000).getHours();
+};
 
 type Stage = 'SELECT' | 'SINGLE' | 'BULK' | 'GUEST';
 
@@ -38,6 +46,15 @@ export default function StaffNewPass() {
   const params = new URLSearchParams(location.search);
   const stageParam = params.get('stage')?.toUpperCase() as Stage | null;
   const stage: Stage = (stageParam && ['SINGLE', 'BULK', 'GUEST'].includes(stageParam)) ? stageParam : 'SELECT';
+
+  const passDisabled = getISTHour() >= 17;
+
+  // Redirect if trying to access SINGLE or BULK after 17:00 IST
+  useEffect(() => {
+    if (passDisabled && (stage === 'SINGLE' || stage === 'BULK')) {
+      navigate('/new-pass', { replace: true });
+    }
+  }, [stage, passDisabled]);
 
   const [purpose, setPurpose] = useState('');
   const [reason, setReason] = useState('');
@@ -157,26 +174,45 @@ export default function StaffNewPass() {
 
                <div className="grid gap-4">
                   {[
-                    { id: 'SINGLE', title: 'Personal Pass', sub: 'For your official/private exit', icon: UserPlus, color: 'text-violet-600', bg: 'bg-violet-50' },
-                    { id: 'BULK', title: 'Batch Authorization', sub: 'For student group field trips', icon: Users, color: 'text-amber-600', bg: 'bg-amber-50' },
-                    { id: 'GUEST', title: 'Guest Pass', sub: 'Pre-register visitors for entry', icon: FileText, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-                  ].map((item) => (
+                    { id: 'SINGLE', title: 'Personal Pass', sub: 'For your official/private exit', icon: UserPlus, color: 'text-violet-600', bg: 'bg-violet-50', restricted: true },
+                    { id: 'BULK', title: 'Batch Authorization', sub: 'For student group field trips', icon: Users, color: 'text-amber-600', bg: 'bg-amber-50', restricted: true },
+                    { id: 'GUEST', title: 'Guest Pass', sub: 'Pre-register visitors for entry', icon: FileText, color: 'text-emerald-600', bg: 'bg-emerald-50', restricted: false },
+                  ].filter(item => {
+                    // NCI, NTF, and Admin Officer only get Single + Guest — no bulk
+                    if (item.id === 'BULK' && ['NON_CLASS_INCHARGE', 'NON_TEACHING', 'ADMIN_OFFICER'].includes(role || '')) return false;
+                    return true;
+                  }).map((item) => {
+                    const isDisabled = item.restricted && passDisabled;
+                    return (
                     <motion.button
                       key={item.id}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => navigate(`/new-pass?stage=${item.id.toLowerCase()}`)}
-                      className="w-full p-6 bg-white dark:bg-slate-900 rounded-[32px] border border-slate-100 dark:border-slate-800 flex items-center gap-5 text-left shadow-sm active:shadow-none transition-all"
+                      whileTap={{ scale: isDisabled ? 1 : 0.98 }}
+                      disabled={isDisabled}
+                      onClick={() => !isDisabled && navigate(`/new-pass?stage=${item.id.toLowerCase()}`)}
+                      className={cn(
+                        "w-full p-6 rounded-[32px] border flex items-center gap-5 text-left shadow-sm transition-all",
+                        isDisabled
+                          ? "bg-slate-50 dark:bg-slate-900/40 border-slate-100 dark:border-slate-800 opacity-60 cursor-not-allowed"
+                          : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 active:shadow-none"
+                      )}
                     >
-                       <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shrink-0", item.bg)}>
-                          <item.icon className={cn("w-7 h-7 font-black", item.color)} />
+                       <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shrink-0", isDisabled ? "bg-slate-200 dark:bg-slate-800" : item.bg)}>
+                          <item.icon className={cn("w-7 h-7 font-black", isDisabled ? "text-slate-400" : item.color)} />
                        </div>
                        <div className="flex-1">
-                          <h3 className="text-[16px] font-black text-slate-900 dark:text-white tracking-tight mb-1">{item.title}</h3>
-                          <p className="text-[12px] font-bold text-slate-400 italic leading-tight">{item.sub}</p>
+                          <h3 className={cn("text-[16px] font-black tracking-tight mb-1", isDisabled ? "text-slate-400" : "text-slate-900 dark:text-white")}>{item.title}</h3>
+                          <p className="text-[12px] font-bold text-slate-400 italic leading-tight">
+                            {isDisabled ? 'Not available after 5:00 PM' : item.sub}
+                          </p>
                        </div>
-                       <ChevronRight className="w-5 h-5 text-slate-200" />
+                       {isDisabled ? (
+                         <Ban className="w-5 h-5 text-rose-400" />
+                       ) : (
+                         <ChevronRight className="w-5 h-5 text-slate-200" />
+                       )}
                     </motion.button>
-                  ))}
+                    );
+                  })}
                </div>
             </motion.div>
           )}

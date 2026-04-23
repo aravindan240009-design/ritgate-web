@@ -1,6 +1,6 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldCheck, FileText, Send, Loader2, QrCode } from 'lucide-react';
+import { ShieldCheck, FileText, Send, Loader2, QrCode, Ban } from 'lucide-react';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
@@ -10,6 +10,13 @@ import { useToast } from '../../context/ToastContext';
 import { submitNTFGatePass, approveGatePassByHR, getGatePassQRCode } from '../../services/api.service';
 import { useActionLock } from '../../context/ActionLockContext';
 import { transitions } from '../../design-system/animations';
+
+/** Returns current hour in IST (UTC+5:30) */
+const getISTHour = () => {
+  const now = new Date();
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  return new Date(utcMs + 5.5 * 60 * 60 * 1000).getHours();
+};
 
 interface AdminNewPassProps {
   onBack?: () => void;
@@ -21,6 +28,8 @@ export default function AdminNewPass({ onBack }: AdminNewPassProps = {}) {
   const { withLock } = useActionLock();
   const adminCode = getUserId();
   const adminName = (user as any)?.staffName || (user as any)?.name || 'Admin';
+
+  const passDisabled = getISTHour() >= 17;
   
   const [purpose, setPurpose] = useState('');
   const [reason, setReason] = useState('');
@@ -111,6 +120,21 @@ export default function AdminNewPass({ onBack }: AdminNewPassProps = {}) {
         </div>
       </div>
 
+      {/* Time restriction banner */}
+      {passDisabled && (
+        <motion.div initial={transitions.page.initial} animate={transitions.page.animate}>
+          <div className="flex items-start gap-3 p-4 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 rounded-2xl">
+            <Ban className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-xs font-bold text-rose-700 dark:text-rose-400 uppercase tracking-wide">Not Available</p>
+              <p className="text-xs text-rose-600 dark:text-rose-400/80 font-medium leading-relaxed mt-0.5">
+                Gate pass generation is disabled after 5:00 PM.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* User Info */}
       <motion.div initial={transitions.page.initial} animate={transitions.page.animate}>
         <Card className="bg-slate-50 dark:bg-slate-900">
@@ -156,7 +180,7 @@ export default function AdminNewPass({ onBack }: AdminNewPassProps = {}) {
         fullWidth
         size="lg"
         onClick={handleSubmit}
-        disabled={submitting || !purpose.trim() || !reason.trim()}
+        disabled={submitting || !purpose.trim() || !reason.trim() || passDisabled}
         className="h-14 rounded-2xl font-black uppercase tracking-widest gap-2 bg-indigo-600 hover:bg-indigo-700"
       >
         {submitting ? (

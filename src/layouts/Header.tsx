@@ -59,7 +59,7 @@ export default function Header({ onMenuClick, sidebarCollapsed }: HeaderProps) {
   const roleLabel = ROLE_LABELS[role || ''] || role || '';
 
   return (
-    <header className="sticky top-0 z-30 h-[60px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800 flex items-center shrink-0">
+    <header className="sticky top-0 z-30 h-[60px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800 flex items-center shrink-0 overflow-visible">
       <div className="flex items-center justify-between w-full px-6 gap-4">
 
         {/* ── Left: Menu toggle + Breadcrumb ──────────────── */}
@@ -91,7 +91,7 @@ export default function Header({ onMenuClick, sidebarCollapsed }: HeaderProps) {
             </h1>
             {isDashboard && (
               <span className="text-[11px] text-slate-400 mt-0.5 leading-none">
-                RIT Rajarampur
+                RIT
               </span>
             )}
           </div>

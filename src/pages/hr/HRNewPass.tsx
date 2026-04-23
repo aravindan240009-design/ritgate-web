@@ -1,9 +1,8 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { QrCode, ShieldCheck, FileText, Info, Paperclip, X, Loader2 } from 'lucide-react';
+import { QrCode, ShieldCheck, FileText, Info, Loader2, Ban } from 'lucide-react';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
-import Input from '../../components/ui/Input';
 import Modal from '../../components/ui/Modal';
 import QRCodeModal from '../../components/common/QRCodeModal';
 import { useAuth } from '../../context/AuthContext';
@@ -13,6 +12,13 @@ import { useActionLock } from '../../context/ActionLockContext';
 import { cn } from '../../utils/cn';
 import { transitions } from '../../design-system/animations';
 
+/** Returns current hour in IST (UTC+5:30) */
+const getISTHour = () => {
+  const now = new Date();
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  return new Date(utcMs + 5.5 * 60 * 60 * 1000).getHours();
+};
+
 export default function HRNewPass() {
   const { getUserId, user } = useAuth();
   const { success: showSuccess, error: showError } = useToast();
@@ -21,6 +27,8 @@ export default function HRNewPass() {
   const hrName = (user as any)?.hrName || (user as any)?.name || 'HR';
   const department = (user as any)?.department || 'HR';
   const initials = hrName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+
+  const passDisabled = getISTHour() >= 17;
 
   const [purpose, setPurpose] = useState('');
   const [reason, setReason] = useState('');
@@ -111,6 +119,21 @@ export default function HRNewPass() {
         </div>
       </motion.div>
 
+      {/* Time restriction banner */}
+      {passDisabled && (
+        <motion.div initial={transitions.page.initial} animate={transitions.page.animate}>
+          <div className="flex items-start gap-3 p-4 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 rounded-2xl">
+            <Ban className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-xs font-bold text-rose-700 dark:text-rose-400 uppercase tracking-wide">Not Available</p>
+              <p className="text-xs text-rose-600 dark:text-rose-400/80 font-medium leading-relaxed mt-0.5">
+                Gate pass generation is disabled after 5:00 PM.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* User Card */}
       <motion.div initial={transitions.page.initial} animate={transitions.page.animate}>
         <Card>
@@ -160,7 +183,7 @@ export default function HRNewPass() {
         fullWidth
         size="lg"
         onClick={handleSubmit}
-        disabled={submitting || !purpose.trim() || !reason.trim()}
+        disabled={submitting || !purpose.trim() || !reason.trim() || passDisabled}
         className="h-14 rounded-2xl font-bold gap-2"
       >
         {submitting ? (

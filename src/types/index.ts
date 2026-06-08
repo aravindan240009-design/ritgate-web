@@ -304,6 +304,36 @@ export interface SessionData {
   loginAt?: number; // epoch ms
 }
 
+// ── Events ───────────────────────────────────────────────────────────────────
+export interface RITGateEvent {
+  id: number;
+  hodCode: string;
+  eventName: string;
+  eventDate: string;
+  venue?: string;
+  status: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+  createdAt?: string;
+}
+
+export interface EventCoordinator {
+  id: number;
+  eventId: number;
+  staffCode: string;
+  staffName?: string;
+  assignedAt?: string;
+}
+
+export interface EventPassRow {
+  full_name: string;
+  email?: string;
+  college_name?: string;
+  phone?: string;
+  student_id?: string;
+  department?: string;
+  course?: string;
+  [key: string]: string | undefined;
+}
+
 // ── Toast ─────────────────────────────────────────────────────────────────────
 export interface ToastMessage {
   id: string;

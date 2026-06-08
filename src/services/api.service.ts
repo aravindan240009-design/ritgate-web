@@ -688,6 +688,75 @@ export async function markAllNotificationsRead(userId: string): Promise<ApiRespo
   catch (e) { return { success: false, message: extractError(e) }; }
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// EVENTS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export async function createEvent(hodCode: string, eventName: string, eventDate: string, venue: string): Promise<ApiResponse> {
+  try { return (await api.post('/events', { hodCode, eventName, eventDate, venue })).data; }
+  catch (e) { return { success: false, message: extractError(e) }; }
+}
+
+export async function getHODEvents(hodCode: string): Promise<{ success: boolean; events: any[] }> {
+  try {
+    const { data } = await api.get(`/events/hod/${encodeURIComponent(hodCode)}`);
+    return { success: true, events: data.events || data.data || (Array.isArray(data) ? data : []) };
+  } catch { return { success: false, events: [] }; }
+}
+
+export async function getStaffEvents(staffCode: string): Promise<{ success: boolean; events: any[] }> {
+  try {
+    const { data } = await api.get(`/events/coordinator/${encodeURIComponent(staffCode)}`);
+    return { success: true, events: data.events || data.data || (Array.isArray(data) ? data : []) };
+  } catch { return { success: false, events: [] }; }
+}
+
+export async function getEventCoordinators(eventId: number): Promise<{ success: boolean; coordinators: any[] }> {
+  try {
+    const { data } = await api.get(`/events/${eventId}/coordinators`);
+    return { success: true, coordinators: data.coordinators || data.data || (Array.isArray(data) ? data : []) };
+  } catch { return { success: false, coordinators: [] }; }
+}
+
+export async function assignCoordinators(eventId: number, hodCode: string, staffCodes: string[]): Promise<ApiResponse> {
+  try { return (await api.post(`/events/${eventId}/coordinators`, { hodCode, staffCodes })).data; }
+  catch (e) { return { success: false, message: extractError(e) }; }
+}
+
+export async function removeCoordinator(eventId: number, staffCode: string): Promise<ApiResponse> {
+  try { return (await api.delete(`/events/${eventId}/coordinators/${encodeURIComponent(staffCode)}`)).data; }
+  catch (e) { return { success: false, message: extractError(e) }; }
+}
+
+export async function uploadEventCsvPreview(eventId: number, staffCode: string, file: File): Promise<{ success: boolean; rows?: any[]; message?: string }> {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('staffCode', staffCode);
+    const { data } = await api.post(`/events/${eventId}/csv/preview`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return { success: true, rows: data.rows || data.data || [] };
+  } catch (e) { return { success: false, message: extractError(e) }; }
+}
+
+export async function confirmEventCsvUpload(eventId: number, staffCode: string, rows: any[]): Promise<ApiResponse> {
+  try { return (await api.post(`/events/${eventId}/csv/confirm`, { staffCode, rows })).data; }
+  catch (e) { return { success: false, message: extractError(e) }; }
+}
+
+export async function getEventPasses(eventId: number): Promise<{ success: boolean; passes: any[] }> {
+  try {
+    const { data } = await api.get(`/events/${eventId}/passes`);
+    return { success: true, passes: data.passes || data.data || [] };
+  } catch { return { success: false, passes: [] }; }
+}
+
+export async function completeEvent(eventId: number): Promise<ApiResponse> {
+  try { return (await api.put(`/events/${eventId}/complete`)).data; }
+  catch (e) { return { success: false, message: extractError(e) }; }
+}
+
 // ── Entry/Exit status ─────────────────────────────────────────────────────────
 export async function getUserStatus(userId: string): Promise<any> {
   try { return (await api.get(`/entry-exit/status/${userId}`)).data; }

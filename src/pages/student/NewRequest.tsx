@@ -1,21 +1,24 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ArrowLeft, 
-  ShieldCheck, 
-  Layout, 
-  AlignLeft, 
-  Paperclip, 
-  X, 
+import PurposeSelect from '../../components/common/PurposeSelect';
+import {
+  ArrowLeft,
+  ShieldCheck,
+  Layout,
+  AlignLeft,
+  Paperclip,
+  X,
   Image as ImageIcon,
   CheckCircle2,
   AlertCircle,
   Loader2
 } from 'lucide-react';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useActionLock } from '../../context/ActionLockContext';
+import { useFieldValidation } from '../../hooks/useFieldValidation';
 import { submitStudentGatePass } from '../../services/api.service';
 import Button from '../../components/ui/Button';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
@@ -33,6 +36,7 @@ const getISTHour = () => {
 };
 
 export default function NewRequest() {
+  usePageTitle('New Request');
   const navigate = useNavigate();
   const { user: rawUser } = useAuth();
   const user = rawUser as Student;
@@ -45,8 +49,6 @@ export default function NewRequest() {
       navigate('/dashboard', { replace: true });
     }
   }, []);
-  const { success: showToastSuccess, error: showToastError } = useToast();
-  const { withLock, isLocked } = useActionLock();
 
   const [purpose, setPurpose] = useState('');
   const [reason, setReason] = useState('');
@@ -57,6 +59,11 @@ export default function NewRequest() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const { errors, validateAll, fieldProps } = useFieldValidation({
+    purpose: v => !v.trim() ? 'Purpose is required' : undefined,
+    reason:  v => !v.trim() ? 'Please describe your reason' : v.trim().length < 10 ? 'Too short — add more detail' : undefined,
+  });
 
   const isFormValid = purpose.trim() && reason.trim();
 
@@ -80,7 +87,7 @@ export default function NewRequest() {
   };
 
   const handleSubmit = async () => {
-    if (!isFormValid) return;
+    if (!validateAll({ purpose, reason })) return;
     
     await withLock(async () => {
       try {
@@ -138,7 +145,7 @@ export default function NewRequest() {
       <main className="flex-1 overflow-y-auto px-5 pt-6 pb-32">
         <div className="max-w-md mx-auto space-y-6">
           {/* Profile Banner */}
-          <div className="bg-indigo-600 rounded-[28px] p-5 flex items-center gap-4 shadow-lg shadow-indigo-200 dark:shadow-none">
+          <div className="bg-[var(--color-primary)] rounded-[28px] p-5 flex items-center gap-4 shadow-lg shadow-blue-200 dark:shadow-none">
             <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 text-white text-[22px] font-black">
               {user?.firstName?.charAt(0) || 'S'}
             </div>
@@ -162,18 +169,12 @@ export default function NewRequest() {
               <label className="block text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] px-1">
                 PURPOSE OF VISIT
               </label>
-              <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors">
-                  <Layout className="w-5 h-5" />
-                </div>
-                <input 
-                  type="text"
-                  placeholder="e.g. Hospital, Personal Work"
-                  value={purpose}
-                  onChange={(e) => setPurpose(e.target.value)}
-                  className="w-full h-14 pl-12 pr-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-[15px] font-bold text-slate-900 dark:text-white placeholder:text-slate-300 shadow-sm focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all"
-                />
-              </div>
+              <PurposeSelect
+                value={purpose}
+                onChange={v => { setPurpose(v); fieldProps('purpose', v).onChange({ target: { value: v } } as any); }}
+                error={errors.purpose}
+                variant="outlined"
+              />
             </div>
 
             {/* Detailed Reason */}
@@ -182,17 +183,22 @@ export default function NewRequest() {
                 DETAILED REASON
               </label>
               <div className="relative group">
-                <div className="absolute left-4 top-5 text-slate-300 group-focus-within:text-indigo-500 transition-colors">
+                <div className={cn("absolute left-4 top-5 transition-colors", errors.reason ? "text-rose-400" : "text-slate-300 group-focus-within:text-[var(--color-primary)]")}>
                   <AlignLeft className="w-5 h-5" />
                 </div>
-                <textarea 
+                <textarea
                   rows={4}
                   placeholder="Please provide specific details for your outing..."
                   value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-[15px] font-bold text-slate-900 dark:text-white placeholder:text-slate-300 shadow-sm focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all resize-none"
+                  onChange={e => { setReason(e.target.value); fieldProps('reason', e.target.value).onChange(e); }}
+                  onBlur={fieldProps('reason', reason).onBlur}
+                  className={cn(
+                    "w-full pl-12 pr-4 py-4 bg-white dark:bg-slate-900 rounded-2xl text-[15px] font-bold text-slate-900 dark:text-white placeholder:text-slate-300 shadow-sm outline-none transition-all resize-none border",
+                    errors.reason ? "border-rose-400 focus:ring-2 focus:ring-rose-300/30" : "border-slate-100 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/10"
+                  )}
                 />
               </div>
+              {errors.reason && <p className="text-[11px] font-bold text-rose-500 px-1 mt-1">{errors.reason}</p>}
             </div>
 
             {/* Attachment Picker */}
@@ -206,10 +212,10 @@ export default function NewRequest() {
                   onClick={() => fileInputRef.current?.click()}
                   className="w-full py-8 bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[28px] flex flex-col items-center justify-center gap-3 active:scale-[0.98] transition-all group"
                 >
-                  <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-slate-400 group-hover:text-indigo-500 transition-colors">
+                  <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-slate-400 group-hover:text-blue-700 transition-colors">
                     <Paperclip className="w-6 h-6" />
                   </div>
-                  <span className="text-[13px] font-bold text-slate-500 group-hover:text-indigo-600">Upload Image or PDF</span>
+                  <span className="text-[13px] font-bold text-slate-500 group-hover:text-[var(--color-primary)]">Upload Image or PDF</span>
                   <input 
                     type="file" 
                     ref={fileInputRef}
@@ -220,7 +226,7 @@ export default function NewRequest() {
                 </button>
               ) : (
                 <div className="relative bg-white dark:bg-slate-900 rounded-[28px] p-4 border border-slate-200 dark:border-slate-800 flex items-center gap-4">
-                  <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl flex items-center justify-center text-indigo-600">
+                  <div className="w-14 h-14 bg-blue-50 dark:bg-indigo-900/20 rounded-2xl flex items-center justify-center text-[var(--color-primary)]">
                     <ImageIcon className="w-7 h-7" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -246,7 +252,7 @@ export default function NewRequest() {
           onClick={() => setShowConfirmSubmit(true)}
           disabled={!isFormValid || isLocked}
           className={cn(
-            "w-full h-15 bg-slate-950 dark:bg-indigo-600 rounded-2xl flex items-center justify-center gap-3 text-white active:scale-95 transition-all shadow-xl shadow-slate-200 dark:shadow-none",
+            "w-full h-15 bg-slate-950 dark:bg-[var(--color-primary)] rounded-2xl flex items-center justify-center gap-3 text-white active:scale-95 transition-all shadow-xl shadow-slate-200 dark:shadow-none",
             (!isFormValid || isLocked) && "opacity-60 saturate-50 cursor-not-allowed"
           )}
         >

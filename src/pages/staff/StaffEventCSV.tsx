@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   FileSpreadsheet, Upload, X, CheckCircle2, AlertCircle,
   CalendarDays, MapPin, Calendar, Send, Loader2,
-  RefreshCw, Info
+  RefreshCw, Info, PartyPopper
 } from 'lucide-react';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useAuth } from '../../context/AuthContext';
@@ -16,7 +16,14 @@ import { SkeletonList } from '../../components/ui/Skeleton';
 import { cn } from '../../utils/cn';
 import type { RITGateEvent } from '../../types';
 
-type View = 'events' | 'upload' | 'preview';
+type View = 'events' | 'upload' | 'preview' | 'result';
+
+interface UploadResult {
+  total: number;
+  issued: number;
+  failed: number;
+  errors?: { name?: string; email?: string; reason?: string }[];
+}
 
 interface ParsedRow {
   full_name: string;
@@ -33,7 +40,7 @@ interface ParsedRow {
 export default function StaffEventCSV() {
   usePageTitle('Event CSV Upload');
   const { getUserId } = useAuth();
-  const { success: toast, error: toastError } = useToast();
+  const { error: toastError } = useToast();
   const { withLock, isLocked } = useActionLock();
   const staffCode = getUserId();
 
@@ -47,6 +54,7 @@ export default function StaffEventCSV() {
   const [parsedRows, setParsedRows] = useState<ParsedRow[]>([]);
   const [csvError, setCsvError] = useState('');
   const [previewing, setPreviewing] = useState(false);
+  const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
 
   const loadEvents = useCallback(async () => {
     try {
@@ -136,11 +144,15 @@ export default function StaffEventCSV() {
       const rows = valid.map(({ valid: _v, error: _e, ...rest }) => rest);
       const res = await confirmEventCsvUpload(selectedEvent.id, staffCode, rows);
       if (res.success) {
-        toast('Passes Created', `${valid.length} gate pass(es) dispatched for "${selectedEvent.eventName}"`);
-        setView('events');
-        setSelectedEvent(null);
-        setParsedRows([]);
-        setFileName('');
+        const total = valid.length;
+        const failed = (res as any).failed ?? 0;
+        setUploadResult({
+          total,
+          issued: total - failed,
+          failed,
+          errors: (res as any).errors || [],
+        });
+        setView('result');
         loadEvents();
       } else {
         toastError('Failed', res.message || 'Could not confirm upload');
@@ -157,6 +169,92 @@ export default function StaffEventCSV() {
 
   const validRows = parsedRows.filter(r => r.valid);
   const invalidRows = parsedRows.filter(r => !r.valid);
+
+  // ─── Result ───────────────────────────────────────────────────────────────────
+  if (view === 'result' && selectedEvent && uploadResult) {
+    const allIssued = uploadResult.failed === 0;
+    return (
+      <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
+        <PageHeader title="Upload Complete" onBack={() => { setView('events'); setSelectedEvent(null); setUploadResult(null); }} />
+        <div className="px-5 py-5 pb-28 space-y-5">
+          <div className="flex flex-col items-center pt-6 pb-2 gap-4">
+            <div className={cn(
+              'w-24 h-24 rounded-full flex items-center justify-center shadow-lg',
+              allIssued
+                ? 'bg-emerald-500 shadow-emerald-200 dark:shadow-none'
+                : 'bg-amber-500 shadow-amber-200 dark:shadow-none'
+            )}>
+              {allIssued
+                ? <PartyPopper className="w-12 h-12 text-white" />
+                : <AlertCircle className="w-12 h-12 text-white" />}
+            </div>
+            <div className="text-center">
+              <h2 className="text-[22px] font-black text-slate-900 dark:text-white leading-none mb-2">
+                {allIssued ? 'All Passes Issued!' : 'Partially Complete'}
+              </h2>
+              <p className="text-[14px] font-bold text-slate-500">{selectedEvent.eventName}</p>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm flex">
+            <div className="flex-1 py-5 flex flex-col items-center gap-1.5 border-r border-slate-100 dark:border-slate-800">
+              <span className="text-[28px] font-black text-slate-900 dark:text-white leading-none">{uploadResult.total}</span>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total</span>
+            </div>
+            <div className="flex-1 py-5 flex flex-col items-center gap-1.5 border-r border-slate-100 dark:border-slate-800">
+              <span className="text-[28px] font-black text-emerald-600 leading-none">{uploadResult.issued}</span>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Issued</span>
+            </div>
+            <div className="flex-1 py-5 flex flex-col items-center gap-1.5">
+              <span className={cn(
+                'text-[28px] font-black leading-none',
+                uploadResult.failed > 0 ? 'text-rose-500' : 'text-slate-300 dark:text-slate-700'
+              )}>
+                {uploadResult.failed}
+              </span>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Failed</span>
+            </div>
+          </div>
+
+          {uploadResult.failed > 0 && uploadResult.errors && uploadResult.errors.length > 0 && (
+            <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+              <div className="px-5 py-3 bg-rose-50/70 dark:bg-rose-900/20 border-b border-rose-100 dark:border-rose-800/50">
+                <p className="text-[11px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-widest">
+                  Failed Entries ({uploadResult.failed})
+                </p>
+              </div>
+              <div className="divide-y divide-slate-50 dark:divide-slate-800/50 max-h-[240px] overflow-y-auto">
+                {uploadResult.errors.map((err, i) => (
+                  <div key={i} className="flex items-start gap-3 px-5 py-3">
+                    <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                    <div className="flex-1 min-w-0">
+                      {err.name && <p className="text-[13px] font-black text-slate-900 dark:text-white truncate">{err.name}</p>}
+                      {err.email && <p className="text-[11px] font-bold text-slate-400 truncate">{err.email}</p>}
+                      {err.reason && <p className="text-[10px] font-bold text-rose-500 mt-0.5">{err.reason}</p>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-start gap-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-2xl px-4 py-3">
+            <Info className="w-4 h-4 text-[var(--color-primary)] shrink-0 mt-0.5" />
+            <p className="text-[12px] font-bold text-blue-700 dark:text-blue-400 leading-relaxed">
+              Each participant has received an email with their unique QR code. Passes are valid until midnight on {selectedEvent.eventDate}.
+            </p>
+          </div>
+
+          <button
+            onClick={() => { setView('events'); setSelectedEvent(null); setUploadResult(null); }}
+            className="w-full h-14 bg-[var(--color-primary)] rounded-2xl text-white font-black text-[14px] uppercase tracking-widest shadow-lg shadow-blue-100 dark:shadow-none flex items-center justify-center active:scale-[0.98] transition-all"
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // ─── Preview ──────────────────────────────────────────────────────────────────
   if (view === 'preview' && selectedEvent) {

@@ -138,7 +138,7 @@ export default function ProfilePage({ user: propUser, onBack }: ProfilePageProps
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
         <div className="px-5 pt-6 pb-32 min-h-[calc(100vh-100px)] lg:min-h-0 lg:px-0 lg:pt-0 lg:pb-8 lg:grid lg:grid-cols-[320px_minmax(0,1fr)] xl:grid-cols-[340px_minmax(0,1fr)] lg:gap-7 lg:items-start lg:max-w-[1120px] lg:mx-auto">
           {/* 1. Header Section */}
-          <div className="flex flex-col items-center mb-8 lg:sticky lg:top-28 lg:mb-0 lg:bg-white lg:dark:bg-slate-900 lg:border lg:border-slate-100 lg:dark:border-slate-800 lg:rounded-[24px] lg:p-7 lg:shadow-sm">
+          <div className="flex flex-col items-center mb-8 lg:sticky lg:top-28 lg:mb-0 lg:row-span-3 lg:self-start lg:bg-white lg:dark:bg-slate-900 lg:border lg:border-slate-100 lg:dark:border-slate-800 lg:rounded-[24px] lg:p-7 lg:shadow-sm">
              <div className="relative mb-4">
                 <div className="w-[100px] h-[100px] rounded-full border-2 border-blue-700 p-1 flex items-center justify-center bg-white dark:bg-slate-900 shadow-xl shadow-blue-100">
                    {profileImage ? (

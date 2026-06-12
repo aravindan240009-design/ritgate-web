@@ -12,6 +12,7 @@ import {
   RefreshCw,
   LogOut
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useAuth } from '../../context/AuthContext';
 import { useRefresh } from '../../context/RefreshContext';
@@ -36,11 +37,19 @@ import { cn } from '../../utils/cn';
 import type { Staff } from '../../types';
 import { formatDateTime, relativeTime, isToday } from '../../utils/dateUtils';
 import { EMPTY_COPY } from '../../config/nativeCopy';
+import { useAdaptive } from '../../utils/useAdaptive';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
+import DesktopStatCard from '../../components/desktop/DesktopStatCard';
+import DesktopToolbar from '../../components/desktop/DesktopToolbar';
+import Button from '../../components/ui/Button';
+import EmptyState from '../../components/ui/EmptyState';
 
 type ActiveTab = 'PENDING' | 'APPROVED' | 'REJECTED';
 
 export default function StaffDashboard() {
   usePageTitle('Dashboard');
+  const navigate = useNavigate();
+  const { isDesktop } = useAdaptive();
   const { user: rawUser, logout, getUserId } = useAuth();
   const user = rawUser as Staff;
   const { refreshCount } = useRefresh();
@@ -225,15 +234,24 @@ export default function StaffDashboard() {
   };
 
   return (
-    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
-      <TopMenuBar
+    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
+      {!isDesktop && <TopMenuBar
         greeting={getGreeting()}
         title={staffName.toUpperCase()}
-      />
+      />}
 
-      <div className="px-5 pt-4 space-y-4">
+      {isDesktop && (
+        <DesktopPageHeader
+          eyebrow={getGreeting().replace(',', '')}
+          title="Dashboard"
+          subtitle="Track and manage your gate pass requests"
+          action={<Button icon={<FileText className="w-4 h-4" />} onClick={() => navigate('/new-pass')}>New Pass</Button>}
+        />
+      )}
+
+      <div className="px-5 pt-4 space-y-4 lg:px-0 lg:pt-0 lg:space-y-5">
         {/* Search Bar */}
-        <div className="relative">
+        <div className="relative lg:hidden">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
             <Search className="w-5 h-5" />
           </div>
@@ -246,8 +264,33 @@ export default function StaffDashboard() {
           />
         </div>
 
+        {isDesktop && (
+          <DesktopToolbar
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+            searchPlaceholder="Search requests by name, purpose, or ID..."
+          >
+            <div className="ml-auto flex items-center gap-2">
+              {(['PENDING', 'APPROVED', 'REJECTED'] as ActiveTab[]).map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={cn(
+                    'h-10 px-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-colors',
+                    activeTab === tab
+                      ? 'bg-blue-700 text-white shadow-sm'
+                      : 'bg-slate-100 text-slate-500 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-300 dark:hover:text-white'
+                  )}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </DesktopToolbar>
+        )}
+
         {/* Stats Tabs */}
-        <div className="flex bg-white dark:bg-slate-900 rounded-[24px] p-2 shadow-sm border border-slate-50 dark:border-slate-800 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
+        <div className="flex bg-white dark:bg-slate-900 rounded-[24px] p-2 shadow-sm border border-slate-50 dark:border-slate-800 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all lg:hidden">
           {(['PENDING', 'APPROVED', 'REJECTED'] as ActiveTab[]).map((tab) => {
             const stats = getStats();
             const isActive = activeTab === tab;
@@ -272,12 +315,77 @@ export default function StaffDashboard() {
             );
           })}
         </div>
+
+        {isDesktop && (
+          <div className="grid grid-cols-3 gap-4">
+            <DesktopStatCard label="Pending" value={getStats().PENDING} icon={Clock} tone="amber" active={activeTab === 'PENDING'} onClick={() => setActiveTab('PENDING')} />
+            <DesktopStatCard label="Approved" value={getStats().APPROVED} icon={CheckCircle2} tone="emerald" active={activeTab === 'APPROVED'} onClick={() => setActiveTab('APPROVED')} />
+            <DesktopStatCard label="Rejected" value={getStats().REJECTED} icon={AlertCircle} tone="rose" active={activeTab === 'REJECTED'} onClick={() => setActiveTab('REJECTED')} />
+          </div>
+        )}
       </div>
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-5 pt-4 pb-28">
+        <div className="px-5 pt-4 pb-28 lg:px-0 lg:pt-6 lg:pb-8">
           {loading ? (
             <SkeletonList count={4} />
+          ) : isDesktop && filteredRequests.length > 0 ? (
+            <section className="desktop-card overflow-hidden">
+              <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-bold text-slate-950 dark:text-white">Requests Overview</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Review assigned requests for today</p>
+                </div>
+                <span className="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase tracking-widest">{filteredRequests.length} Requests</span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="desktop-table">
+                  <thead>
+                    <tr>
+                      <th>Requester</th>
+                      <th>Type</th>
+                      <th>Purpose</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th className="text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredRequests.map((request) => {
+                      const isVisitor = request.requestType === 'VISITOR';
+                      return (
+                        <tr key={request.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/35 transition-colors">
+                          <td>
+                            <div>
+                              <p className="font-bold text-slate-950 dark:text-white">{request.studentName || 'Unknown'}</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                {isVisitor ? request.visitorPhone || 'Visitor' : `${request.regNo || 'N/A'} - ${request.department || 'Dept'}`}
+                              </p>
+                            </div>
+                          </td>
+                          <td>{isVisitor ? 'Visitor' : request.passType === 'BULK' ? 'Bulk GatePass' : 'Single GatePass'}</td>
+                          <td className="max-w-[320px] truncate">{request.purpose || request.reason || 'General'}</td>
+                          <td>{formatDateTime(request.requestDate || request.createdAt)}</td>
+                          <td>
+                            <span className={cn(
+                              'inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase',
+                              request.staffApproval === 'APPROVED' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' :
+                              request.staffApproval === 'REJECTED' ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300' :
+                              'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300'
+                            )}>
+                              {request.staffApproval || 'PENDING'}
+                            </span>
+                          </td>
+                          <td className="text-right">
+                            <Button size="sm" variant="secondary" onClick={() => { setSelectedRequest(request); setShowDetailModal(true); }}>View</Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </section>
           ) : filteredRequests.length > 0 ? (
             <div className="space-y-4">
               {filteredRequests.map((request) => {
@@ -353,15 +461,12 @@ export default function StaffDashboard() {
               })}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mb-5">
-                <CheckCircle2 className="w-10 h-10 text-slate-200 dark:text-slate-800" />
-              </div>
-              <h5 className="text-[17px] font-black text-slate-900 dark:text-white mb-1.5">{EMPTY_COPY.noRequestsFound}</h5>
-              <p className="text-[13px] font-medium text-slate-400 max-w-[200px] leading-relaxed italic">
-                {EMPTY_COPY.requestsWillAppear}
-              </p>
-            </div>
+            <EmptyState
+              icon={<CheckCircle2 className="w-8 h-8" />}
+              title={EMPTY_COPY.noRequestsFound}
+              description={EMPTY_COPY.requestsWillAppear}
+              action={isDesktop ? <Button onClick={() => navigate('/new-pass')}>Create New Pass</Button> : undefined}
+            />
           )}
         </div>
       </TopRefreshControl>

@@ -36,7 +36,7 @@ export default function Card({ children, className, hover = false, glass = false
       onClick={onClick}
       {...interactionProps}
       className={cn(
-        'native-card transition-all duration-200',
+        'native-card lg:desktop-card transition-all duration-200',
         glass
           ? 'bg-white/10 backdrop-blur-md border-white/20 shadow-lg'
           : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 shadow-sm',

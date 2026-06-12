@@ -15,6 +15,9 @@ import TopRefreshControl from '../../components/common/TopRefreshControl';
 import { SkeletonList } from '../../components/ui/Skeleton';
 import { cn } from '../../utils/cn';
 import type { RITGateEvent } from '../../types';
+import { useAdaptive } from '../../utils/useAdaptive';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
+import EmptyState from '../../components/ui/EmptyState';
 
 type View = 'events' | 'upload' | 'preview' | 'result';
 
@@ -39,6 +42,7 @@ interface ParsedRow {
 
 export default function StaffEventCSV() {
   usePageTitle('Event CSV Upload');
+  const { isDesktop } = useAdaptive();
   const { getUserId } = useAuth();
   const { error: toastError } = useToast();
   const { withLock, isLocked } = useActionLock();
@@ -174,9 +178,10 @@ export default function StaffEventCSV() {
   if (view === 'result' && selectedEvent && uploadResult) {
     const allIssued = uploadResult.failed === 0;
     return (
-      <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
+      <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
         <PageHeader title="Upload Complete" onBack={() => { setView('events'); setSelectedEvent(null); setUploadResult(null); }} />
-        <div className="px-5 py-5 pb-28 space-y-5">
+        {isDesktop && <DesktopPageHeader title="Upload Complete" subtitle="Review event visitor pass creation results" />}
+        <div className="px-5 py-5 pb-28 space-y-5 lg:px-0 lg:py-0 lg:max-w-[920px]">
           <div className="flex flex-col items-center pt-6 pb-2 gap-4">
             <div className={cn(
               'w-24 h-24 rounded-full flex items-center justify-center shadow-lg',
@@ -259,9 +264,10 @@ export default function StaffEventCSV() {
   // ─── Preview ──────────────────────────────────────────────────────────────────
   if (view === 'preview' && selectedEvent) {
     return (
-      <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
+      <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
         <PageHeader title="Review Participants" onBack={() => setView('upload')} />
-        <div className="px-5 py-5 pb-28 space-y-5">
+        {isDesktop && <DesktopPageHeader title="Review Participants" subtitle="Validate participant rows before issuing passes" />}
+        <div className="px-5 py-5 pb-28 space-y-5 lg:px-0 lg:py-0 lg:max-w-[1040px]">
           <div className="bg-[var(--color-primary)] rounded-[24px] px-5 py-4 flex items-center gap-3">
             <CalendarDays className="w-6 h-6 text-white/70 shrink-0" />
             <div className="min-w-0">
@@ -329,9 +335,10 @@ export default function StaffEventCSV() {
   // ─── Upload ───────────────────────────────────────────────────────────────────
   if (view === 'upload' && selectedEvent) {
     return (
-      <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
+      <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
         <PageHeader title="Upload Participants" onBack={() => { setView('events'); setSelectedEvent(null); }} />
-        <div className="px-5 py-5 pb-28 space-y-5">
+        {isDesktop && <DesktopPageHeader title="Upload Participants" subtitle="Upload and manage event visitor/pass data" />}
+        <div className="px-5 py-5 pb-28 space-y-5 lg:px-0 lg:py-0 lg:max-w-[920px]">
           <div className="bg-[var(--color-primary)] rounded-[24px] px-5 py-4 flex items-center gap-3">
             <CalendarDays className="w-6 h-6 text-white/70 shrink-0" />
             <div className="min-w-0">
@@ -398,11 +405,12 @@ export default function StaffEventCSV() {
 
   // ─── Event List ───────────────────────────────────────────────────────────────
   return (
-    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
+    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
       <PageHeader title="Event CSV Upload" />
+      {isDesktop && <DesktopPageHeader title="Event CSV" subtitle="Upload and manage event visitor/pass data" />}
       <TopRefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); loadEvents(); }}>
-        <div className="px-5 pt-5 pb-28 space-y-5">
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-[24px] p-4 flex gap-3">
+        <div className="px-5 pt-5 pb-28 space-y-5 lg:px-0 lg:pt-0 lg:pb-8 lg:max-w-[1040px]">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-[24px] p-4 flex gap-3 lg:desktop-card lg:p-5">
             <Info className="w-5 h-5 text-[var(--color-primary)] shrink-0 mt-0.5" />
             <p className="text-[12px] font-bold text-blue-700 dark:text-blue-400 leading-relaxed">
               Upload a CSV of external participants for events where you are assigned as coordinator by your HOD.
@@ -412,19 +420,15 @@ export default function StaffEventCSV() {
           {loadingEvents ? (
             <SkeletonList count={3} />
           ) : events.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mb-5">
-                <CalendarDays className="w-10 h-10 text-slate-200 dark:text-slate-800" />
-              </div>
-              <h5 className="text-[17px] font-black text-slate-900 dark:text-white mb-1.5">No Active Events</h5>
-              <p className="text-[13px] font-medium text-slate-400 max-w-[240px] leading-relaxed italic mb-4">
-                You haven't been assigned as coordinator for any active events yet.
-              </p>
-              <button onClick={() => { setRefreshing(true); loadEvents(); }}
+            <EmptyState
+              icon={<CalendarDays className="w-8 h-8" />}
+              title="No Active Events"
+              description="You haven't been assigned as coordinator for any active events yet."
+              action={<button onClick={() => { setRefreshing(true); loadEvents(); }}
                 className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl text-slate-500 text-[13px] font-black uppercase tracking-widest">
                 <RefreshCw className="w-4 h-4" /> Refresh
-              </button>
-            </div>
+              </button>}
+            />
           ) : (
             <div className="space-y-4">
               <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Your Assigned Events</p>

@@ -41,7 +41,7 @@ export default function AppLayout() {
   };
 
   // Sidebar width for margin offset
-  const sidebarWidth = isMobile ? 0 : sidebarCollapsed ? 68 : 256;
+  const sidebarWidth = isMobile ? 0 : sidebarCollapsed ? 72 : 272;
 
   // ── MOBILE LAYOUT ──────────────────────────────────────────────────────────
   if (isMobile) {
@@ -84,7 +84,7 @@ export default function AppLayout() {
 
   // ── TABLET / DESKTOP LAYOUT ────────────────────────────────────────────────
   return (
-    <div className="min-full-height bg-slate-50 dark:bg-slate-950 flex">
+    <div className="min-full-height desktop-shell-bg flex">
       {/* Fixed sidebar */}
       <Sidebar
         collapsed={sidebarCollapsed}
@@ -170,10 +170,10 @@ export default function AppLayout() {
         <main className={cn(
           'flex-1 overflow-y-auto',
           isDesktop
-            ? 'px-8 xl:px-10 py-8'
+            ? 'px-7 xl:px-10 py-8 xl:py-9'
             : 'px-4 py-6', // tablet
         )}>
-          <div className="w-full max-w-[1440px] mx-auto">
+          <div className="desktop-page">
             <AnimatePresence mode="wait">
               <motion.div
                 key={location.pathname}

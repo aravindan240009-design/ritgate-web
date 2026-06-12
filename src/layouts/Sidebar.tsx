@@ -48,14 +48,14 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
   return (
     <motion.aside
-      animate={{ width: collapsed ? 68 : 256 }}
+      animate={{ width: collapsed ? 72 : 272 }}
       transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed left-0 top-0 h-screen z-40 flex flex-col bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 overflow-hidden"
+      className="fixed left-0 top-0 h-screen z-40 flex flex-col bg-white/96 dark:bg-slate-950/96 backdrop-blur-xl border-r border-slate-200/70 dark:border-slate-800 overflow-hidden shadow-[8px_0_30px_rgba(15,23,42,0.035)]"
     >
       {/* ── Brand ─────────────────────────────────────────── */}
       <div className={cn(
         'flex items-center border-b border-slate-100 dark:border-slate-800 shrink-0',
-        collapsed ? 'h-[60px] justify-center px-0' : 'h-[60px] px-4 gap-3',
+        collapsed ? 'h-[68px] justify-center px-0' : 'h-[68px] px-5 gap-3',
       )}>
         <div className="shrink-0">
           <RITLogo size={collapsed ? 30 : 32} />
@@ -90,9 +90,9 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
             transition={{ duration: 0.2 }}
             className="overflow-hidden shrink-0"
           >
-            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
+            <div className="px-4 py-4 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl overflow-hidden shrink-0 bg-[var(--color-primary)] flex items-center justify-center">
+                <div className="w-11 h-11 rounded-2xl overflow-hidden shrink-0 bg-gradient-to-br from-blue-700 to-sky-500 flex items-center justify-center shadow-sm shadow-blue-500/20">
                   {profileImage
                     ? <img src={profileImage} alt={userName} className="w-full h-full object-cover" />
                     : <span className="text-white font-bold text-sm">{initials}</span>
@@ -126,7 +126,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       )}
 
       {/* ── Navigation ────────────────────────────────────── */}
-      <nav className="flex-1 overflow-y-auto sidebar-scroll py-2 px-2 space-y-0.5">
+      <nav className="flex-1 overflow-y-auto sidebar-scroll py-4 px-3 space-y-1">
         {navItems.map((item) => {
           const isActive =
             location.pathname === item.path ||
@@ -138,7 +138,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
               to={item.path}
               title={collapsed ? item.label : undefined}
               className={cn(
-                'group flex items-center gap-3 rounded-lg min-h-[40px] transition-all duration-150 relative select-none',
+                'group flex items-center gap-3 rounded-2xl min-h-[44px] transition-all duration-150 relative select-none',
                 collapsed ? 'justify-center px-0 py-2' : 'px-3 py-2',
                 isActive
                   ? 'bg-blue-50 dark:bg-indigo-950/50 text-[var(--color-primary)] dark:text-blue-400'

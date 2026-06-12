@@ -24,9 +24,15 @@ import MyRequestsBulkModal from '../../components/common/MyRequestsBulkModal';
 import type { Staff } from '../../types';
 import { cn } from '../../utils/cn';
 import { formatDateTime, relativeTime, isToday } from '../../utils/dateUtils';
+import { useAdaptive } from '../../utils/useAdaptive';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
+import DesktopToolbar from '../../components/desktop/DesktopToolbar';
+import Button from '../../components/ui/Button';
+import EmptyState from '../../components/ui/EmptyState';
 
 export default function StaffMyRequests() {
   usePageTitle('My Requests');
+  const { isDesktop } = useAdaptive();
   const { user: rawUser, logout, getUserId } = useAuth();
   const user = rawUser as Staff;
   const { refreshCount } = useRefresh();
@@ -139,13 +145,20 @@ export default function StaffMyRequests() {
   const initials = staffName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
 
   return (
-    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
+    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
       {/* Header */}
       <PageHeader title="My Requests" />
+      {isDesktop && (
+        <DesktopPageHeader
+          title="My Requests"
+          subtitle="View and track your gate pass request history"
+          action={<Button onClick={() => navigate('/new-pass')}>Create New Pass</Button>}
+        />
+      )}
 
-      <div className="px-5 pt-4 space-y-4">
+      <div className="px-5 pt-4 space-y-4 lg:px-0 lg:pt-0 lg:mb-5">
         {/* Search Bar */}
-        <div className="relative">
+        <div className="relative lg:hidden">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
             <Search className="w-5 h-5" />
           </div>
@@ -157,12 +170,74 @@ export default function StaffMyRequests() {
             className="w-full h-12 pl-12 pr-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[20px] text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 shadow-sm outline-none"
           />
         </div>
+        {isDesktop && (
+          <DesktopToolbar
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+            searchPlaceholder="Search your requests by purpose, reason, or ID..."
+          />
+        )}
       </div>
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-5 pt-4 pb-28">
+        <div className="px-5 pt-4 pb-28 lg:px-0 lg:pt-0 lg:pb-8">
           {loading ? (
             <SkeletonList count={4} />
+          ) : isDesktop && filteredRequests.length > 0 ? (
+            <section className="desktop-card overflow-hidden">
+              <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-bold text-slate-950 dark:text-white">Request History</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Today&apos;s submitted requests</p>
+                </div>
+                <span className="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase tracking-widest">{filteredRequests.length} Records</span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="desktop-table">
+                  <thead>
+                    <tr>
+                      <th>Request</th>
+                      <th>Date</th>
+                      <th>Purpose</th>
+                      <th>Status</th>
+                      <th className="text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredRequests.map((request) => {
+                      const isBulk = request.passType === 'BULK';
+                      const isApproved = request.status === 'APPROVED';
+                      const isRejected = request.status === 'REJECTED';
+                      return (
+                        <tr key={request.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/35 transition-colors">
+                          <td>
+                            <div>
+                              <p className="font-bold text-slate-950 dark:text-white">{isBulk ? 'Bulk Student Pass' : 'Myself (Single Pass)'}</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">ID: {request.id}</p>
+                            </div>
+                          </td>
+                          <td>{formatDateTime(request.createdAt || request.requestDate)}</td>
+                          <td className="max-w-[360px] truncate">{request.purpose || request.reason || 'Gate Pass Request'}</td>
+                          <td>
+                            <span className={cn(
+                              'inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase',
+                              isApproved ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' :
+                              isRejected ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300' :
+                              'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300'
+                            )}>
+                              {isApproved ? 'Approved' : isRejected ? 'Rejected' : 'Pending'}
+                            </span>
+                          </td>
+                          <td className="text-right">
+                            <Button size="sm" variant="secondary" onClick={() => handleReviewRequest(request)}>View</Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </section>
           ) : filteredRequests.length > 0 ? (
             <div className="space-y-4">
               {filteredRequests.map((request) => {
@@ -267,15 +342,12 @@ export default function StaffMyRequests() {
               })}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mb-5">
-                <FileText className="w-10 h-10 text-slate-200 dark:text-slate-800" />
-              </div>
-              <h5 className="text-[17px] font-black text-slate-900 dark:text-white mb-1.5">No requests found</h5>
-              <p className="text-[13px] font-medium text-slate-400 max-w-[200px] leading-relaxed italic">
-                Your past gate pass requests will appear here.
-              </p>
-            </div>
+            <EmptyState
+              icon={<FileText className="w-8 h-8" />}
+              title="No requests found"
+              description="Your past gate pass requests will appear here."
+              action={isDesktop ? <Button onClick={() => navigate('/new-pass')}>Create New Pass</Button> : undefined}
+            />
           )}
         </div>
       </TopRefreshControl>

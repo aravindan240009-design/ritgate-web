@@ -10,7 +10,6 @@ import {
   ScanLine,
   Bell,
   Clock,
-  UserPlus,
   Contact2,
   FileSpreadsheet,
   CalendarDays,
@@ -41,7 +40,6 @@ export function getNavItems(role: string): NavItem[] {
         { path: '/new-pass', label: 'New Pass', icon: Plus },
         { path: '/my-requests', label: 'My Requests', icon: ClipboardList },
         { path: '/event-csv', label: 'Event CSV', icon: Upload },
-        { path: '/guest-register', label: 'Pre-register guest', icon: UserPlus },
         { path: '/profile', label: 'Profile', icon: User },
       ];
     case 'NON_TEACHING':
@@ -51,7 +49,6 @@ export function getNavItems(role: string): NavItem[] {
         { path: '/new-pass', label: 'New Pass', icon: Plus },
         { path: '/my-requests', label: 'My Requests', icon: ClipboardList },
         { path: '/exits', label: 'Exits', icon: LogOut },
-        { path: '/guest-register', label: 'Pre-register guest', icon: UserPlus },
         { path: '/profile', label: 'Profile', icon: User },
       ];
     case 'HOD':
@@ -60,7 +57,6 @@ export function getNavItems(role: string): NavItem[] {
         { path: '/new-pass', label: 'New Pass', icon: Plus },
         { path: '/my-requests', label: 'My Requests', icon: ClipboardList },
         { path: '/hod-events', label: 'Events', icon: CalendarDays },
-        { path: '/guest-register', label: 'Pre-register guest', icon: UserPlus },
         { path: '/profile', label: 'Profile', icon: User },
       ];
     case 'HR':
@@ -71,7 +67,6 @@ export function getNavItems(role: string): NavItem[] {
         { path: '/my-requests', label: 'My Requests', icon: ClipboardList },
         { path: '/exits', label: 'Exits', icon: LogOut },
         { path: '/gate-logs', label: 'Gate Logs', icon: BookOpen },
-        { path: '/guest-register', label: 'Pre-register guest', icon: UserPlus },
         { path: '/profile', label: 'Profile', icon: User },
       ];
     case 'SECURITY':

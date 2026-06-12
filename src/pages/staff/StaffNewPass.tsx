@@ -8,24 +8,22 @@ import {
   UserPlus, 
   ArrowLeft, 
   X,
-  Plus,
   ChevronRight,
-  LayoutGrid,
   Ban
 } from 'lucide-react';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useActionLock } from '../../context/ActionLockContext';
-import { submitStaffGatePass, createInstantGuestPass } from '../../services/api.service';
+import { submitStaffGatePass } from '../../services/api.service';
 import type { Staff } from '../../types';
 import { cn } from '../../utils/cn';
 import { getRequestDate } from '../../utils/dateUtils';
 import { PASS_COPY } from '../../config/nativeCopy';
-import GatePassQRModal from '../../components/common/GatePassQRModal';
 import StaffBulkPass from './StaffBulkPass';
 import HRNewPass from '../hr/HRNewPass';
 import AdminNewPass from '../admin/AdminNewPass';
+import GuestPreRequest from '../shared/GuestPreRequest';
 
 /** Returns current hour in IST (UTC+5:30) */
 const getISTHour = () => {
@@ -65,14 +63,6 @@ export default function StaffNewPass() {
   const [attachment, setAttachment] = useState<{ name: string; uri: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Guest Fields
-  const [guestName, setGuestName] = useState('');
-  const [guestPhone, setGuestPhone] = useState('');
-  const [guestEmail, setGuestEmail] = useState('');
-  const [guestPurpose, setGuestPurpose] = useState('');
-  const [guestQRModal, setGuestQRModal] = useState(false);
-  const [guestQRData, setGuestQRData] = useState<any>(null);
-
   const staffName = (user as any)?.staffName || (user as any)?.name || 'Staff Member';
   const initials = staffName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
 
@@ -109,35 +99,6 @@ export default function StaffNewPass() {
           } else showToastError('Failed', res.message);
         } catch { showToastError('Error', 'An internal error occurred'); }
      }, 'Dispatching authorization...');
-  };
-
-  const submitGuest = async () => {
-    if (!guestName.trim() || !guestPurpose.trim()) return showToastError('Missing Fields', 'Name and Purpose are required');
-    await withLock(async () => {
-       try {
-         const res = await createInstantGuestPass({
-            name: guestName.trim(),
-            email: guestEmail.trim(),
-            phone: guestPhone.trim(),
-            purpose: guestPurpose.trim(),
-            staffCode: staffCode,
-            department: user?.department || '',
-            creatorStaffCode: staffCode,
-            creatorRole: 'STAFF'
-         });
-         if (res.success) {
-           showToastSuccess('Guest Registered', 'QR code generated successfully');
-           setGuestQRData({
-              qrCode: res.qrCode,
-              manualCode: res.manualCode,
-              name: guestName,
-              id: res.id
-           });
-           setGuestQRModal(true);
-           setGuestName(''); setGuestPhone(''); setGuestEmail(''); setGuestPurpose('');
-         } else showToastError('Failed', res.message);
-       } catch { showToastError('Error', 'System sync failed'); }
-    }, 'Registering guest pass...');
   };
 
   return (
@@ -310,85 +271,11 @@ export default function StaffNewPass() {
                animate={{ opacity: 1, x: 0 }}
                className="space-y-6"
              >
-                <div className="bg-emerald-600 rounded-[32px] p-6 text-white flex items-center gap-5 shadow-xl shadow-emerald-100 dark:shadow-none">
-                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center font-black">
-                     <UserPlus className="w-7 h-7" />
-                  </div>
-                  <div>
-                    <h3 className="text-[18px] font-black leading-none mb-1">Guest Registration</h3>
-                    <p className="text-[13px] font-bold text-emerald-100 uppercase tracking-widest opacity-80">Instant Pass Generation</p>
-                  </div>
-                </div>
-
-                <div className="space-y-5">
-                   <div className="space-y-2">
-                      <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Guest Full Name</label>
-                      <input 
-                        value={guestName}
-                        onChange={(e) => setGuestName(e.target.value)}
-                        placeholder="John Doe"
-                        className="w-full h-14 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 text-[15px] font-bold text-slate-900 dark:text-white shadow-sm outline-none"
-                      />
-                   </div>
-
-                   <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                         <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
-                         <input 
-                           value={guestPhone}
-                           onChange={(e) => setGuestPhone(e.target.value)}
-                           placeholder="9876543210"
-                           className="w-full h-14 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 text-[15px] font-bold text-slate-900 dark:text-white shadow-sm outline-none"
-                         />
-                      </div>
-                      <div className="space-y-2">
-                         <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Purpose</label>
-                         <input 
-                           value={guestPurpose}
-                           onChange={(e) => setGuestPurpose(e.target.value)}
-                           placeholder="Meeting"
-                           className="w-full h-14 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 text-[15px] font-bold text-slate-900 dark:text-white shadow-sm outline-none"
-                         />
-                      </div>
-                   </div>
-
-                   <div className="space-y-2">
-                      <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Email (Optional)</label>
-                      <input 
-                        value={guestEmail}
-                        onChange={(e) => setGuestEmail(e.target.value)}
-                        placeholder="guest@example.com"
-                        className="w-full h-14 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 text-[15px] font-bold text-slate-900 dark:text-white shadow-sm outline-none"
-                      />
-                   </div>
-
-                   <div className="pt-4 pb-10">
-                      <button 
-                        onClick={submitGuest}
-                        className="w-full h-15 bg-emerald-600 rounded-2xl text-white font-black text-[16px] uppercase tracking-widest shadow-xl shadow-emerald-100 dark:shadow-none transition-all active:scale-[0.98]"
-                      >
-                         {PASS_COPY.generateGuestPass}
-                      </button>
-                   </div>
-                </div>
+                <GuestPreRequest embedded onBack={() => navigate('/new-pass')} />
              </motion.div>
           )}
         </AnimatePresence>
       </main>
-
-      {/* Guest QR Modal */}
-      <AnimatePresence>
-         {guestQRModal && guestQRData && (
-            <GatePassQRModal 
-              isOpen={guestQRModal}
-              onClose={() => setGuestQRModal(false)}
-              qrCodeData={guestQRData.qrCode}
-              manualCode={guestQRData.manualCode}
-              personName={guestQRData.name}
-              personId={`ID: ${guestQRData.id}`}
-            />
-         )}
-      </AnimatePresence>
     </div>
   );
 }

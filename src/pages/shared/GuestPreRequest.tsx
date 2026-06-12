@@ -25,9 +25,10 @@ import { cn } from '../../utils/cn';
 
 interface GuestPreRequestProps {
   onBack?: () => void;
+  embedded?: boolean;
 }
 
-export default function GuestPreRequest({ onBack }: GuestPreRequestProps = {}) {
+export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRequestProps = {}) {
   const navigate = useNavigate();
   const { getUserId, user, role } = useAuth();
   const { success: showToastSuccess, error: showToastError } = useToast();
@@ -115,26 +116,28 @@ export default function GuestPreRequest({ onBack }: GuestPreRequestProps = {}) {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F8FAFC] dark:bg-slate-950">
+    <div className={embedded ? "contents" : "flex flex-col min-h-screen bg-[#F8FAFC] dark:bg-slate-950"}>
       {/* Header */}
-      <header
-        className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shrink-0"
-        style={{ paddingTop: 'env(safe-area-inset-top)' }}
-      >
-        <div className="px-4 h-[72px] flex items-center justify-between">
-          <button
-            onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-900 dark:text-white active:scale-95 transition-transform"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="text-[16px] font-black text-slate-900 dark:text-white uppercase tracking-tight">Guest Registration</h1>
-          <div className="w-10 h-10" />
-        </div>
-      </header>
+      {!embedded && (
+        <header
+          className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shrink-0"
+          style={{ paddingTop: 'env(safe-area-inset-top)' }}
+        >
+          <div className="px-4 h-[72px] flex items-center justify-between">
+            <button
+              onClick={onBack ?? (() => navigate(-1))}
+              className="w-10 h-10 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-900 dark:text-white active:scale-95 transition-transform"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h1 className="text-[16px] font-black text-slate-900 dark:text-white uppercase tracking-tight">Guest Registration</h1>
+            <div className="w-10 h-10" />
+          </div>
+        </header>
+      )}
 
-      <main className="flex-1 overflow-y-auto px-5 py-6">
-        <div className="space-y-6 max-w-lg mx-auto pb-32">
+      <main className={embedded ? "w-full" : "flex-1 overflow-y-auto px-5 py-6"}>
+        <div className={cn("space-y-6 pb-32", embedded ? "w-full" : "max-w-lg mx-auto")}>
            {/* Banner */}
            <div className="bg-emerald-600 rounded-[32px] p-6 text-white shadow-xl shadow-emerald-100 dark:shadow-none">
               <div className="flex items-center gap-4 mb-4">

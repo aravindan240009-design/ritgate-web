@@ -17,6 +17,7 @@ import { cn } from '../../utils/cn';
 import { PASS_COPY } from '../../config/nativeCopy';
 import HODNewPassRequest from './HODNewPassRequest';
 import HODBulkPass from './HODBulkPass';
+import GuestPreRequest from '../shared/GuestPreRequest';
 
 /** Returns current hour in IST (UTC+5:30) */
 const getISTHour = () => {
@@ -105,8 +106,7 @@ export default function HODNewPass() {
                         disabled={isDisabled}
                         onClick={() => {
                           if (isDisabled) return;
-                          if (card.id === 'GUEST') navigate('/guest-register');
-                          else navigate(`/new-pass?stage=${card.id.toLowerCase()}`);
+                          navigate(`/new-pass?stage=${card.id.toLowerCase()}`);
                         }}
                         className={cn(
                           "w-full p-6 rounded-[32px] border flex items-center gap-5 text-left shadow-sm transition-all",
@@ -155,6 +155,17 @@ export default function HODNewPass() {
                className="h-full"
              >
                 <HODBulkPass onBack={() => navigate('/new-pass')} />
+             </motion.div>
+          )}
+
+          {stage === 'GUEST' && (
+             <motion.div 
+               key="stage-guest"
+               initial={{ opacity: 0, x: 20 }}
+               animate={{ opacity: 1, x: 0 }}
+               className="h-full"
+             >
+                <GuestPreRequest embedded onBack={() => navigate('/new-pass')} />
              </motion.div>
           )}
         </AnimatePresence>

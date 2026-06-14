@@ -24,10 +24,16 @@ import SinglePassDetailsModal from '../../components/common/SinglePassDetailsMod
 import MyRequestsBulkModal from '../../components/common/MyRequestsBulkModal';
 import { cn } from '../../utils/cn';
 import { formatDateTimeShort, getRelativeTime, isToday } from '../../utils/dateUtils';
+import { useAdaptive } from '../../utils/useAdaptive';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
+import DesktopToolbar from '../../components/desktop/DesktopToolbar';
+import Button from '../../components/ui/Button';
+import EmptyState from '../../components/ui/EmptyState';
 
 export default function HODMyRequests() {
   usePageTitle('My Requests');
   const { user, logout, getUserId } = useAuth();
+  const { isDesktop } = useAdaptive();
   const { refreshCount } = useRefresh();
   const { error: showToastError } = useToast();
   const navigate = useNavigate();
@@ -109,12 +115,26 @@ export default function HODMyRequests() {
   const initials = hodName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
 
   return (
-    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
+    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
       {/* Header */}
       <PageHeader title="My Requests" />
 
-      <div className="px-5 pt-4 space-y-4">
+      {isDesktop && (
+        <DesktopPageHeader
+          title="My Requests"
+          subtitle="View gate passes created for yourself"
+        />
+      )}
+
+      <div className="px-5 pt-4 space-y-4 lg:px-0 lg:pt-0">
         {/* Search Bar */}
+        {isDesktop ? (
+          <DesktopToolbar
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+            searchPlaceholder="Search your requests by purpose, reason, or ID..."
+          />
+        ) : (
         <div className="relative">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
             <Search className="w-5 h-5" />
@@ -127,12 +147,67 @@ export default function HODMyRequests() {
             className="w-full h-12 pl-12 pr-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[20px] text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 shadow-sm outline-none"
           />
         </div>
+        )}
       </div>
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-5 pt-4 pb-28">
+        <div className="px-5 pt-4 pb-28 lg:px-0 lg:pt-6 lg:pb-8">
           {loading ? (
             <SkeletonList count={4} />
+          ) : isDesktop && filteredRequests.length > 0 ? (
+            <section className="desktop-card overflow-hidden">
+              <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
+                <div>
+                  <h3 className="text-base font-bold text-slate-950 dark:text-white">My Gate Passes</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Today&apos;s self-created HOD requests</p>
+                </div>
+                <span className="text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">{filteredRequests.length} Requests</span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="desktop-table">
+                  <thead>
+                    <tr>
+                      <th>Request</th>
+                      <th>Type</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th className="text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredRequests.map((request) => {
+                      const isBulk = request.passType === 'BULK';
+                      const isApproved = request.status === 'APPROVED';
+                      const isRejected = request.status === 'REJECTED';
+                      return (
+                        <tr key={request.id} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35" onClick={() => { setSelectedRequest(request); if (isBulk) setShowBulkModal(true); else setShowDetailModal(true); }}>
+                          <td>
+                            <p className="font-bold text-slate-950 dark:text-white">{request.purpose || request.reason || 'Gate Pass Request'}</p>
+                            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Request #{request.id}</p>
+                          </td>
+                          <td>{isBulk ? 'Bulk Pass' : 'Single Pass'}</td>
+                          <td>{formatDateTimeShort(request.createdAt || request.requestDate)}</td>
+                          <td>
+                            <span className={cn('inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase',
+                              isApproved ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' :
+                              isRejected ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300' :
+                              'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300'
+                            )}>{isApproved ? 'ACTIVE' : isRejected ? 'REJECTED' : 'PENDING'}</span>
+                          </td>
+                          <td className="text-right">
+                            {isApproved ? (
+                              <Button size="sm" onClick={(e) => { e.stopPropagation(); handleViewQR(request); }} icon={<QrCode className="w-4 h-4" />}>View QR</Button>
+                            ) : (
+                              <Button size="sm" variant="secondary" onClick={(e) => { e.stopPropagation(); setSelectedRequest(request); if (isBulk) setShowBulkModal(true); else setShowDetailModal(true); }}>View</Button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </section>
           ) : filteredRequests.length > 0 ? (
             <div className="space-y-4">
               {filteredRequests.map((request) => {
@@ -234,6 +309,13 @@ export default function HODMyRequests() {
               })}
             </div>
           ) : (
+            isDesktop ? (
+              <EmptyState
+                title="No requests found"
+                description="Any gate passes you create for yourself will appear here."
+                icon={<FileText className="w-8 h-8" />}
+              />
+            ) : (
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <div className="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mb-5">
                 <FileText className="w-10 h-10 text-slate-200 dark:text-slate-800" />
@@ -243,6 +325,7 @@ export default function HODMyRequests() {
                 Any gate passes you create for yourself will appear here.
               </p>
             </div>
+            )
           )}
         </div>
       </TopRefreshControl>

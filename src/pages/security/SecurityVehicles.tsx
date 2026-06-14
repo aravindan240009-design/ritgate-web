@@ -25,9 +25,13 @@ import { useToast } from '../../context/ToastContext';
 import { getVehicles, searchVehicle, registerVehicle } from '../../services/api.service';
 import { cn } from '../../utils/cn';
 import { transitions } from '../../design-system/animations';
+import { useAdaptive } from '../../utils/useAdaptive';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
+import DesktopToolbar from '../../components/desktop/DesktopToolbar';
 
 export default function SecurityVehicles() {
   usePageTitle('Vehicles');
+  const { isDesktop } = useAdaptive();
   const { getUserId } = useAuth();
   const { success: showSuccess, error: showError } = useToast();
   const securityId = getUserId();
@@ -127,7 +131,16 @@ export default function SecurityVehicles() {
   return (
     <div className="space-y-8 pb-10">
       {/* 1. Context & Title */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1 text-left">
+      {isDesktop && (
+        <DesktopPageHeader
+          eyebrow="Vehicle Registry"
+          title="Vehicles"
+          subtitle="Monitor and register temporary campus vehicles"
+          action={<Button onClick={() => setShowRegModal(true)} icon={<Plus className="w-4 h-4" />}>Log Temporary Vehicle</Button>}
+        />
+      )}
+
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1 text-left lg:hidden">
         <div className="flex-1">
           <div className="flex items-center gap-2 text-[var(--color-primary)] dark:text-blue-400 mb-1 leading-none uppercase">
             <Tag className="w-3.5 h-3.5" />
@@ -153,6 +166,15 @@ export default function SecurityVehicles() {
       </div>
 
       {/* 2. Control Layout: Search */}
+      {isDesktop ? (
+        <DesktopToolbar
+          searchValue={query}
+          onSearchChange={(value) => setQuery(value.toUpperCase())}
+          searchPlaceholder="Enter license plate..."
+        >
+          <Button variant="secondary" size="sm" onClick={handleSearch} disabled={isSearching} icon={isSearching ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}>Search</Button>
+        </DesktopToolbar>
+      ) : (
       <div className="flex gap-2 items-center">
         <div className="flex-1 relative">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10">
@@ -175,6 +197,7 @@ export default function SecurityVehicles() {
           {isSearching ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
         </button>
       </div>
+      )}
 
       {/* 3. Feed */}
       <div className="space-y-4">
@@ -196,6 +219,36 @@ export default function SecurityVehicles() {
             description={query ? "No units found matching this criteria." : "No temporary vehicles logged in currently."} 
             icon={<Car className="w-12 h-12 text-slate-200" />} 
           />
+        ) : isDesktop ? (
+          <section className="desktop-card overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="desktop-table">
+                <thead>
+                  <tr>
+                    <th>Plate</th>
+                    <th>Owner</th>
+                    <th>Owner Type</th>
+                    <th>Vehicle Type</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {vehicles.map((v, i) => (
+                    <tr key={v.id || i} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35">
+                      <td className="font-mono tracking-widest">{v.licensePlate}</td>
+                      <td>
+                        <p className="font-bold text-slate-950 dark:text-white">{v.ownerName}</p>
+                        <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{v.ownerPhone || 'No phone'}</p>
+                      </td>
+                      <td>{v.ownerType}</td>
+                      <td>{v.vehicleType?.replace('_', ' ')}</td>
+                      <td><span className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-bold uppercase text-blue-700 dark:bg-blue-950/30 dark:text-blue-300">Registered</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              <AnimatePresence mode="popLayout">

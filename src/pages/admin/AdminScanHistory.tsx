@@ -12,6 +12,10 @@ import { getAdminGateLogs } from '../../services/api.service';
 import { cn } from '../../utils/cn';
 import { transitions } from '../../design-system/animations';
 import { usePageTitle } from '../../hooks/usePageTitle';
+import { useAdaptive } from '../../utils/useAdaptive';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
+import DesktopToolbar from '../../components/desktop/DesktopToolbar';
+import EmptyState from '../../components/ui/EmptyState';
 
 const formatDateShort = (d: string) => {
   try { return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
@@ -25,6 +29,7 @@ interface AdminScanHistoryProps {
 
 export default function AdminScanHistory({ onBack }: AdminScanHistoryProps = {}) {
   usePageTitle('Scan History');
+  const { isDesktop } = useAdaptive();
   const { success: showSuccess, error: showError } = useToast();
   const [gateLogs, setGateLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,7 +87,16 @@ export default function AdminScanHistory({ onBack }: AdminScanHistoryProps = {})
 
   return (
     <div className="space-y-6 pb-10">
-      <div className="flex items-center justify-between">
+      {isDesktop && (
+        <DesktopPageHeader
+          eyebrow="Admin Console"
+          title="Gate Log History"
+          subtitle={`${rangeLabel} - ${loading ? 'Loading...' : `${filtered.length} records`}`}
+          action={<div className="flex gap-2"><Button variant="secondary" size="sm" onClick={() => setShowDatePicker(true)} icon={<Calendar className="w-4 h-4" />}>Date Range</Button><Button size="sm" variant={gateLogs.length > 0 ? 'success' : 'secondary'} onClick={handleExportCSV} disabled={gateLogs.length === 0} icon={<Download className="w-4 h-4" />}>Export CSV</Button></div>}
+        />
+      )}
+
+      <div className="flex items-center justify-between lg:hidden">
         <div>
           <div className="flex items-center gap-2 text-[var(--color-primary)] dark:text-blue-400 mb-1">
             <ArrowUpDown className="w-3.5 h-3.5" />
@@ -96,24 +110,69 @@ export default function AdminScanHistory({ onBack }: AdminScanHistoryProps = {})
         </button>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex gap-3 lg:hidden">
         <Button onClick={() => setShowDatePicker(true)} variant="primary" size="sm" className="flex-1 gap-2"><Calendar className="w-4 h-4" /> Date Range</Button>
         <Button onClick={handleExportCSV} variant={gateLogs.length > 0 ? 'success' : 'secondary'} size="sm" className="flex-1 gap-2" disabled={gateLogs.length === 0}><Download className="w-4 h-4" /> Export CSV</Button>
       </div>
 
+      {isDesktop ? (
+        <DesktopToolbar
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder="Search by name, ID, or department..."
+        >
+          <Button variant="secondary" size="sm" onClick={() => loadGateLogs(fromDate || undefined, toDate || undefined)} icon={<RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />}>Refresh</Button>
+        </DesktopToolbar>
+      ) : (
       <div className="relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
         <input type="text" placeholder="Search..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
           className="w-full pl-11 pr-4 h-11 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500/10 placeholder:text-slate-300" />
         {searchQuery && <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2"><X className="w-4 h-4 text-slate-400" /></button>}
       </div>
+      )}
 
       {loading ? <SkeletonList count={6} /> : filtered.length === 0 ? (
-        <div className="flex flex-col items-center py-16 gap-3">
-          <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center"><ArrowUpDown className="w-8 h-8 text-slate-300" /></div>
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">No records found</h3>
-          <p className="text-sm text-slate-400">Adjust your date range or search filter.</p>
-        </div>
+        <EmptyState title="No records found" description="Adjust your date range or search filter." icon={<ArrowUpDown className="w-8 h-8" />} />
+      ) : isDesktop ? (
+        <section className="desktop-card overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="desktop-table">
+              <thead>
+                <tr>
+                  <th>Person</th>
+                  <th>Role</th>
+                  <th>Department</th>
+                  <th>Purpose</th>
+                  <th>Scan</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((log, i) => {
+                  const isEntry = log.scanType === 'ENTRY';
+                  return (
+                    <tr key={log.id || i} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35">
+                      <td>
+                        <p className="font-bold text-slate-950 dark:text-white">{log.name || log.userId || 'Unknown'}</p>
+                        <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{log.userId || '-'}</p>
+                      </td>
+                      <td>{log.userType || '-'}</td>
+                      <td>{log.department || '-'}</td>
+                      <td className="max-w-[300px] truncate">{log.purpose || '-'}</td>
+                      <td>
+                        <span className={cn('inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase',
+                          isEntry ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' : 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300'
+                        )}>{log.scanType || '-'}</span>
+                      </td>
+                      <td>{formatDateShort(log.time)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
       ) : (
         <div className="space-y-3">
           <AnimatePresence mode="popLayout">

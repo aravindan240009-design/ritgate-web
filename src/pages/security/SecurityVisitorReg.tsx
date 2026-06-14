@@ -11,6 +11,7 @@ import { useActionLock } from '../../context/ActionLockContext';
 import { cn } from '../../utils/cn';
 import { transitions } from '../../design-system/animations';
 import { usePageTitle } from '../../hooks/usePageTitle';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
 
 export default function SecurityVisitorReg() {
   usePageTitle('Visitor Registration');
@@ -65,9 +66,14 @@ export default function SecurityVisitorReg() {
   };
 
   return (
-    <div className="max-w-xl mx-auto space-y-8 pb-10">
+    <div className="desktop-page max-w-xl mx-auto space-y-8 pb-10 lg:max-w-5xl">
+      <DesktopPageHeader
+        title="Visitor Registration"
+        subtitle="Log manual entry for verified guests and route approval to the right official."
+        eyebrow="Security Protocol"
+      />
       {/* 1. Context & Title */}
-      <div className="text-left px-1">
+      <div className="text-left px-1 lg:hidden">
         <div className="flex items-center gap-2 text-[var(--color-primary)] dark:text-blue-400 mb-1 leading-none">
           <ShieldCheck className="w-3.5 h-3.5" />
           <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Security Protocol</span>

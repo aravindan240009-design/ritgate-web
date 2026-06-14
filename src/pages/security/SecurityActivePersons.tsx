@@ -13,9 +13,13 @@ import { formatTime } from '../../utils/dateUtils';
 import { cn } from '../../utils/cn';
 import { transitions } from '../../design-system/animations';
 import { usePageTitle } from '../../hooks/usePageTitle';
+import { useAdaptive } from '../../utils/useAdaptive';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
+import DesktopToolbar from '../../components/desktop/DesktopToolbar';
 
 export default function SecurityActivePersons() {
   usePageTitle('Active Persons');
+  const { isDesktop } = useAdaptive();
   const { getUserId } = useAuth();
   const { success: showSuccess, error: showError } = useToast();
   const securityId = getUserId();
@@ -104,7 +108,16 @@ export default function SecurityActivePersons() {
   return (
     <div className="space-y-8 pb-10">
       {/* 1. Context & Title */}
-      <div className="text-left px-1">
+      {isDesktop && (
+        <DesktopPageHeader
+          eyebrow="Operations Management"
+          title="Active Persons"
+          subtitle="Real-time registry of people currently inside campus"
+          action={<Button variant="secondary" size="sm" onClick={fetchActive}>Refresh</Button>}
+        />
+      )}
+
+      <div className="text-left px-1 lg:hidden">
         <div className="flex items-center gap-2 text-[var(--color-primary)] dark:text-blue-400 mb-1 leading-none uppercase">
           <ShieldCheck className="w-3.5 h-3.5" />
           <span className="text-[10px] font-bold tracking-widest leading-none">Operations Management</span>
@@ -118,6 +131,13 @@ export default function SecurityActivePersons() {
       </div>
 
       {/* 2. Search Filter */}
+      {isDesktop ? (
+        <DesktopToolbar
+          searchValue={search}
+          onSearchChange={(value) => setSearch(value.toUpperCase())}
+          searchPlaceholder="Search by name or subject type..."
+        />
+      ) : (
       <div className="relative px-1">
         <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 z-10">
            <Search className="w-4 h-4" />
@@ -130,6 +150,7 @@ export default function SecurityActivePersons() {
           className="w-full pl-12 pr-4 h-12 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-[11px] font-bold focus:ring-2 focus:ring-blue-500/10 placeholder:text-slate-300 uppercase tracking-widest transition-all outline-none"
         />
       </div>
+      )}
 
       {/* 3. Active Subject Feed */}
       <div className="space-y-4">
@@ -145,6 +166,38 @@ export default function SecurityActivePersons() {
 
         {filtered.length === 0 ? (
           <EmptyState title="Sector Clear" description={search ? 'No subjects matching audit criteria.' : 'No personnel currently inside secure zone.'} icon={<Users className="w-12 h-12 text-slate-200" />} />
+        ) : isDesktop ? (
+          <section className="desktop-card overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="desktop-table">
+                <thead>
+                  <tr>
+                    <th>Person</th>
+                    <th>Type</th>
+                    <th>Purpose</th>
+                    <th>Inside Since</th>
+                    <th className="text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((person, i) => (
+                    <tr key={person.id || i} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35">
+                      <td>
+                        <p className="font-bold text-slate-950 dark:text-white">{person.name || person.personName}</p>
+                        <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{person.userId || 'Campus person'}</p>
+                      </td>
+                      <td>{person.type || person.personType}</td>
+                      <td className="max-w-[320px] truncate">{person.purpose || 'Campus Access'}</td>
+                      <td>{formatTime(person.inTime || person.timestamp)}</td>
+                      <td className="text-right">
+                        <Button size="sm" variant="secondary" onClick={() => { setSelectedPerson(person); setShowExitModal(true); }} icon={<LogOut className="w-4 h-4" />}>Manual Exit</Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
         ) : (
           <div className="space-y-3">
             <AnimatePresence mode="popLayout">

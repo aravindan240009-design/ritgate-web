@@ -14,6 +14,10 @@ import { transitions } from '../../design-system/animations';
 import { formatDateTime, relativeTime, isToday } from '../../utils/dateUtils';
 import type { GatePassRequest } from '../../types';
 import { usePageTitle } from '../../hooks/usePageTitle';
+import { useAdaptive } from '../../utils/useAdaptive';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
+import DesktopToolbar from '../../components/desktop/DesktopToolbar';
+import EmptyState from '../../components/ui/EmptyState';
 
 interface AdminMyRequestsProps {
   onBack?: () => void;
@@ -21,6 +25,7 @@ interface AdminMyRequestsProps {
 
 export default function AdminMyRequests({ onBack }: AdminMyRequestsProps = {}) {
   usePageTitle('All Requests');
+  const { isDesktop } = useAdaptive();
   const { getUserId, user } = useAuth();
   const { error: showError } = useToast();
   const adminCode = getUserId();
@@ -109,7 +114,16 @@ export default function AdminMyRequests({ onBack }: AdminMyRequestsProps = {}) {
   return (
     <div className="space-y-4 pb-10 text-left">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      {isDesktop && (
+        <DesktopPageHeader
+          eyebrow="Personal Requests"
+          title="My Requests"
+          subtitle="Track gate passes created by the admin officer"
+          action={<Button variant="secondary" size="sm" onClick={fetchData} icon={<RefreshCw className={cn('w-4 h-4', isLoading && 'animate-spin')} />}>Refresh</Button>}
+        />
+      )}
+
+      <div className="flex items-center justify-between lg:hidden">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-indigo-900/30 flex items-center justify-center text-[var(--color-primary)] dark:text-indigo-300 font-bold text-base shrink-0 border border-blue-200 dark:border-[var(--color-primary)]">{initials}</div>
           <div>
@@ -124,19 +138,71 @@ export default function AdminMyRequests({ onBack }: AdminMyRequestsProps = {}) {
       </div>
 
       {/* Search */}
+      {isDesktop ? (
+        <DesktopToolbar
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder="Search your requests by purpose, reason, or ID..."
+        />
+      ) : (
       <div className="relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
         <input type="text" placeholder="Search your requests..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
           className="w-full pl-11 pr-4 h-11 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500/10 placeholder:text-slate-300" />
       </div>
+      )}
 
       {/* List */}
       <div className="space-y-3">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center py-16 gap-3">
-            <FileText className="w-12 h-12 text-slate-200" />
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">No requests found</p>
-          </div>
+          <EmptyState title="No requests found" description="Your gate pass requests will appear here." icon={<FileText className="w-8 h-8" />} />
+        ) : isDesktop ? (
+          <section className="desktop-card overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="desktop-table">
+                <thead>
+                  <tr>
+                    <th>Request</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th className="text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((req, i) => {
+                    const dateStr = req.createdAt || req.requestDate || '';
+                    const isApproved = req.status === 'APPROVED';
+                    const isRejected = req.status === 'REJECTED';
+                    return (
+                      <tr key={req.id || i} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35" onClick={() => { setSelectedRequest(req); setShowDetailModal(true); }}>
+                        <td>
+                          <p className="font-bold text-slate-950 dark:text-white">{req.purpose || req.reason || 'Gate Pass Request'}</p>
+                          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Request #{req.id || '-'}</p>
+                        </td>
+                        <td>Single Pass</td>
+                        <td>{formatDateTime(dateStr)}</td>
+                        <td>
+                          <span className={cn('inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase',
+                            isApproved ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' :
+                            isRejected ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300' :
+                            'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300'
+                          )}>{isApproved ? 'APPROVED' : isRejected ? 'REJECTED' : 'PENDING'}</span>
+                        </td>
+                        <td className="text-right">
+                          {isApproved ? (
+                            <Button size="sm" onClick={(e) => { e.stopPropagation(); handleViewQR(req); }} icon={<QrCode className="w-4 h-4" />}>View QR</Button>
+                          ) : (
+                            <Button size="sm" variant="secondary" onClick={(e) => { e.stopPropagation(); setSelectedRequest(req); setShowDetailModal(true); }}>View</Button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </section>
         ) : (
           <AnimatePresence mode="popLayout">
             {filtered.map((req, i) => {

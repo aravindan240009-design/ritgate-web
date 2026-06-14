@@ -103,7 +103,7 @@ export default function AdminNewPass({ onBack }: AdminNewPassProps = {}) {
   };
 
   return (
-    <div className="max-w-md mx-auto space-y-6 pb-10 text-left">
+    <div className="max-w-md mx-auto space-y-6 pb-10 text-left lg:max-w-4xl">
       {/* Header */}
       <div className="text-left px-1">
         <div className="flex items-center gap-2 text-[var(--color-primary)] dark:text-blue-400 mb-1">
@@ -156,7 +156,7 @@ export default function AdminNewPass({ onBack }: AdminNewPassProps = {}) {
       </motion.div>
 
       {/* Form */}
-      <motion.div initial={transitions.page.initial} animate={transitions.page.animate} className="space-y-4">
+      <motion.div initial={transitions.page.initial} animate={transitions.page.animate} className="space-y-4 lg:desktop-card lg:p-6">
         <div>
           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2 px-1">Purpose *</label>
           <PurposeSelect value={purpose} onChange={setPurpose} variant="compact" />

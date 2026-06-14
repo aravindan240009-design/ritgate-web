@@ -9,6 +9,10 @@ import { getHODContacts } from '../../services/api.service';
 import { cn } from '../../utils/cn';
 import { transitions } from '../../design-system/animations';
 import { usePageTitle } from '../../hooks/usePageTitle';
+import { useAdaptive } from '../../utils/useAdaptive';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
+import DesktopToolbar from '../../components/desktop/DesktopToolbar';
+import EmptyState from '../../components/ui/EmptyState';
 
 const DEPARTMENTS = ['ALL', 'CSE', 'ECE', 'IT', 'AIDS', 'AIML', 'MECH', 'EEE', 'CCE', 'CSBS', 'VLSI', 'ADMIN'];
 
@@ -22,6 +26,7 @@ const getInitials = (name: string | null | undefined) => {
 
 export default function SecurityHODContacts() {
   usePageTitle('HOD Contacts');
+  const { isDesktop } = useAdaptive();
   const { error: showError } = useToast();
   const [hods, setHods] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,7 +65,16 @@ export default function SecurityHODContacts() {
   return (
     <div className="space-y-6 pb-10">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      {isDesktop && (
+        <DesktopPageHeader
+          eyebrow="Security Directory"
+          title="HOD Contacts"
+          subtitle={loading ? 'Loading contacts...' : `${filtered.length} contact${filtered.length !== 1 ? 's' : ''} available`}
+          action={<button onClick={fetchHODs} className="h-10 px-4 rounded-xl bg-slate-100 text-sm font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">Refresh</button>}
+        />
+      )}
+
+      <div className="flex items-center justify-between lg:hidden">
         <div>
           <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 mb-1">
             <Users className="w-3.5 h-3.5" />
@@ -75,6 +89,13 @@ export default function SecurityHODContacts() {
       </div>
 
       {/* Search */}
+      {isDesktop ? (
+        <DesktopToolbar
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder="Search by HOD name or department..."
+        />
+      ) : (
       <div className="relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
         <input
@@ -90,6 +111,7 @@ export default function SecurityHODContacts() {
           </button>
         )}
       </div>
+      )}
 
       {/* Department Filter */}
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
@@ -113,15 +135,41 @@ export default function SecurityHODContacts() {
       {loading ? (
         <SkeletonList count={5} />
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center py-16 gap-3">
-          <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
-            <Users className="w-8 h-8 text-slate-300" />
+        <EmptyState
+          title="No contacts found"
+          description={searchQuery || selectedDept !== 'ALL' ? 'Try adjusting your search or filter.' : 'No HOD contacts available.'}
+          icon={<Users className="w-8 h-8" />}
+        />
+      ) : isDesktop ? (
+        <section className="desktop-card overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="desktop-table">
+              <thead>
+                <tr>
+                  <th>HOD</th>
+                  <th>Department</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((hod, i) => (
+                  <tr key={hod.id || i} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35">
+                    <td>
+                      <p className="font-bold text-slate-950 dark:text-white">{hod.name || 'Unknown HOD'}</p>
+                      <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Head of Department</p>
+                    </td>
+                    <td>{hod.department || 'N/A'}</td>
+                    <td>{hod.phone || 'N/A'}</td>
+                    <td className="max-w-[320px] truncate">{hod.email || 'N/A'}</td>
+                    <td><span className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-bold uppercase text-blue-700 dark:bg-blue-950/30 dark:text-blue-300">Active</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">No contacts found</h3>
-          <p className="text-sm text-slate-400 text-center max-w-xs">
-            {searchQuery || selectedDept !== 'ALL' ? 'Try adjusting your search or filter' : 'No HOD contacts available'}
-          </p>
-        </div>
+        </section>
       ) : (
         <div className="space-y-3">
           <AnimatePresence mode="popLayout">

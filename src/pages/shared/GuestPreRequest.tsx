@@ -137,9 +137,9 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
       )}
 
       <main className={embedded ? "w-full" : "flex-1 overflow-y-auto px-5 py-6"}>
-        <div className={cn("space-y-6 pb-32", embedded ? "w-full" : "max-w-lg mx-auto")}>
+        <div className={cn("space-y-6 pb-32", embedded ? "w-full lg:max-w-5xl lg:mx-auto" : "max-w-lg mx-auto lg:max-w-5xl")}>
            {/* Banner */}
-           <div className="bg-emerald-600 rounded-[32px] p-6 text-white shadow-xl shadow-emerald-100 dark:shadow-none">
+           <div className="bg-emerald-600 rounded-[32px] p-6 text-white shadow-xl shadow-emerald-100 dark:shadow-none lg:p-8">
               <div className="flex items-center gap-4 mb-4">
                  <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
                     <UserPlus className="w-7 h-7 text-white" />
@@ -155,7 +155,7 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
            </div>
 
            {/* Creator Info Card */}
-           <div className="bg-white dark:bg-slate-900 rounded-[24px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4">
+           <div className="bg-white dark:bg-slate-900 rounded-[24px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 lg:desktop-card">
               <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-emerald-600 font-black text-[20px]">
                  {creatorName.charAt(0)}
               </div>
@@ -167,7 +167,7 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
            </div>
 
            {/* Form Section */}
-           <div className="space-y-5">
+           <div className="space-y-5 lg:desktop-card lg:p-6">
               <div className="space-y-2">
                  <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Guest Full Name</label>
                  <input 
@@ -178,7 +178,7 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
                  />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                  <div className="space-y-2">
                     <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
                     <div className="relative">

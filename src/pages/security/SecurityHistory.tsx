@@ -29,11 +29,16 @@ import { cn } from '../../utils/cn';
 import { exportToPdf, exportToCsv } from '../../utils/reportUtils';
 import { transitions } from '../../design-system/animations';
 import { EMPTY_COPY } from '../../config/nativeCopy';
+import { useAdaptive } from '../../utils/useAdaptive';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
+import DesktopToolbar from '../../components/desktop/DesktopToolbar';
+import DesktopSegmentedTabs from '../../components/desktop/DesktopSegmentedTabs';
 
 type TabType = 'PERSONS' | 'VEHICLES';
 
 export default function SecurityHistory() {
   usePageTitle('Scan History');
+  const { isDesktop } = useAdaptive();
   const [activeTab, setActiveTab] = useState<TabType>('PERSONS');
   const [history, setHistory] = useState<any[]>([]);
   const [vehicles, setVehicles] = useState<any[]>([]);
@@ -175,7 +180,16 @@ export default function SecurityHistory() {
   return (
     <div className="space-y-8 pb-10">
       {/* 1. Context & Title */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1 text-left">
+      {isDesktop && (
+        <DesktopPageHeader
+          eyebrow="Security Audit"
+          title="Scan History"
+          subtitle="Immutable registry of campus transactions"
+          action={<div className="flex gap-2"><Button variant="secondary" size="sm" onClick={() => handleExport('CSV')}>CSV</Button><Button size="sm" onClick={() => handleExport('PDF')}>PDF</Button></div>}
+        />
+      )}
+
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1 text-left lg:hidden">
         <div className="flex-1">
           <div className="flex items-center gap-2 text-[var(--color-primary)] dark:text-blue-400 mb-1 leading-none uppercase">
             <ShieldCheck className="w-3.5 h-3.5" />
@@ -211,7 +225,26 @@ export default function SecurityHistory() {
 
       {/* 2. Control Layout: Tabs & Filters */}
       <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row gap-4 items-center">
+        {isDesktop && (
+          <DesktopToolbar
+            searchValue={searchQuery}
+            onSearchChange={(value) => setSearchQuery(value.toUpperCase())}
+            searchPlaceholder="Search archives by name, plate, purpose..."
+          >
+            <DesktopSegmentedTabs
+              value={activeTab}
+              onChange={setActiveTab}
+              options={[
+                { value: 'PERSONS', label: 'Individual Scans', count: filteredHistory.length },
+                { value: 'VEHICLES', label: 'Vehicle Logs', count: filteredVehicles.length },
+              ]}
+            />
+            <Button variant="secondary" size="sm" onClick={() => setShowFilters(!showFilters)} icon={<Filter className="w-4 h-4" />}>
+              Date Window
+            </Button>
+          </DesktopToolbar>
+        )}
+        <div className="flex flex-col sm:flex-row gap-4 items-center lg:hidden">
           <div className="flex p-1.5 bg-slate-100 dark:bg-slate-900 rounded-2xl w-full sm:w-fit border border-slate-200 dark:border-slate-800">
             <button
               onClick={() => setActiveTab('PERSONS')}
@@ -318,6 +351,46 @@ export default function SecurityHistory() {
             description={searchQuery || startDate || endDate ? "No subjects matching audit criteria." : "Access logs will appear here upon activity."} 
             icon={<History className="w-12 h-12 text-slate-200" />} 
           />
+        ) : isDesktop ? (
+          <section className="desktop-card overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="desktop-table">
+                <thead>
+                  <tr>
+                    <th>{activeTab === 'PERSONS' ? 'Person' : 'Vehicle'}</th>
+                    <th>Type</th>
+                    <th>Purpose / Owner</th>
+                    <th>Action</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(activeTab === 'PERSONS' ? filteredHistory : filteredVehicles).map((item, i) => {
+                    const isEntry = activeTab === 'PERSONS' ? (item.scanType === 'ENTRY') : (item.status === 'ENTERED');
+                    const name = activeTab === 'PERSONS' ? item.personName : item.licensePlate;
+                    const sub = activeTab === 'PERSONS' ? item.personType : item.vehicleType;
+                    const purpose = activeTab === 'PERSONS' ? (item.purpose || 'Campus Access') : (item.ownerName || 'Unknown Owner');
+                    return (
+                      <tr key={item.id || i} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35">
+                        <td>
+                          <p className="font-bold text-slate-950 dark:text-white">{name || 'Unknown'}</p>
+                          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{activeTab === 'PERSONS' ? item.personType : item.ownerName}</p>
+                        </td>
+                        <td>{sub}</td>
+                        <td className="max-w-[340px] truncate">{purpose}</td>
+                        <td>
+                          <span className={cn('inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase',
+                            isEntry ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' : 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300'
+                          )}>{activeTab === 'PERSONS' ? item.scanType : item.status}</span>
+                        </td>
+                        <td>{formatDateTime(item.timestamp || item.createdAt)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </section>
         ) : (
           <div className="space-y-3">
              <AnimatePresence mode="popLayout">

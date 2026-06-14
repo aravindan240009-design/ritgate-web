@@ -23,12 +23,20 @@ import MyRequestsBulkModal from '../../components/common/MyRequestsBulkModal';
 import { cn } from '../../utils/cn';
 import type { Student } from '../../types';
 import { formatDateTime, relativeTime, isToday } from '../../utils/dateUtils';
+import { useAdaptive } from '../../utils/useAdaptive';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
+import DesktopStatCard from '../../components/desktop/DesktopStatCard';
+import DesktopToolbar from '../../components/desktop/DesktopToolbar';
+import DesktopSegmentedTabs from '../../components/desktop/DesktopSegmentedTabs';
+import Button from '../../components/ui/Button';
+import EmptyState from '../../components/ui/EmptyState';
 
 type ActiveTab = 'PENDING' | 'APPROVED' | 'REJECTED';
 
 export default function StudentRequests() {
   usePageTitle('My Requests');
   const { user: rawUser, logout } = useAuth();
+  const { isDesktop } = useAdaptive();
   const user = rawUser as Student;
   const { refreshCount } = useRefresh();
   const { error: showError } = useToast();
@@ -125,11 +133,42 @@ export default function StudentRequests() {
   const initials = studentName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
 
   return (
-    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
+    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
       <PageHeader title="My Requests" />
 
-      <div className="px-5 pt-4 space-y-4">
+      {isDesktop && (
+        <DesktopPageHeader
+          title="My Requests"
+          subtitle="Track today's active gate pass requests"
+        />
+      )}
+
+      <div className="px-5 pt-4 space-y-4 lg:px-0 lg:pt-0 lg:space-y-5">
+        {isDesktop && (
+          <div className="grid grid-cols-3 gap-4">
+            <DesktopStatCard label="Pending" value={getStats().PENDING} icon={Clock} tone="amber" active={activeTab === 'PENDING'} onClick={() => setActiveTab('PENDING')} />
+            <DesktopStatCard label="Approved" value={getStats().APPROVED} icon={QrCode} tone="emerald" active={activeTab === 'APPROVED'} onClick={() => setActiveTab('APPROVED')} />
+            <DesktopStatCard label="Rejected" value={getStats().REJECTED} icon={AlertCircle} tone="rose" active={activeTab === 'REJECTED'} onClick={() => setActiveTab('REJECTED')} />
+          </div>
+        )}
         {/* Search Bar */}
+        {isDesktop ? (
+          <DesktopToolbar
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+            searchPlaceholder="Search requests by purpose or ID..."
+          >
+            <DesktopSegmentedTabs
+              value={activeTab}
+              onChange={setActiveTab}
+              options={[
+                { value: 'PENDING', label: 'Pending', count: getStats().PENDING },
+                { value: 'APPROVED', label: 'Approved', count: getStats().APPROVED },
+                { value: 'REJECTED', label: 'Rejected', count: getStats().REJECTED },
+              ]}
+            />
+          </DesktopToolbar>
+        ) : (
         <div className="relative">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
             <Search className="w-5 h-5" />
@@ -142,9 +181,10 @@ export default function StudentRequests() {
             className="w-full h-12 pl-12 pr-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 shadow-sm outline-none"
           />
         </div>
+        )}
 
         {/* Status Tabs */}
-        <div className="flex bg-white dark:bg-slate-900 rounded-[20px] p-2 shadow-sm border border-slate-50 dark:border-slate-800">
+        <div className="flex bg-white dark:bg-slate-900 rounded-[20px] p-2 shadow-sm border border-slate-50 dark:border-slate-800 lg:hidden">
           {(['PENDING', 'APPROVED', 'REJECTED'] as ActiveTab[]).map((tab) => {
             const stats = getStats();
             const isActive = activeTab === tab;
@@ -172,9 +212,56 @@ export default function StudentRequests() {
       </div>
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-5 pt-4 pb-28">
+        <div className="px-5 pt-4 pb-28 lg:px-0 lg:pt-6 lg:pb-8">
           {loading ? (
             <SkeletonList count={4} />
+          ) : isDesktop && filteredRequests.length > 0 ? (
+            <section className="desktop-card overflow-hidden">
+              <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
+                <div>
+                  <h3 className="text-base font-bold text-slate-950 dark:text-white">Request Queue</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Filtered by {activeTab.toLowerCase()} status</p>
+                </div>
+                <span className="text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">{filteredRequests.length} Requests</span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="desktop-table">
+                  <thead>
+                    <tr>
+                      <th>Request</th>
+                      <th>Type</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th className="text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredRequests.map((request) => {
+                      const config = getStatusConfig(request.status);
+                      const isBulk = request.passType === 'BULK';
+                      return (
+                        <tr key={request.id} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35" onClick={() => { setSelectedRequest(request); if (isBulk) setShowBulkModal(true); else setShowSingleModal(true); }}>
+                          <td>
+                            <p className="font-bold text-slate-950 dark:text-white">{request.purpose || request.reason || 'Gate Pass Request'}</p>
+                            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Request #{request.id}</p>
+                          </td>
+                          <td>{isBulk ? 'Bulk Pass' : 'Single Pass'}</td>
+                          <td>{formatDateTime(request.requestDate || request.createdAt)}</td>
+                          <td><span className={cn('inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase', config.bg, config.color)}>{config.text}</span></td>
+                          <td className="text-right">
+                            {request.status === 'APPROVED' && !isBulk ? (
+                              <Button size="sm" onClick={(e) => { e.stopPropagation(); handleViewQR(request); }} icon={<QrCode className="w-4 h-4" />}>View QR</Button>
+                            ) : (
+                              <Button size="sm" variant="secondary" onClick={(e) => { e.stopPropagation(); setSelectedRequest(request); if (isBulk) setShowBulkModal(true); else setShowSingleModal(true); }}>View</Button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </section>
           ) : filteredRequests.length > 0 ? (
             <div className="space-y-4">
               {filteredRequests.map((request) => {
@@ -261,6 +348,13 @@ export default function StudentRequests() {
               })}
             </div>
           ) : (
+            isDesktop ? (
+              <EmptyState
+                title="No requests found"
+                description="Any requests needing your attention will appear here."
+                icon={<FileText className="w-8 h-8" />}
+              />
+            ) : (
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <div className="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mb-5">
                 <FileText className="w-10 h-10 text-slate-200 dark:text-slate-800" />
@@ -272,6 +366,7 @@ export default function StudentRequests() {
                 Any requests needing your attention will appear here.
               </p>
             </div>
+            )
           )}
         </div>
       </TopRefreshControl>

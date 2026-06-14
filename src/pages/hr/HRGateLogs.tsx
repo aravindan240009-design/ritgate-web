@@ -12,6 +12,9 @@ import { getGateLogs } from '../../services/api.service';
 import { cn } from '../../utils/cn';
 import { transitions } from '../../design-system/animations';
 import { usePageTitle } from '../../hooks/usePageTitle';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
+import DesktopToolbar from '../../components/desktop/DesktopToolbar';
+import EmptyState from '../../components/ui/EmptyState';
 
 const formatDateShort = (d: string) => {
   try { return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
@@ -106,9 +109,20 @@ export default function HRGateLogs({ onBack }: HRGateLogsProps) {
   });
 
   return (
-    <div className="space-y-6 pb-10">
+    <div className="desktop-page space-y-6 pb-10">
+      <DesktopPageHeader
+        title="Gate Logs"
+        subtitle={`${rangeLabel} - ${loading ? 'Loading...' : `${filtered.length} record${filtered.length !== 1 ? 's' : ''}`}`}
+        eyebrow="Gate Management"
+        action={
+          <Button onClick={() => loadGateLogs(fromDate || undefined, toDate || undefined)} variant="secondary" className="gap-2">
+            <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />
+            Refresh
+          </Button>
+        }
+      />
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between lg:hidden">
         <div className="flex items-center gap-3">
           {onBack && (
             <button onClick={onBack} className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center mr-1">
@@ -132,7 +146,27 @@ export default function HRGateLogs({ onBack }: HRGateLogsProps) {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-3">
+      <div className="hidden lg:block">
+        <DesktopToolbar
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder="Search by name, ID, department, purpose..."
+        >
+          <Button onClick={() => setShowDatePicker(true)} variant="secondary" className="gap-2">
+            <Calendar className="w-4 h-4" /> Date Range
+          </Button>
+          <Button
+            onClick={handleExportCSV}
+            variant={gateLogs.length > 0 ? 'success' : 'secondary'}
+            className="gap-2"
+            disabled={isDownloading || gateLogs.length === 0}
+          >
+            <Download className="w-4 h-4" /> Export CSV
+          </Button>
+        </DesktopToolbar>
+      </div>
+
+      <div className="flex gap-3 lg:hidden">
         <Button onClick={() => setShowDatePicker(true)} variant="primary" size="sm" className="flex-1 gap-2">
           <Calendar className="w-4 h-4" /> Date Range
         </Button>
@@ -148,7 +182,7 @@ export default function HRGateLogs({ onBack }: HRGateLogsProps) {
       </div>
 
       {/* Search */}
-      <div className="relative">
+      <div className="relative lg:hidden">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
         <input
           type="text"
@@ -168,7 +202,11 @@ export default function HRGateLogs({ onBack }: HRGateLogsProps) {
       {loading ? (
         <SkeletonList count={6} />
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center py-16 gap-3">
+        <div className="lg:desktop-card lg:p-10">
+          <div className="hidden lg:block">
+            <EmptyState title="No gate log records" description="No entry or exit records found for the selected period." icon={<ArrowUpDown className="w-7 h-7" />} />
+          </div>
+          <div className="flex flex-col items-center py-16 gap-3 lg:hidden">
           <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
             <ArrowUpDown className="w-8 h-8 text-slate-300" />
           </div>
@@ -176,9 +214,52 @@ export default function HRGateLogs({ onBack }: HRGateLogsProps) {
           <p className="text-sm text-slate-400 text-center max-w-xs">
             No entry or exit records found for the selected period. Use Date Range to filter by a specific date.
           </p>
+          </div>
         </div>
       ) : (
-        <div className="space-y-3">
+        <>
+        <div className="hidden lg:block desktop-card overflow-hidden">
+          <table className="desktop-table">
+            <thead>
+              <tr>
+                <th>Person</th>
+                <th>Role</th>
+                <th>Department</th>
+                <th>Purpose</th>
+                <th>Type</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((log, i) => (
+                <tr key={log.id || i}>
+                  <td>
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        'w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold',
+                        log.scanType === 'ENTRY'
+                          ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
+                          : 'bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300'
+                      )}>
+                        {getInitials(log.name || log.userId)}
+                      </div>
+                      <div>
+                        <p className="font-bold">{log.name || 'Unknown'}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{log.userId || '-'}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{log.userType || '-'}</td>
+                  <td>{log.department || '-'}</td>
+                  <td>{log.purpose || '-'}</td>
+                  <td><Badge variant={log.scanType === 'ENTRY' ? 'green' : 'red'}>{log.scanType || '-'}</Badge></td>
+                  <td>{formatDateShort(log.time)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="space-y-3 lg:hidden">
           <AnimatePresence mode="popLayout">
             {filtered.map((log, i) => {
               const isEntry = log.scanType === 'ENTRY';
@@ -219,6 +300,7 @@ export default function HRGateLogs({ onBack }: HRGateLogsProps) {
             })}
           </AnimatePresence>
         </div>
+        </>
       )}
 
       {/* Date Range Picker Modal */}

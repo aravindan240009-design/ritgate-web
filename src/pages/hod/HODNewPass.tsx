@@ -18,6 +18,7 @@ import { PASS_COPY } from '../../config/nativeCopy';
 import HODNewPassRequest from './HODNewPassRequest';
 import HODBulkPass from './HODBulkPass';
 import GuestPreRequest from '../shared/GuestPreRequest';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
 
 /** Returns current hour in IST (UTC+5:30) */
 const getISTHour = () => {
@@ -59,7 +60,7 @@ export default function HODNewPass() {
     <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen flex flex-col">
       {/* Header */}
       <header
-        className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shrink-0"
+        className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shrink-0 lg:hidden"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
         <div className="px-4 h-[72px] flex items-center justify-between">
@@ -76,7 +77,12 @@ export default function HODNewPass() {
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-5 py-6 pb-28">
+      <main className="desktop-page flex-1 overflow-y-auto px-5 py-6 pb-28 lg:px-0 lg:pt-0">
+        <DesktopPageHeader
+          title={stage === 'SELECT' ? PASS_COPY.newRequest : stage === 'SINGLE' ? PASS_COPY.singleTitle : stage === 'BULK' ? PASS_COPY.bulkTitle : PASS_COPY.guestTitle}
+          subtitle={stage === 'SELECT' ? PASS_COPY.selectSubtitle : 'Create department gate passes with HOD-level controls.'}
+          eyebrow="HOD Gate Pass Control"
+        />
         <AnimatePresence mode="wait">
           {stage === 'SELECT' && (
             <motion.div 
@@ -86,12 +92,12 @@ export default function HODNewPass() {
                exit={{ opacity: 0, x: -20 }}
                className="space-y-6"
             >
-               <div className="mb-8">
+               <div className="mb-8 lg:hidden">
                   <h2 className="text-[24px] font-black text-slate-900 dark:text-white leading-tight">{PASS_COPY.selectTitle}</h2>
                   <p className="text-[14px] font-bold text-slate-400 mt-1">{PASS_COPY.selectSubtitle}</p>
                </div>
 
-               <div className="grid gap-4">
+               <div className="grid gap-4 lg:grid-cols-3">
                   {[
                     { id: 'SINGLE', title: PASS_COPY.singleTitle, sub: PASS_COPY.singleSubtitle, icon: UserPlus, color: 'text-white', bg: 'bg-gradient-to-br from-[#4facfe] to-[#00f2fe]', restricted: true },
                     { id: 'BULK', title: PASS_COPY.bulkTitle, sub: PASS_COPY.bulkSubtitle, icon: Users, color: 'text-white', bg: 'bg-gradient-to-br from-[#667eea] to-[#764ba2]', restricted: true },
@@ -109,7 +115,7 @@ export default function HODNewPass() {
                           navigate(`/new-pass?stage=${card.id.toLowerCase()}`);
                         }}
                         className={cn(
-                          "w-full p-6 rounded-[32px] border flex items-center gap-5 text-left shadow-sm transition-all",
+                          "w-full p-6 rounded-[32px] border flex items-center gap-5 text-left shadow-sm transition-all lg:min-h-[220px] lg:flex-col lg:items-start",
                           isDisabled
                             ? "bg-slate-50 dark:bg-slate-900/40 border-slate-100 dark:border-slate-800 opacity-60 cursor-not-allowed"
                             : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 active:shadow-none"
@@ -118,7 +124,7 @@ export default function HODNewPass() {
                          <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg", isDisabled ? "bg-slate-200 dark:bg-slate-800" : card.bg)}>
                             <Icon className={cn("w-7 h-7", isDisabled ? "text-slate-400" : card.color)} />
                          </div>
-                         <div className="flex-1">
+                         <div className="flex-1 min-w-0">
                             <h3 className={cn("text-[17px] font-black tracking-tight leading-none mb-1.5", isDisabled ? "text-slate-400" : "text-slate-900 dark:text-white")}>{card.title}</h3>
                             <p className="text-[13px] font-bold text-slate-400">
                               {isDisabled ? PASS_COPY.unavailableAfterFive : card.sub}

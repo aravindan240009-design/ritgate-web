@@ -21,6 +21,10 @@ import { SkeletonList } from '../../components/ui/Skeleton';
 import { formatDateTime } from '../../utils/dateUtils';
 import { cn } from '../../utils/cn';
 import { EMPTY_COPY } from '../../config/nativeCopy';
+import { useAdaptive } from '../../utils/useAdaptive';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
+import DesktopStatCard from '../../components/desktop/DesktopStatCard';
+import EmptyState from '../../components/ui/EmptyState';
 
 interface HistoryItem {
   id: string;
@@ -34,6 +38,7 @@ interface HistoryItem {
 export default function StudentHistory() {
   usePageTitle('History');
   const { user: rawUser, logout } = useAuth();
+  const { isDesktop } = useAdaptive();
   const user = rawUser as Student;
   const { refreshCount } = useRefresh();
 
@@ -127,12 +132,25 @@ export default function StudentHistory() {
   const studentName = `${user?.firstName} ${user?.lastName || ''}`.trim();
 
   return (
-    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
+    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
       <PageHeader title="History" />
 
+      {isDesktop && (
+        <DesktopPageHeader
+          title="History"
+          subtitle="Review your entry, exit, and gate pass movement records"
+        />
+      )}
+
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-5 pb-28">
+        <div className="px-5 pb-28 lg:px-0 lg:pb-8">
           {/* Summary Stats Card */}
+          {isDesktop ? (
+            <div className="grid grid-cols-2 gap-4">
+              <DesktopStatCard label="Entries" value={stats.entries} icon={LogIn} tone="emerald" />
+              <DesktopStatCard label="Exits" value={stats.exits} icon={LogOut} tone="rose" />
+            </div>
+          ) : (
           <div className="mt-6 bg-white dark:bg-slate-900 rounded-[28px] p-6 flex items-center justify-around shadow-sm border border-slate-50 dark:border-slate-800">
             <div className="flex flex-col items-center">
                <span className="text-[32px] font-black text-[var(--color-primary)] leading-none mb-2">{stats.entries}</span>
@@ -144,11 +162,53 @@ export default function StudentHistory() {
                <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Exits</span>
             </div>
           </div>
+          )}
 
           {/* List Section */}
-          <div className="mt-8 space-y-4">
+          <div className="mt-8 space-y-4 lg:mt-6">
             {loading ? (
               <SkeletonList count={5} />
+            ) : isDesktop && historyData.length > 0 ? (
+              <section className="desktop-card overflow-hidden">
+                <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-950 dark:text-white">Movement Records</h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Latest gate activity for {studentName || user?.regNo}</p>
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">{historyData.length} Records</span>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="desktop-table">
+                    <thead>
+                      <tr>
+                        <th>Activity</th>
+                        <th>Pass</th>
+                        <th>Reason</th>
+                        <th>Location</th>
+                        <th>Time</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {historyData.map((item) => {
+                        const config = getItemConfig(item.type);
+                        return (
+                          <tr key={item.id} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35">
+                            <td>
+                              <span className={cn('inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase', config.bg, config.color)}>
+                                {config.label}
+                              </span>
+                            </td>
+                            <td>{item.passId || '-'}</td>
+                            <td className="max-w-[360px] truncate">{item.reason || '-'}</td>
+                            <td>{item.location || 'Main Gate'}</td>
+                            <td>{formatDateTime(item.timestamp)}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
             ) : historyData.length > 0 ? (
               historyData.map((item) => {
                 const config = getItemConfig(item.type);
@@ -200,6 +260,13 @@ export default function StudentHistory() {
                 );
               })
             ) : (
+              isDesktop ? (
+                <EmptyState
+                  title={EMPTY_COPY.noRecordsFound}
+                  description="Your gate movement history will appear here."
+                  icon={<History className="w-8 h-8" />}
+                />
+              ) : (
               <div className="flex flex-col items-center justify-center py-20 text-center">
                  <div className="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mb-5">
                     <History className="w-10 h-10 text-slate-200 dark:text-slate-800" />
@@ -209,6 +276,7 @@ export default function StudentHistory() {
                     Your gate movement history will appear here.
                  </p>
               </div>
+              )
             )}
           </div>
         </div>

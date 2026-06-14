@@ -11,6 +11,9 @@ import { useToast } from '../../context/ToastContext';
 import { getGateLogs } from '../../services/api.service';
 import { cn } from '../../utils/cn';
 import { usePageTitle } from '../../hooks/usePageTitle';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
+import DesktopToolbar from '../../components/desktop/DesktopToolbar';
+import EmptyState from '../../components/ui/EmptyState';
 
 const formatDateShort = (d: string) => {
   try { return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
@@ -92,9 +95,20 @@ export default function HRExits() {
       <PageHeader title="Exit Logs" />
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-5 pt-4 pb-28 space-y-4">
+        <div className="desktop-page px-5 pt-4 pb-28 space-y-4 lg:px-0 lg:pt-0 lg:space-y-6">
+          <DesktopPageHeader
+            title="Exit Logs"
+            subtitle={`${rangeLabel} - ${loading ? 'Loading...' : `${filtered.length} exit record${filtered.length !== 1 ? 's' : ''}`}`}
+            eyebrow="HR Gate Management"
+            action={
+              <Button onClick={handleRefresh} variant="secondary" className="gap-2">
+                <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />
+                Refresh
+              </Button>
+            }
+          />
           {/* Stats bar */}
-          <div className="bg-white dark:bg-slate-900 rounded-[24px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4">
+          <div className="bg-white dark:bg-slate-900 rounded-[24px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 lg:desktop-card">
             <div className="w-12 h-12 bg-rose-50 dark:bg-rose-900/20 rounded-2xl flex items-center justify-center shrink-0">
               <LogOut className="w-6 h-6 text-rose-500" />
             </div>
@@ -111,7 +125,22 @@ export default function HRExits() {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3">
+          <div className="hidden lg:block">
+            <DesktopToolbar
+              searchValue={searchQuery}
+              onSearchChange={setSearchQuery}
+              searchPlaceholder="Search by name, ID, department, purpose..."
+            >
+              <Button onClick={() => setShowDatePicker(true)} variant="secondary" className="gap-2">
+                <Calendar className="w-4 h-4" /> Date Range
+              </Button>
+              <Button onClick={handleExportCSV} disabled={gateLogs.length === 0} variant="success" className="gap-2">
+                <Download className="w-4 h-4" /> Export CSV
+              </Button>
+            </DesktopToolbar>
+          </div>
+
+          <div className="flex gap-3 lg:hidden">
             <button
               onClick={() => setShowDatePicker(true)}
               className="flex-1 h-11 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl flex items-center justify-center gap-2 text-[13px] font-black text-slate-700 dark:text-white shadow-sm"
@@ -128,7 +157,7 @@ export default function HRExits() {
           </div>
 
           {/* Search */}
-          <div className="relative">
+          <div className="relative lg:hidden">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
@@ -148,7 +177,11 @@ export default function HRExits() {
           {loading ? (
             <SkeletonList count={6} />
           ) : filtered.length === 0 ? (
-            <div className="flex flex-col items-center py-20 gap-3">
+            <div className="lg:desktop-card lg:p-10">
+              <div className="hidden lg:block">
+                <EmptyState title="No exit records" description="No exits found for the selected period." icon={<LogOut className="w-7 h-7" />} />
+              </div>
+              <div className="flex flex-col items-center py-20 gap-3 lg:hidden">
               <div className="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center">
                 <LogOut className="w-10 h-10 text-slate-200 dark:text-slate-800" />
               </div>
@@ -156,9 +189,45 @@ export default function HRExits() {
               <p className="text-[13px] font-medium text-slate-400 text-center max-w-[200px] leading-relaxed italic">
                 No exits found for the selected period.
               </p>
+              </div>
             </div>
           ) : (
-            <div className="space-y-3">
+            <>
+            <div className="hidden lg:block desktop-card overflow-hidden">
+              <table className="desktop-table">
+                <thead>
+                  <tr>
+                    <th>Person</th>
+                    <th>Role</th>
+                    <th>Department</th>
+                    <th>Purpose</th>
+                    <th>Exit Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((log, i) => (
+                    <tr key={log.id || i}>
+                      <td>
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 flex items-center justify-center text-xs font-bold">
+                            {getInitials(log.name || log.userId)}
+                          </div>
+                          <div>
+                            <p className="font-bold">{log.name || 'Unknown'}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{log.userId || '-'}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td>{log.userType || '-'}</td>
+                      <td>{log.department || '-'}</td>
+                      <td>{log.purpose || '-'}</td>
+                      <td>{formatDateShort(log.time)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="space-y-3 lg:hidden">
               <AnimatePresence mode="popLayout">
                 {filtered.map((log, i) => (
                   <motion.div
@@ -196,6 +265,7 @@ export default function HRExits() {
                 ))}
               </AnimatePresence>
             </div>
+            </>
           )}
         </div>
       </TopRefreshControl>

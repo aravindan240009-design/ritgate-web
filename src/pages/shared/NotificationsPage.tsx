@@ -18,6 +18,7 @@ import TopRefreshControl from '../../components/common/TopRefreshControl';
 import { SkeletonList } from '../../components/ui/Skeleton';
 import { cn } from '../../utils/cn';
 import { relativeTime } from '../../utils/dateUtils';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
 
 export default function NotificationsPage() {
   usePageTitle('Notifications');
@@ -60,7 +61,7 @@ export default function NotificationsPage() {
     <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
       {/* Header */}
       <header
-        className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800"
+        className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 lg:hidden"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
         <div className="px-4 h-[72px] flex items-center justify-between">
@@ -99,11 +100,25 @@ export default function NotificationsPage() {
       </header>
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-4 pt-4 pb-28">
+        <div className="desktop-page px-4 pt-4 pb-28 lg:px-0 lg:pt-0">
+          <DesktopPageHeader
+            title="Notifications"
+            subtitle={notifications.filter(n => !n.isRead).length > 0 ? `${notifications.filter(n => !n.isRead).length} unread updates` : 'All caught up'}
+            eyebrow="Alerts"
+            action={notifications.length > 0 && (
+              <button
+                onClick={clearAllNotifications}
+                className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 text-rose-500 font-bold"
+              >
+                <Trash2 className="w-4 h-4" />
+                Clear
+              </button>
+            )}
+          />
           {isLoading && notifications.length === 0 ? (
             <SkeletonList count={6} />
           ) : notifications.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
               <AnimatePresence mode="popLayout">
                 {notifications.map((notif) => {
                   const { icon: Icon, color, bg } = getNotifIcon(notif.type);

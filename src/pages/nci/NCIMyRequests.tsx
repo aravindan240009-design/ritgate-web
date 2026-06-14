@@ -10,9 +10,15 @@ import { getNTFOwnRequests, getGatePassQRCode } from '../../services/api.service
 import { cn } from '../../utils/cn';
 import { formatDateTime, relativeTime, isToday } from '../../utils/dateUtils';
 import { usePageTitle } from '../../hooks/usePageTitle';
+import { useAdaptive } from '../../utils/useAdaptive';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
+import DesktopToolbar from '../../components/desktop/DesktopToolbar';
+import Button from '../../components/ui/Button';
+import EmptyState from '../../components/ui/EmptyState';
 
 export default function NCIMyRequests() {
   usePageTitle('My Requests');
+  const { isDesktop } = useAdaptive();
   const { getUserId, user } = useAuth();
   const { error: showError } = useToast();
   const staffCode = getUserId();
@@ -81,11 +87,25 @@ export default function NCIMyRequests() {
   }
 
   return (
-    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
-      <div className="px-5 pt-4 space-y-4">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">My Requests</h2>
+    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
+      <div className="px-5 pt-4 space-y-4 lg:px-0 lg:pt-0">
+        {isDesktop ? (
+          <DesktopPageHeader
+            title="My Requests"
+            subtitle="Track your NCI gate pass requests"
+          />
+        ) : (
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">My Requests</h2>
+        )}
 
         {/* Search */}
+        {isDesktop ? (
+          <DesktopToolbar
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+            searchPlaceholder="Search your requests by purpose, reason, or ID..."
+          />
+        ) : (
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
@@ -96,19 +116,58 @@ export default function NCIMyRequests() {
             className="w-full pl-11 pr-4 h-12 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[20px] text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 shadow-sm outline-none"
           />
         </div>
+        )}
 
         {/* List */}
-        <div className="pb-28 space-y-4">
+        <div className="pb-28 space-y-4 lg:pb-8">
           {filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mb-5">
-                <FileText className="w-10 h-10 text-slate-200 dark:text-slate-800" />
+            <EmptyState title="No requests found" description="Your past gate pass requests will appear here." icon={<FileText className="w-8 h-8" />} />
+          ) : isDesktop ? (
+            <section className="desktop-card overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="desktop-table">
+                  <thead>
+                    <tr>
+                      <th>Request</th>
+                      <th>Type</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th className="text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((request) => {
+                      const isApproved = request.status === 'APPROVED';
+                      const isRejected = request.status === 'REJECTED';
+                      return (
+                        <tr key={request.id} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35" onClick={() => { setSelectedRequest(request); setShowDetailModal(true); }}>
+                          <td>
+                            <p className="font-bold text-slate-950 dark:text-white">{request.purpose || request.reason || 'Gate Pass Request'}</p>
+                            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Request #{request.id}</p>
+                          </td>
+                          <td>Single Pass</td>
+                          <td>{formatDateTime(request.createdAt || request.requestDate)}</td>
+                          <td>
+                            <span className={cn('inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase',
+                              isApproved ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' :
+                              isRejected ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300' :
+                              'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300'
+                            )}>{isApproved ? 'APPROVED' : isRejected ? 'REJECTED' : 'PENDING'}</span>
+                          </td>
+                          <td className="text-right">
+                            {isApproved ? (
+                              <Button size="sm" onClick={(e) => { e.stopPropagation(); handleViewQR(request); }} icon={<QrCode className="w-4 h-4" />}>View QR</Button>
+                            ) : (
+                              <Button size="sm" variant="secondary" onClick={(e) => { e.stopPropagation(); setSelectedRequest(request); setShowDetailModal(true); }}>View</Button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
-              <h5 className="text-[17px] font-black text-slate-900 dark:text-white mb-1.5">No requests found</h5>
-              <p className="text-[13px] font-medium text-slate-400 max-w-[200px] leading-relaxed italic">
-                Your past gate pass requests will appear here.
-              </p>
-            </div>
+            </section>
           ) : (
             <AnimatePresence>
               {filtered.map(request => {

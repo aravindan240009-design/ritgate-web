@@ -6,6 +6,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { useAuth } from '../../context/AuthContext';
 import type { Student } from '../../types';
 import { usePageTitle } from '../../hooks/usePageTitle';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
 
 export default function StudentQRCodes() {
   usePageTitle('QR Codes');
@@ -19,7 +20,7 @@ export default function StudentQRCodes() {
     <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen flex flex-col">
       {/* Header */}
       <header
-        className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800"
+        className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 lg:hidden"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
         <div className="px-4 h-[72px] flex items-center justify-between">
@@ -36,8 +37,13 @@ export default function StudentQRCodes() {
         </div>
       </header>
 
-      <main className="px-5 pt-6 pb-28">
-        <div className="max-w-md mx-auto space-y-6">
+      <main className="desktop-page px-5 pt-6 pb-28 lg:px-0 lg:pt-0">
+        <DesktopPageHeader
+          title="My QR Codes"
+          subtitle="Use your student ID QR for campus entry and scanner verification."
+          eyebrow="Student Identity"
+        />
+        <div className="max-w-md mx-auto space-y-6 lg:max-w-5xl lg:grid lg:grid-cols-[minmax(360px,460px)_1fr] lg:items-start lg:gap-6 lg:space-y-0">
           {/* Main QR Card */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}

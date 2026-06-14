@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ShieldCheck,
-  Search,
   QrCode,
   AlertCircle,
-  FileText
+  FileText,
+  Ban
 } from 'lucide-react';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useAuth } from '../../context/AuthContext';
@@ -23,8 +23,6 @@ import type { Student } from '../../types';
 import { formatDateTime, isToday } from '../../utils/dateUtils';
 import { useAdaptive } from '../../utils/useAdaptive';
 import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
-import DesktopStatCard from '../../components/desktop/DesktopStatCard';
-import DesktopToolbar from '../../components/desktop/DesktopToolbar';
 import EmptyState from '../../components/ui/EmptyState';
 import Button from '../../components/ui/Button';
 
@@ -54,7 +52,6 @@ export default function StudentHome() {
   const [refreshing, setRefreshing] = useState(false);
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
   
   const [showQRModal, setShowQRModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -138,17 +135,9 @@ export default function StudentHome() {
     }
   };
 
-  const filteredRequests = requests.filter(r => 
-    r.purpose?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    r.id?.toString().includes(searchQuery)
-  );
+  const filteredRequests = requests;
 
   const gatePassDisabled = isStudentPassDisabled();
-  const stats = {
-    pending: requests.filter(r => String(r.status || '').startsWith('PENDING')).length,
-    approved: requests.filter(r => r.status === 'APPROVED' || r.status === 'APPROVED_BY_HOD').length,
-    rejected: requests.filter(r => r.status === 'REJECTED').length,
-  };
 
   return (
     <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
@@ -160,42 +149,12 @@ export default function StudentHome() {
       {isDesktop && (
         <DesktopPageHeader
           eyebrow={getGreeting().replace(',', '')}
-          title="Student Dashboard"
+          title={`${user?.firstName || 'Student'} ${user?.lastName?.charAt(0) || ''}`.toUpperCase()}
           subtitle="Request, track, and access your gate pass approvals"
-          action={<Button disabled={gatePassDisabled} onClick={() => (window.location.href = '/new-request')} icon={<ShieldCheck className="w-4 h-4" />}>Request Gate Pass</Button>}
         />
       )}
 
       <div className="px-4 pt-4 lg:px-0 lg:pt-0 lg:space-y-5">
-        {isDesktop && (
-          <div className="grid grid-cols-3 gap-4">
-            <DesktopStatCard label="Pending" value={stats.pending} icon={AlertCircle} tone="amber" />
-            <DesktopStatCard label="Approved" value={stats.approved} icon={ShieldCheck} tone="emerald" />
-            <DesktopStatCard label="Rejected" value={stats.rejected} icon={FileText} tone="rose" />
-          </div>
-        )}
-
-        {/* Search Bar */}
-        {isDesktop ? (
-          <DesktopToolbar
-            searchValue={searchQuery}
-            onSearchChange={setSearchQuery}
-            searchPlaceholder="Search recent requests by purpose or ID..."
-          />
-        ) : (
-        <div className="relative">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-            <Search className="w-4 h-4" />
-          </div>
-          <input 
-            type="text"
-            placeholder="Search recent requests..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-11 pl-11 pr-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 shadow-sm focus:ring-2 focus:ring-blue-500/10 outline-none transition-all"
-          />
-        </div>
-        )}
       </div>
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
@@ -204,10 +163,10 @@ export default function StudentHome() {
           <motion.div 
             whileTap={{ scale: gatePassDisabled ? 1 : 0.98 }}
             onClick={() => !gatePassDisabled && (window.location.href = '/new-request')}
-            className="rounded-[24px] overflow-hidden shadow-md shadow-indigo-500/10 border border-slate-100 dark:border-indigo-900/20 lg:hidden"
+            className="rounded-[24px] overflow-hidden shadow-md shadow-indigo-500/10 border border-slate-100 dark:border-indigo-900/20 lg:desktop-card lg:grid lg:grid-cols-[minmax(260px,420px)_1fr] lg:rounded-[28px]"
           >
             <div className={cn(
-              "h-40 flex items-center justify-center relative overflow-hidden",
+              "h-40 flex items-center justify-center relative overflow-hidden lg:h-56",
               gatePassDisabled ? "bg-slate-400" : "bg-[var(--color-primary)]"
             )}>
               <ShieldCheck className="w-24 h-24 text-white/20 absolute" />
@@ -219,9 +178,9 @@ export default function StudentHome() {
               <ShieldCheck className="w-10 h-10 text-white relative z-10" />
             </div>
             
-            <div className="bg-white dark:bg-slate-900 px-5 py-4 flex items-center justify-between">
+            <div className="bg-white dark:bg-slate-900 px-5 py-4 flex items-center justify-between lg:p-8">
               <div className="flex-1">
-                <h3 className="text-[17px] font-black text-slate-900 dark:text-white leading-tight">
+                <h3 className="text-[17px] font-black text-slate-900 dark:text-white leading-tight lg:text-2xl">
                   Request Gate Pass
                 </h3>
                 {gatePassDisabled && (
@@ -236,11 +195,11 @@ export default function StudentHome() {
               <button 
                 disabled={gatePassDisabled}
                 className={cn(
-                  "px-5 py-2.5 rounded-2xl text-[12px] font-black uppercase tracking-widest transition-all",
+                  "px-5 py-2.5 rounded-2xl text-[12px] font-black uppercase tracking-widest transition-all lg:h-12 lg:px-7",
                   gatePassDisabled ? "bg-slate-100 text-slate-400" : "bg-[var(--color-primary)] text-white shadow-lg shadow-blue-200 dark:shadow-none active:scale-95"
                 )}
               >
-                Apply Now
+                {gatePassDisabled ? <Ban className="w-5 h-5" /> : 'Apply Now'}
               </button>
             </div>
           </motion.div>
@@ -364,18 +323,13 @@ export default function StudentHome() {
             </div>
           ) : (
             isDesktop ? (
-              <EmptyState
-                title="No requests found"
-                description="Your recent gate pass activity will appear here."
-                icon={<FileText className="w-8 h-8" />}
-              />
+              <EmptyState title="No recent requests" icon={<FileText className="w-8 h-8" />} />
             ) : (
             <div className="bg-white dark:bg-slate-900 rounded-2xl p-10 flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-3">
                 <FileText className="w-8 h-8 text-slate-200 dark:text-slate-700" />
               </div>
-              <h5 className="text-[15px] font-bold text-slate-900 dark:text-white mb-1">No requests found</h5>
-              <p className="text-[12px] font-medium text-slate-400">Your recent gate pass activity will appear here.</p>
+              <h5 className="text-[15px] font-bold text-slate-900 dark:text-white mb-1">No recent requests</h5>
             </div>
             )
           )}

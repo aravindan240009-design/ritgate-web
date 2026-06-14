@@ -25,9 +25,7 @@ import type { Student } from '../../types';
 import { formatDateTime, relativeTime, isToday } from '../../utils/dateUtils';
 import { useAdaptive } from '../../utils/useAdaptive';
 import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
-import DesktopStatCard from '../../components/desktop/DesktopStatCard';
 import DesktopToolbar from '../../components/desktop/DesktopToolbar';
-import DesktopSegmentedTabs from '../../components/desktop/DesktopSegmentedTabs';
 import Button from '../../components/ui/Button';
 import EmptyState from '../../components/ui/EmptyState';
 
@@ -116,9 +114,11 @@ export default function StudentRequests() {
     const matchesSearch = searchQuery === '' ||
       r.purpose?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       r.id?.toString().includes(searchQuery);
-    const matchesTab = activeTab === 'PENDING'
-      ? (r.status === 'PENDING_STAFF' || r.status === 'PENDING_HOD')
-      : r.status === activeTab;
+    const matchesTab = isDesktop
+      ? true
+      : activeTab === 'PENDING'
+        ? (r.status === 'PENDING_STAFF' || r.status === 'PENDING_HOD')
+        : r.status === activeTab;
     return matchesSearch && matchesTab;
   });
 
@@ -144,30 +144,13 @@ export default function StudentRequests() {
       )}
 
       <div className="px-5 pt-4 space-y-4 lg:px-0 lg:pt-0 lg:space-y-5">
-        {isDesktop && (
-          <div className="grid grid-cols-3 gap-4">
-            <DesktopStatCard label="Pending" value={getStats().PENDING} icon={Clock} tone="amber" active={activeTab === 'PENDING'} onClick={() => setActiveTab('PENDING')} />
-            <DesktopStatCard label="Approved" value={getStats().APPROVED} icon={QrCode} tone="emerald" active={activeTab === 'APPROVED'} onClick={() => setActiveTab('APPROVED')} />
-            <DesktopStatCard label="Rejected" value={getStats().REJECTED} icon={AlertCircle} tone="rose" active={activeTab === 'REJECTED'} onClick={() => setActiveTab('REJECTED')} />
-          </div>
-        )}
         {/* Search Bar */}
         {isDesktop ? (
           <DesktopToolbar
             searchValue={searchQuery}
             onSearchChange={setSearchQuery}
             searchPlaceholder="Search requests by purpose or ID..."
-          >
-            <DesktopSegmentedTabs
-              value={activeTab}
-              onChange={setActiveTab}
-              options={[
-                { value: 'PENDING', label: 'Pending', count: getStats().PENDING },
-                { value: 'APPROVED', label: 'Approved', count: getStats().APPROVED },
-                { value: 'REJECTED', label: 'Rejected', count: getStats().REJECTED },
-              ]}
-            />
-          </DesktopToolbar>
+          />
         ) : (
         <div className="relative">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
@@ -220,7 +203,7 @@ export default function StudentRequests() {
               <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
                 <div>
                   <h3 className="text-base font-bold text-slate-950 dark:text-white">Request Queue</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Filtered by {activeTab.toLowerCase()} status</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Today&apos;s active requests</p>
                 </div>
                 <span className="text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">{filteredRequests.length} Requests</span>
               </div>
@@ -351,7 +334,7 @@ export default function StudentRequests() {
             isDesktop ? (
               <EmptyState
                 title="No requests found"
-                description="Any requests needing your attention will appear here."
+                description="No active requests for today."
                 icon={<FileText className="w-8 h-8" />}
               />
             ) : (
@@ -363,7 +346,7 @@ export default function StudentRequests() {
                 No requests found
               </h5>
               <p className="text-[13px] font-medium text-slate-400 max-w-[200px] leading-relaxed italic">
-                Any requests needing your attention will appear here.
+                No active requests for today.
               </p>
             </div>
             )

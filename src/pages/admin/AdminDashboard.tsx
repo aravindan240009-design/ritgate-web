@@ -135,7 +135,7 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
       {isDesktop && (
         <DesktopPageHeader
           eyebrow={greeting.replace(',', '')}
-          title="Admin Dashboard"
+          title="Dashboard"
           subtitle="Monitor website visitor requests and administrative clearances"
           action={<Button icon={<Plus className="w-4 h-4" />} onClick={() => onNavigate?.('new-pass')}>New Pass</Button>}
         />

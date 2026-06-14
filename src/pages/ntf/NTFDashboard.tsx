@@ -167,7 +167,7 @@ export default function NTFDashboard() {
       {isDesktop && (
         <DesktopPageHeader
           eyebrow={greeting.replace(',', '')}
-          title="NTF Dashboard"
+          title="Dashboard"
           subtitle="Manage visitor approvals and non-teaching faculty clearances"
         />
       )}

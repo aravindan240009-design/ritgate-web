@@ -154,7 +154,7 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
       {isDesktop && (
         <DesktopPageHeader
           eyebrow={greeting.replace(',', '')}
-          title="HR Dashboard"
+          title="Dashboard"
           subtitle="Review today's gate pass approvals and visitor clearances"
         />
       )}

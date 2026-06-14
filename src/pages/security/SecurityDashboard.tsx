@@ -98,7 +98,7 @@ export default function SecurityDashboard() {
       {isDesktop && (
         <DesktopPageHeader
           eyebrow="ON DUTY"
-          title="Security Dashboard"
+          title="Dashboard"
           subtitle={`Live gate operations for ${gate}`}
           action={<Button icon={<Camera className="w-4 h-4" />} onClick={() => navigate('/scanner')}>Launch Scanner</Button>}
         />

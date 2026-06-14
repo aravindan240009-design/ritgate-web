@@ -202,7 +202,7 @@ export default function HODDashboard() {
       {isDesktop && (
         <DesktopPageHeader
           eyebrow={getGreeting().replace(',', '')}
-          title="HOD Dashboard"
+          title="Dashboard"
           subtitle="Authorize department requests, bulk passes, and visitor clearances"
         />
       )}

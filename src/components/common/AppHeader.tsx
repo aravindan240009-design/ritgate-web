@@ -24,7 +24,7 @@ export default function AppHeader({
   return (
     <header
       className={cn(
-        'sticky top-0 z-30 flex h-[68px] shrink-0 items-center overflow-visible border-b border-slate-200 bg-white/94 shadow-[0_1px_0_rgba(15,23,42,0.04)] backdrop-blur-xl dark:border-slate-800 dark:bg-[#0b1120]/95',
+        'sticky top-0 z-30 flex h-[60px] shrink-0 items-center overflow-visible border-b border-slate-200 bg-white/94 shadow-[0_1px_0_rgba(15,23,42,0.04)] backdrop-blur-xl dark:border-slate-800 dark:bg-[#0b1120]/95',
         className,
       )}
     >

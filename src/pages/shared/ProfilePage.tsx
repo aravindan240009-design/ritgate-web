@@ -137,7 +137,7 @@ export default function ProfilePage({ user: propUser, onBack }: ProfilePageProps
       </header>}
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-5 pt-6 pb-32 min-h-[calc(100vh-100px)] lg:min-h-0 lg:px-7 lg:pt-7 lg:pb-8 lg:grid lg:grid-cols-[304px_minmax(0,1fr)] xl:grid-cols-[304px_minmax(0,552px)] lg:gap-5 xl:gap-5 lg:items-start lg:justify-start lg:max-w-[940px] xl:max-w-[900px] lg:mx-0">
+        <div className="px-5 pt-6 pb-32 min-h-[calc(100vh-100px)] lg:min-h-0 lg:px-0 lg:pt-0 lg:pb-0 lg:grid lg:grid-cols-[304px_minmax(0,552px)] lg:gap-5 xl:gap-5 lg:items-start lg:justify-start lg:max-w-[876px] lg:mx-0">
           {/* 1. Header Section */}
           <div className="flex flex-col items-center mb-8 lg:sticky lg:top-24 lg:mb-0 lg:row-span-3 lg:self-start lg:bg-white lg:dark:bg-slate-900 lg:border lg:border-slate-100 lg:dark:border-slate-800 lg:rounded-[10px] lg:px-7 lg:py-8 lg:shadow-[0_10px_28px_-20px_rgba(15,23,42,0.35)] lg:w-full lg:min-h-[502px]">
              <div className="relative mb-5">

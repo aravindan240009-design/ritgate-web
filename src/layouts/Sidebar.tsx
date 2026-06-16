@@ -2,12 +2,10 @@ import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ChevronLeft, LogOut, Sun, Moon, ShieldCheck,
+  ChevronLeft, LogOut, Sun, Moon,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { useProfile } from '../context/ProfileContext';
-import { ROLE_LABELS } from '../config/api.config';
 import { getNavItems } from '../config/navigation';
 import RITLogo from '../components/common/RITLogo';
 import ConfirmationModal from '../components/common/ConfirmationModal';
@@ -19,32 +17,12 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
-  const { role, user, logout } = useAuth();
+  const { role, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const { profileImage } = useProfile();
   const location = useLocation();
 
   const navItems = getNavItems(role || 'STUDENT');
-
-  const userName = (() => {
-    if (!user) return 'User';
-    const u = user as any;
-    return (
-      u.fullName || u.staffName || u.hodName || u.hrName || u.name ||
-      (u.firstName ? `${u.firstName} ${u.lastName || ''}`.trim() : '') ||
-      'User'
-    );
-  })();
-
-  const initials = userName
-    .split(' ')
-    .map((w: string) => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-
-  const roleLabel = ROLE_LABELS[role || ''] || role || 'User';
 
   return (
     <motion.aside
@@ -90,50 +68,6 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       </div>
 
       {/* ── User Card ─────────────────────────────────────── */}
-      <AnimatePresence>
-        {!collapsed && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden shrink-0"
-          >
-            <div className="px-4 py-4 border-b border-slate-100 dark:border-slate-800">
-              <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-900/70">
-                <div className="w-11 h-11 rounded-lg overflow-hidden shrink-0 bg-blue-700 flex items-center justify-center shadow-sm shadow-blue-500/20">
-                  {profileImage
-                    ? <img src={profileImage} alt={userName} className="w-full h-full object-cover" />
-                    : <span className="text-white font-bold text-sm">{initials}</span>
-                  }
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-semibold text-slate-900 dark:text-white truncate leading-tight">
-                    {userName}
-                  </p>
-                  <div className="flex items-center gap-1 mt-1">
-                    <ShieldCheck className="w-3 h-3 text-emerald-500 shrink-0" />
-                    <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate">{roleLabel}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Collapsed avatar */}
-      {collapsed && (
-        <div className="flex justify-center py-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
-          <div className="w-10 h-10 rounded-lg overflow-hidden bg-blue-700 flex items-center justify-center">
-            {profileImage
-              ? <img src={profileImage} alt={userName} className="w-full h-full object-cover" />
-              : <span className="text-white font-bold text-sm">{initials}</span>
-            }
-          </div>
-        </div>
-      )}
-
       {/* ── Navigation ────────────────────────────────────── */}
       <nav className="flex-1 overflow-y-auto sidebar-scroll py-4 px-4 space-y-1">
         {navItems.map((item) => {

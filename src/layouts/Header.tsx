@@ -1,10 +1,8 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-import { CalendarDays, ChevronDown } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { CalendarDays } from 'lucide-react';
 import AppHeader from '../components/common/AppHeader';
 import NotificationBell from '../components/common/NotificationBell';
 import { useAuth } from '../context/AuthContext';
-import { useProfile } from '../context/ProfileContext';
-import { ROLE_LABELS } from '../config/api.config';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -140,19 +138,10 @@ const routeCopy: Record<string, Omit<HeaderCopy, 'label'>> = {
 };
 
 export default function Header({ onMenuClick, sidebarCollapsed }: HeaderProps) {
-  const navigate = useNavigate();
   const location = useLocation();
   const { user, role } = useAuth();
-  const { profileImage } = useProfile();
 
   const userName = getUserName(user);
-  const initials = userName
-    .split(' ')
-    .map((part: string) => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-  const roleLabel = ROLE_LABELS[role || ''] || role || 'User';
 
   const copy: HeaderCopy = location.pathname === '/dashboard'
     ? {
@@ -188,26 +177,6 @@ export default function Header({ onMenuClick, sidebarCollapsed }: HeaderProps) {
             {currentDate}
           </div>
           <NotificationBell />
-          <button
-            type="button"
-            onClick={() => navigate('/profile')}
-            className="hidden items-center gap-3 rounded-xl border border-slate-200 bg-white/85 py-1.5 pl-1.5 pr-3 text-left shadow-sm transition-colors hover:border-blue-200 hover:bg-blue-50 dark:border-slate-800 dark:bg-slate-900/80 dark:hover:border-blue-900 dark:hover:bg-blue-950/30 xl:flex"
-          >
-            <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-blue-700 text-xs font-black text-white shadow-sm shadow-blue-700/20">
-              {profileImage
-                ? <img src={profileImage} alt={userName} className="h-full w-full object-cover" />
-                : initials}
-            </span>
-            <span className="min-w-0">
-              <span className="block max-w-[140px] truncate text-sm font-bold leading-tight text-slate-950 dark:text-white">
-                {userName}
-              </span>
-              <span className="block max-w-[140px] truncate text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                {roleLabel}
-              </span>
-            </span>
-            <ChevronDown className="h-4 w-4 text-slate-400" />
-          </button>
         </>
       )}
     />

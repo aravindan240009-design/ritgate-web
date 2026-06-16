@@ -41,10 +41,11 @@ export default function AppHeader({
           )}
 
           <div className="min-w-0">
-            <p className="sr-only">
-              {label} - {subtitle}
+            <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">
+              {label}
             </p>
-            <h1 className="truncate text-[20px] font-black leading-tight tracking-tight text-slate-950 dark:text-white">
+            <p className="sr-only">{subtitle}</p>
+            <h1 className="truncate text-[20px] font-black uppercase leading-tight tracking-tight text-slate-950 dark:text-white">
               {title}
             </h1>
           </div>

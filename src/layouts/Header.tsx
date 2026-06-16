@@ -19,9 +19,9 @@ interface HeaderCopy {
 
 const getGreeting = () => {
   const hour = new Date().getHours();
-  if (hour < 12) return 'GOOD MORNING';
-  if (hour < 17) return 'GOOD AFTERNOON';
-  return 'GOOD EVENING';
+  if (hour < 12) return 'GOOD MORNING,';
+  if (hour < 17) return 'GOOD AFTERNOON,';
+  return 'GOOD EVENING,';
 };
 
 const getUserName = (user: any) => {

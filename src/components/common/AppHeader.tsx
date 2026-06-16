@@ -30,13 +30,15 @@ export default function AppHeader({
     >
       <div className="flex w-full items-center justify-between gap-4 px-6 lg:px-8 xl:px-10 2xl:px-12">
         <div className="flex min-w-0 items-center gap-4">
-          <button
-            onClick={onMenuClick}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
-            aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            <Menu className="h-4 w-4" />
-          </button>
+          {sidebarCollapsed && (
+            <button
+              onClick={onMenuClick}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+              aria-label="Expand sidebar"
+            >
+              <Menu className="h-4 w-4" />
+            </button>
+          )}
 
           <div className="min-w-0">
             <p className="sr-only">

@@ -58,10 +58,10 @@ export default function RequestDetailsModal({
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-[32px] z-[120] max-h-[92vh] overflow-y-auto shadow-2xl pb-safe"
+              className="fixed bottom-0 left-0 right-0 lg:bottom-auto lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:max-w-2xl lg:rounded-[32px] bg-white dark:bg-slate-900 rounded-t-[32px] z-[120] max-h-[92vh] lg:max-h-[85vh] overflow-y-auto shadow-2xl pb-safe"
             >
               {/* Handle */}
-              <div className="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mt-3 mb-1" />
+              <div className="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mt-3 mb-1 lg:hidden" />
 
               {/* Header */}
               <div className="sticky top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 py-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 z-10">
@@ -75,7 +75,7 @@ export default function RequestDetailsModal({
               </div>
 
               {/* Content */}
-              <div className="p-6 pt-12 space-y-8">
+              <div className="p-6 pt-12 lg:pt-16 space-y-8">
                 {/* Status Section */}
                 <div className="flex items-center justify-between">
                   <span className="text-base font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest text-[13px]">Current Status</span>

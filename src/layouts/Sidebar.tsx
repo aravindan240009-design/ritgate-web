@@ -56,15 +56,17 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
             </motion.div>
           )}
         </AnimatePresence>
-        {!collapsed && (
-          <button
-            onClick={onToggle}
-            className="absolute right-4 top-1/2 h-8 w-8 -translate-y-1/2 rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
-            aria-label="Collapse sidebar"
-          >
-            <ChevronLeft className="mx-auto h-4 w-4" />
-          </button>
-        )}
+        <button
+          onClick={onToggle}
+          className={cn(
+            "absolute right-4 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-md shadow-slate-200/50 transition-all hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:shadow-none dark:hover:bg-slate-800 dark:hover:text-white",
+            collapsed && "right-1/2 translate-x-1/2",
+          )}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
+        </button>
       </div>
 
       {/* ── User Card ─────────────────────────────────────── */}

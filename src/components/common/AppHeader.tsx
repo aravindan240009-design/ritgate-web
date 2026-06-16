@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { Menu } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 interface AppHeaderProps {
@@ -17,8 +16,6 @@ export default function AppHeader({
   title,
   subtitle,
   actions,
-  onMenuClick,
-  sidebarCollapsed,
   className,
 }: AppHeaderProps) {
   return (
@@ -30,16 +27,6 @@ export default function AppHeader({
     >
       <div className="flex w-full items-center justify-between gap-4 px-6 lg:px-8 xl:px-10 2xl:px-12">
         <div className="flex min-w-0 items-center gap-4">
-          {sidebarCollapsed && (
-            <button
-              onClick={onMenuClick}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
-              aria-label="Expand sidebar"
-            >
-              <Menu className="h-4 w-4" />
-            </button>
-          )}
-
           <div className="min-w-0">
             {label && (
               <p className="text-[12px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">

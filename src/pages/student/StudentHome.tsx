@@ -6,6 +6,8 @@ import {
   AlertCircle,
   FileText,
   Ban,
+  ArrowRight,
+  Clock3,
 } from 'lucide-react';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useAuth } from '../../context/AuthContext';
@@ -101,7 +103,7 @@ export default function StudentHome() {
       case 'PENDING_HOD':
         return { label: 'AWAITING HOD', color: 'bg-blue-500' };
       case 'PENDING_STAFF':
-        return { label: 'AWAITING STAFF', color: 'bg-amber-500' };
+        return { label: 'AWAITING STAFF', color: 'bg-orange-500' };
       case 'USED':
         return { label: 'USED', color: 'bg-slate-400' };
       default:
@@ -184,15 +186,15 @@ export default function StudentHome() {
                   gatePassDisabled ? 'cursor-default' : 'hover:border-blue-300/80 hover:shadow-[0_18px_45px_-26px_rgba(37,99,235,0.55)]',
                 )}
               >
-                <div className="flex min-h-[178px] flex-col justify-between gap-6 p-6 xl:flex-row xl:items-center xl:p-7">
+                <div className="flex min-h-[136px] flex-col justify-between gap-5 p-5 xl:flex-row xl:items-center xl:p-6">
                   <div className="flex min-w-0 items-start gap-5">
                     <div className={cn(
-                      'flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border',
+                      'flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border',
                       gatePassDisabled
                         ? 'border-slate-200 bg-slate-100 text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400'
                         : 'border-blue-100 bg-blue-50 text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/35 dark:text-blue-300',
                     )}>
-                      <ShieldCheck className="h-7 w-7" />
+                      <ShieldCheck className="h-6 w-6" />
                     </div>
                     <div className="min-w-0">
                       <div className={cn(
@@ -207,7 +209,7 @@ export default function StudentHome() {
                         )} />
                         {gatePassDisabled ? 'Request window closed' : 'Request window open'}
                       </div>
-                      <h3 className="text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
+                      <h3 className="text-[22px] font-bold tracking-tight text-slate-950 dark:text-white">
                         Gate Pass Request
                       </h3>
                       <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-slate-600 dark:text-slate-400">
@@ -219,16 +221,24 @@ export default function StudentHome() {
                   </div>
 
                   <div className="flex shrink-0 items-center gap-3">
-                    <span className="hidden rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 xl:inline-flex">
+                    <span className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 xl:inline-flex">
+                      <Clock3 className="h-4 w-4 text-slate-400" />
                       Closes at 3:00 PM
                     </span>
                     <span className={cn(
-                      'inline-flex h-11 items-center justify-center rounded-lg px-5 text-sm font-bold',
+                      'inline-flex h-11 items-center justify-center gap-2 rounded-lg px-5 text-sm font-bold',
                       gatePassDisabled
                         ? 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500'
                         : 'bg-blue-700 text-white shadow-sm shadow-blue-700/20 group-hover:bg-blue-800',
                     )}>
-                      {gatePassDisabled ? <Ban className="h-5 w-5" /> : 'Apply Now'}
+                      {gatePassDisabled ? (
+                        <Ban className="h-5 w-5" />
+                      ) : (
+                        <>
+                          Apply Now
+                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                        </>
+                      )}
                     </span>
                   </div>
                 </div>
@@ -246,6 +256,16 @@ export default function StudentHome() {
                       Today&apos;s gate pass activity
                     </h3>
                   </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => { window.location.href = '/requests'; }}
+                    iconRight={<ArrowRight className="h-4 w-4" />}
+                    className="h-9 rounded-lg border-blue-200 bg-white px-4 text-xs shadow-sm shadow-blue-900/5 hover:border-blue-500 hover:bg-blue-50 dark:bg-slate-900 dark:hover:bg-blue-950/25"
+                  >
+                    View All
+                  </Button>
                 </div>
 
                 {loading ? (

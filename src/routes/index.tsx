@@ -69,6 +69,7 @@ const ProfilePage = lazy(() => import('../pages/shared/ProfilePage'));
 const NotificationsPage = lazy(() => import('../pages/shared/NotificationsPage'));
 const GuestPreRequest = lazy(() => import('../pages/shared/GuestPreRequest'));
 const ParticipantsPage = lazy(() => import('../pages/shared/ParticipantsPage'));
+const PassVerificationPage = lazy(() => import('../pages/shared/PassVerificationPage'));
 
 const PageLoader = () => (
   <div className="flex items-center justify-center py-20">
@@ -185,6 +186,7 @@ export default function AppRoutes() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/participants" element={<ParticipantsPage />} />
+          <Route path="/pass-verification/:requestId" element={<PassVerificationPage />} />
         </Route>
 
         {/* 404 — authenticated users see NotFound, unauthenticated go to login */}

@@ -37,7 +37,6 @@ import { useAdaptive } from '../../utils/useAdaptive';
 import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
 import DesktopStatCard from '../../components/desktop/DesktopStatCard';
 import DesktopToolbar from '../../components/desktop/DesktopToolbar';
-import DesktopSegmentedTabs from '../../components/desktop/DesktopSegmentedTabs';
 import Button from '../../components/ui/Button';
 import EmptyState from '../../components/ui/EmptyState';
 
@@ -235,17 +234,7 @@ export default function HODDashboard() {
             searchValue={searchQuery}
             onSearchChange={setSearchQuery}
             searchPlaceholder="Search by student, visitor, purpose, or request ID..."
-          >
-            <DesktopSegmentedTabs
-              value={activeTab}
-              onChange={setActiveTab}
-              options={[
-                { value: 'PENDING', label: 'Pending', count: getStats().PENDING },
-                { value: 'APPROVED', label: 'Approved', count: getStats().APPROVED },
-                { value: 'REJECTED', label: 'Rejected', count: getStats().REJECTED },
-              ]}
-            />
-          </DesktopToolbar>
+          />
         )}
 
         {/* Stats Tabs */}

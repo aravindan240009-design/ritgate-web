@@ -31,11 +31,16 @@ export default function ThemePresetSelector() {
           }
           <button
             onClick={toggleTheme}
-            className="relative w-10 h-6 rounded-full transition-colors duration-300"
-            style={{ backgroundColor: isDark ? activePrimary : '#E5E7EB' }}
+            className="relative w-10 h-6 rounded-full transition-colors duration-300 shrink-0 p-0 cursor-pointer"
+            style={{
+              backgroundColor: isDark ? activePrimary : '#E5E7EB',
+              minHeight: '24px',
+              height: '24px',
+              width: '40px',
+            }}
           >
             <motion.div
-              animate={{ x: isDark ? 18 : 2 }}
+              animate={{ x: isDark ? 22 : 2 }}
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
               className="absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm"
             />

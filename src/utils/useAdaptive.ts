@@ -1,20 +1,25 @@
-import { useIsMobile, useIsTablet, useIsDesktop } from './useMediaQuery';
+import { useIsMobile, useIsTablet, useIsDesktop, useIsLargeDesktop } from './useMediaQuery';
 
 /**
  * Single source of truth for adaptive UI mode.
- * Mobile  ≤ 768px  → app-like PWA experience
- * Tablet  769–1024px → hybrid layout
- * Desktop ≥ 1025px  → premium SaaS dashboard
+ * Mobile  ≤ 768px       → app-like PWA experience
+ * Dashboard ≥ 769px     → premium SaaS dashboard (tablet = compact desktop)
+ * Large desktop ≥ 1280px → extra spacing / multi-column density
+ *
+ * `isDesktop` intentionally returns true for tablets so they inherit the full
+ * professional dashboard layout instead of stretched mobile cards.
  */
 export function useAdaptive() {
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
   const isDesktop = useIsDesktop();
+  const isLargeDesktop = useIsLargeDesktop();
 
   return {
     isMobile,
     isTablet,
     isDesktop,
+    isLargeDesktop,
     /** True when NOT mobile — sidebar/header visible */
     isWide: !isMobile,
     /** Animation config — lightweight on mobile, premium on desktop */

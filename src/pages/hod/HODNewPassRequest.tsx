@@ -1,20 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import PurposeSelect from '../../components/common/PurposeSelect';
 import { motion } from 'framer-motion';
-import { 
-  FileText, 
-  ArrowLeft, 
-  Paperclip, 
-  X,
-  Plus,
-  ShieldCheck,
-  LayoutGrid
-} from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useActionLock } from '../../context/ActionLockContext';
 import { submitHODGatePass } from '../../services/api.service';
-import { getRequestDate } from '../../utils/dateUtils';
 import { cn } from '../../utils/cn';
 
 interface HODNewPassRequestProps {
@@ -30,21 +21,9 @@ export default function HODNewPassRequest({ user, onBack }: HODNewPassRequestPro
 
   const [purpose, setPurpose] = useState('');
   const [reason, setReason] = useState('');
-  const [attachment, setAttachment] = useState<{ name: string; uri: string } | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const hodName = (user as any)?.hodName || (user as any)?.name || 'HOD Member';
   const initials = hodName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) return showToastError('Limit Exceeded', 'Maximum file size is 5MB');
-      const reader = new FileReader();
-      reader.onload = () => setAttachment({ name: file.name, uri: reader.result as string });
-      reader.readAsDataURL(file);
-    }
-  };
 
   const submitRequest = async () => {
     if (!purpose.trim() || !reason.trim()) return showToastError('Missing Fields', 'Please fill all required fields');
@@ -54,12 +33,11 @@ export default function HODNewPassRequest({ user, onBack }: HODNewPassRequestPro
          const res = await submitHODGatePass(
             hodCode,
             purpose.trim(),
-            reason.trim(),
-            attachment?.uri
+            reason.trim()
          );
          if (res.success) {
            showToastSuccess('Request Dispatched', 'Your authorization pass has been submitted for HR review.');
-           setPurpose(''); setReason(''); setAttachment(null);
+           setPurpose(''); setReason('');
            onBack();
          } else showToastError('Failed', res.message);
        } catch { showToastError('Error', 'An internal error occurred'); }
@@ -95,44 +73,7 @@ export default function HODNewPassRequest({ user, onBack }: HODNewPassRequestPro
           />
         </div>
 
-        {/* Attachment */}
-        <div className="space-y-2">
-          <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Supporting Document (Optional)</label>
-          <div 
-            onClick={() => fileInputRef.current?.click()}
-            className="w-full h-32 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center bg-slate-50/50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors cursor-pointer group"
-          >
-            <input 
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              className="hidden"
-              accept="image/*,.pdf"
-            />
-            {attachment ? (
-              <div className="flex flex-col items-center gap-2 p-4">
-                <div className="relative w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
-                  <FileText className="w-6 h-6" />
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); setAttachment(null); }}
-                    className="absolute -top-2 -right-2 w-5 h-5 bg-rose-500 text-white rounded-full flex items-center justify-center shadow-md scale-90 hover:scale-110 active:scale-95 transition-transform"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-                <span className="text-[13px] font-bold text-slate-600 truncate max-w-[200px]">{attachment.name}</span>
-              </div>
-            ) : (
-              <>
-                <div className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-400 shadow-sm mb-2 group-hover:scale-110 transition-transform">
-                  <Plus className="w-5 h-5" />
-                </div>
-                <span className="text-[13px] font-bold text-slate-400">Click to upload doc</span>
-                <span className="text-[10px] font-medium text-slate-300 mt-1 uppercase tracking-widest">Max size: 5MB</span>
-              </>
-            )}
-          </div>
-        </div>
+
 
         <div className="pt-4">
           <button 

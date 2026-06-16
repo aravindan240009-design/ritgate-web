@@ -7,7 +7,6 @@ import {
   Users, 
   UserPlus, 
   ArrowLeft, 
-  X,
   ChevronRight,
   Ban
 } from 'lucide-react';
@@ -61,21 +60,9 @@ export default function StaffNewPass() {
 
   const [purpose, setPurpose] = useState('');
   const [reason, setReason] = useState('');
-  const [attachment, setAttachment] = useState<{ name: string; uri: string } | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const staffName = (user as any)?.staffName || (user as any)?.name || 'Staff Member';
   const initials = staffName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) return showToastError('Limit Exceeded', 'Maximum file size is 5MB');
-      const reader = new FileReader();
-      reader.onload = () => setAttachment({ name: file.name, uri: reader.result as string });
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleBack = () => {
     if (stage === 'SELECT') navigate('/dashboard');
@@ -90,13 +77,12 @@ export default function StaffNewPass() {
             staffCode,
             purpose: purpose.trim(),
             reason: reason.trim(),
-            requestDate: getRequestDate(),
-            attachmentUri: attachment?.uri || undefined
+            requestDate: getRequestDate()
           });
           if (res.success) {
             showToastSuccess('Request Sent', 'Your gate pass authorization has been submitted');
             navigate('/new-pass');
-            setPurpose(''); setReason(''); setAttachment(null);
+            setPurpose(''); setReason('');
           } else showToastError('Failed', res.message);
         } catch { showToastError('Error', 'An internal error occurred'); }
      }, 'Dispatching authorization...');
@@ -228,27 +214,6 @@ export default function StaffNewPass() {
                        placeholder="Please provide more context..."
                        className="w-full h-28 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 text-[15px] font-bold text-slate-900 dark:text-white placeholder:text-slate-400 shadow-sm outline-none resize-none"
                      />
-                   </div>
-
-                   <div className="space-y-2">
-                     <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Attachment (Optional)</label>
-                     <div 
-                       onClick={() => fileInputRef.current?.click()}
-                       className="w-full h-24 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center bg-slate-50/50 cursor-pointer"
-                     >
-                       <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,.pdf" />
-                       {attachment ? (
-                         <div className="flex items-center gap-2">
-                           <FileText className="w-5 h-5 text-emerald-600" />
-                           <span className="text-[12px] font-bold text-slate-600 truncate max-w-[200px]">{attachment.name}</span>
-                           <button onClick={(e) => { e.stopPropagation(); setAttachment(null); }} className="w-5 h-5 bg-rose-500 text-white rounded-full flex items-center justify-center">
-                             <X className="w-3 h-3" />
-                           </button>
-                         </div>
-                       ) : (
-                         <span className="text-[13px] font-bold text-slate-400">Tap to upload</span>
-                       )}
-                     </div>
                    </div>
 
                    <div className="pt-2 pb-10">

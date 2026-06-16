@@ -1,18 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import PurposeSelect from '../../components/common/PurposeSelect';
 import {
   ArrowLeft,
   ArrowRight,
   ShieldCheck,
-  Layout,
   AlignLeft,
-  Paperclip,
-  X,
-  Image as ImageIcon,
-  CheckCircle2,
-  AlertCircle,
   Loader2
 } from 'lucide-react';
 import { usePageTitle } from '../../hooks/usePageTitle';
@@ -21,7 +15,6 @@ import { useToast } from '../../context/ToastContext';
 import { useActionLock } from '../../context/ActionLockContext';
 import { useFieldValidation } from '../../hooks/useFieldValidation';
 import { submitStudentGatePass } from '../../services/api.service';
-import Button from '../../components/ui/Button';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import SuccessModal from '../../components/common/SuccessModal';
 import ErrorModal from '../../components/common/ErrorModal';
@@ -44,7 +37,7 @@ export default function NewRequest() {
   const { user: rawUser } = useAuth();
   const user = rawUser as Student;
   const { isDesktop } = useAdaptive();
-  const { success: showToastSuccess, error: showToastError } = useToast();
+  const { error: showToastError } = useToast();
   const { withLock, isLocked } = useActionLock();
 
   // Block access after 15:00 IST
@@ -56,8 +49,6 @@ export default function NewRequest() {
 
   const [purpose, setPurpose] = useState('');
   const [reason, setReason] = useState('');
-  const [attachment, setAttachment] = useState<{ name: string; uri: string } | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -71,25 +62,6 @@ export default function NewRequest() {
 
   const isFormValid = purpose.trim() && reason.trim();
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-      showToastError('File Too Large', 'Maximum attachment size is 5MB');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (prev) => {
-      setAttachment({
-        name: file.name,
-        uri: prev.target?.result as string
-      });
-    };
-    reader.readAsDataURL(file);
-  };
-
   const handleSubmit = async () => {
     if (!validateAll({ purpose, reason })) return;
     
@@ -99,8 +71,7 @@ export default function NewRequest() {
           regNo: user?.regNo || '',
           purpose: purpose.trim(),
           reason: reason.trim(),
-          requestDate: getRequestDate(),
-          ...(attachment ? { attachmentUri: attachment.uri } : {})
+          requestDate: getRequestDate()
         });
 
         if (response.success) {
@@ -117,7 +88,7 @@ export default function NewRequest() {
   };
 
   const handleGoBack = () => {
-    if (purpose || reason || attachment) {
+    if (purpose || reason) {
       if (window.confirm('Discard changes and go back?')) {
         navigate(-1);
       }
@@ -210,48 +181,6 @@ export default function NewRequest() {
                 />
               </div>
               {errors.reason && <p className="text-[11px] font-bold text-rose-500 px-1 mt-1">{errors.reason}</p>}
-            </div>
-
-            {/* Attachment Picker */}
-            <div className="space-y-2.5">
-              <label className="block text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] px-1">
-                ATTACHMENT PROOF (OPTIONAL)
-              </label>
-              
-              {!attachment ? (
-                <button 
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full py-8 bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[28px] flex flex-col items-center justify-center gap-3 active:scale-[0.98] transition-all group"
-                >
-                  <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-slate-400 group-hover:text-blue-700 transition-colors">
-                    <Paperclip className="w-6 h-6" />
-                  </div>
-                  <span className="text-[13px] font-bold text-slate-500 group-hover:text-[var(--color-primary)]">Upload Image or PDF</span>
-                  <input 
-                    type="file" 
-                    ref={fileInputRef}
-                    onChange={handleFileUpload}
-                    accept="image/*,.pdf"
-                    className="hidden"
-                  />
-                </button>
-              ) : (
-                <div className="relative bg-white dark:bg-slate-900 rounded-[28px] p-4 border border-slate-200 dark:border-slate-800 flex items-center gap-4">
-                  <div className="w-14 h-14 bg-blue-50 dark:bg-indigo-900/20 rounded-2xl flex items-center justify-center text-[var(--color-primary)]">
-                    <ImageIcon className="w-7 h-7" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[14px] font-bold text-slate-900 dark:text-white truncate">{attachment.name}</p>
-                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Proof Attached</p>
-                  </div>
-                  <button 
-                    onClick={() => setAttachment(null)}
-                    className="w-9 h-9 bg-rose-50 dark:bg-rose-950/30 rounded-full flex items-center justify-center text-rose-500"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              )}
             </div>
           </div>
 

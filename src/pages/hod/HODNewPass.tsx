@@ -97,11 +97,11 @@ export default function HODNewPass() {
                   <p className="text-[14px] font-bold text-slate-400 mt-1">{PASS_COPY.selectSubtitle}</p>
                </div>
 
-               <div className="grid gap-4 lg:grid-cols-3">
+               <div className="grid gap-4 lg:grid-cols-3 lg:gap-6">
                   {[
-                    { id: 'SINGLE', title: PASS_COPY.singleTitle, sub: PASS_COPY.singleSubtitle, icon: UserPlus, color: 'text-white', bg: 'bg-gradient-to-br from-[#4facfe] to-[#00f2fe]', restricted: true },
-                    { id: 'BULK', title: PASS_COPY.bulkTitle, sub: PASS_COPY.bulkSubtitle, icon: Users, color: 'text-white', bg: 'bg-gradient-to-br from-[#667eea] to-[#764ba2]', restricted: true },
-                    { id: 'GUEST', title: PASS_COPY.guestTitle, sub: PASS_COPY.guestSubtitle, icon: FileText, color: 'text-white', bg: 'bg-gradient-to-br from-[#0d9488] to-[#14b8a6]', restricted: false },
+                    { id: 'SINGLE', title: PASS_COPY.singleTitle, sub: PASS_COPY.singleSubtitle, icon: UserPlus, color: 'text-white', bg: 'bg-gradient-to-br from-[#4facfe] to-[#00f2fe]', ring: 'lg:group-hover:border-cyan-200 lg:group-hover:shadow-cyan-100/70 dark:lg:group-hover:border-cyan-900/60', label: 'Self pass', restricted: true },
+                    { id: 'BULK', title: PASS_COPY.bulkTitle, sub: PASS_COPY.bulkSubtitle, icon: Users, color: 'text-white', bg: 'bg-gradient-to-br from-[#667eea] to-[#764ba2]', ring: 'lg:group-hover:border-violet-200 lg:group-hover:shadow-violet-100/70 dark:lg:group-hover:border-violet-900/60', label: 'Department pass', restricted: true },
+                    { id: 'GUEST', title: PASS_COPY.guestTitle, sub: PASS_COPY.guestSubtitle, icon: FileText, color: 'text-white', bg: 'bg-gradient-to-br from-[#0d9488] to-[#14b8a6]', ring: 'lg:group-hover:border-teal-200 lg:group-hover:shadow-teal-100/70 dark:lg:group-hover:border-teal-900/60', label: 'Visitor pass', restricted: false },
                   ].map((card) => {
                     const Icon = card.icon;
                     const isDisabled = card.restricted && passDisabled;
@@ -115,26 +115,39 @@ export default function HODNewPass() {
                           navigate(`/new-pass?stage=${card.id.toLowerCase()}`);
                         }}
                         className={cn(
-                          "w-full p-6 rounded-[32px] border flex items-center gap-5 text-left shadow-sm transition-all lg:min-h-[220px] lg:flex-col lg:items-start",
+                          "group w-full p-6 rounded-[32px] border flex items-center gap-5 text-left shadow-sm transition-all",
+                          "lg:min-h-[260px] lg:flex-col lg:items-start lg:justify-between lg:rounded-3xl lg:p-7 lg:shadow-[0_18px_50px_rgba(15,23,42,0.06)] lg:hover:-translate-y-1 lg:hover:shadow-2xl",
                           isDisabled
                             ? "bg-slate-50 dark:bg-slate-900/40 border-slate-100 dark:border-slate-800 opacity-60 cursor-not-allowed"
-                            : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 active:shadow-none"
+                            : cn("bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 active:shadow-none", card.ring)
                         )}
                       >
-                         <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg", isDisabled ? "bg-slate-200 dark:bg-slate-800" : card.bg)}>
-                            <Icon className={cn("w-7 h-7", isDisabled ? "text-slate-400" : card.color)} />
+                         <div className="flex w-full items-start gap-5 lg:flex-col">
+                           <div className="flex w-full items-start justify-between gap-4">
+                             <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg lg:w-16 lg:h-16 lg:rounded-[22px]", isDisabled ? "bg-slate-200 dark:bg-slate-800" : card.bg)}>
+                                <Icon className={cn("w-7 h-7 lg:w-8 lg:h-8", isDisabled ? "text-slate-400" : card.color)} />
+                             </div>
+                             <span className="hidden lg:inline-flex rounded-full bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400 ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700">
+                               {card.label}
+                             </span>
+                           </div>
+                           <div className="flex-1 min-w-0 lg:pt-2">
+                              <h3 className={cn("text-[17px] font-black tracking-tight leading-none mb-1.5 lg:text-[21px] lg:leading-tight", isDisabled ? "text-slate-400" : "text-slate-900 dark:text-white")}>{card.title}</h3>
+                              <p className="text-[13px] font-bold text-slate-400 lg:max-w-[260px] lg:text-[14px] lg:leading-relaxed">
+                                {isDisabled ? PASS_COPY.unavailableAfterFive : card.sub}
+                              </p>
+                           </div>
                          </div>
-                         <div className="flex-1 min-w-0">
-                            <h3 className={cn("text-[17px] font-black tracking-tight leading-none mb-1.5", isDisabled ? "text-slate-400" : "text-slate-900 dark:text-white")}>{card.title}</h3>
-                            <p className="text-[13px] font-bold text-slate-400">
-                              {isDisabled ? PASS_COPY.unavailableAfterFive : card.sub}
-                            </p>
+                         <div className="flex shrink-0 items-center">
+                           {isDisabled ? (
+                             <Ban className="w-5 h-5 text-rose-400 shrink-0" />
+                           ) : (
+                             <div className="flex items-center gap-2 text-slate-300 transition-colors lg:text-slate-400 lg:group-hover:text-slate-900 dark:lg:group-hover:text-white">
+                               <span className="hidden text-xs font-black uppercase tracking-[0.16em] lg:inline">Create</span>
+                               <ChevronRight className="w-5 h-5 transition-transform lg:group-hover:translate-x-1" />
+                             </div>
+                           )}
                          </div>
-                         {isDisabled ? (
-                           <Ban className="w-5 h-5 text-rose-400 shrink-0" />
-                         ) : (
-                           <ChevronRight className="w-5 h-5 text-slate-200" />
-                         )}
                       </motion.button>
                     );
                   })}

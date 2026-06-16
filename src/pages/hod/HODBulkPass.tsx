@@ -15,8 +15,6 @@ import {
   Check,
   UserCircle2,
   GraduationCap,
-  Paperclip,
-  X,
 } from 'lucide-react';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useAuth } from '../../context/AuthContext';
@@ -97,8 +95,6 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
   // ── Form ──────────────────────────────────────────────────────────────────
   const [purpose, setPurpose] = useState('');
   const [reason, setReason] = useState('');
-  const [attachmentUri, setAttachmentUri] = useState<string | null>(null);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
   // ── Load data ─────────────────────────────────────────────────────────────
   useEffect(() => { loadData(); }, []);
 
@@ -261,14 +257,6 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
   ];
 
   // ── Submit ────────────────────────────────────────────────────────────────
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setAttachmentUri(reader.result as string);
-    reader.readAsDataURL(file);
-  };
-
   const submitBulk = async () => {
     if (!purpose.trim() || !reason.trim()) return showToastError('Missing Fields', 'Please enter purpose and reason');
     if (totalSelected === 0) return showToastError('No Selection', 'Select at least one person');
@@ -286,7 +274,6 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
           staff: Array.from(selectedStaffIds),
           includeStaff,
           receiverId: includeStaff ? undefined : (receiverId || undefined),
-          attachmentUri: attachmentUri || undefined,
         });
         if (res.success) {
           showToastSuccess('Batch Sent', `Authorization for ${totalSelected} members submitted`);
@@ -678,29 +665,7 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
               className="w-full min-h-[100px] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 text-[15px] font-bold text-slate-900 dark:text-white shadow-sm outline-none focus:ring-2 focus:ring-blue-500/10 resize-none" />
           </div>
 
-          {/* Supporting Document */}
-          <div className="space-y-2">
-            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Supporting Document <span className="text-slate-300 normal-case font-bold">(optional)</span></label>
-            <input ref={fileInputRef} type="file" accept="image/*,.pdf,.doc,.docx" onChange={handleFileChange} className="hidden" />
-            {attachmentUri ? (
-              <div className="flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-indigo-900/20 border border-blue-200 dark:border-[var(--color-primary)] rounded-2xl">
-                <Paperclip className="w-4.5 h-4.5 text-[var(--color-primary)] shrink-0" />
-                <span className="text-[13px] font-bold text-[var(--color-primary)] dark:text-indigo-300 flex-1 truncate">
-                  {fileInputRef.current?.files?.[0]?.name || 'Document attached'}
-                </span>
-                <button onClick={() => { setAttachmentUri(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
-                  className="w-7 h-7 rounded-full bg-blue-100 dark:bg-indigo-900/40 flex items-center justify-center text-blue-700 hover:bg-indigo-200 transition-colors">
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ) : (
-              <button onClick={() => fileInputRef.current?.click()}
-                className="w-full flex items-center gap-3 px-4 py-3.5 bg-white dark:bg-slate-900 border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl text-slate-400 hover:border-blue-400 hover:text-blue-700 transition-colors">
-                <Paperclip className="w-4.5 h-4.5 shrink-0" />
-                <span className="text-[13px] font-bold">Attach permission letter, circular, etc.</span>
-              </button>
-            )}
-          </div>
+
         </div>
 
         {/* ── SUBMIT ────────────────────────────────────────────────────────── */}

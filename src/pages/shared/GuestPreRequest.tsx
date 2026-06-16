@@ -117,10 +117,10 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
 
   return (
     <div className={embedded ? "contents" : "flex flex-col min-h-screen bg-[#F8FAFC] dark:bg-slate-950"}>
-      {/* Header */}
+      {/* Header — mobile only (dashboard uses the AppLayout header) */}
       {!embedded && (
         <header
-          className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shrink-0"
+          className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shrink-0 lg:hidden"
           style={{ paddingTop: 'env(safe-area-inset-top)' }}
         >
           <div className="px-4 h-[72px] flex items-center justify-between">
@@ -137,7 +137,7 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
       )}
 
       <main className={embedded ? "w-full" : "flex-1 overflow-y-auto px-5 py-6"}>
-        <div className={cn("space-y-6 pb-32", embedded ? "w-full lg:max-w-5xl lg:mx-auto" : "max-w-lg mx-auto lg:max-w-5xl")}>
+        <div className={cn("space-y-6 pb-32 lg:pb-12", embedded ? "w-full lg:max-w-5xl lg:mx-auto" : "max-w-lg mx-auto lg:max-w-5xl")}>
            {/* Banner */}
            <div className="bg-emerald-600 rounded-[32px] p-6 text-white shadow-xl shadow-emerald-100 dark:shadow-none lg:p-8">
               <div className="flex items-center gap-4 mb-4">

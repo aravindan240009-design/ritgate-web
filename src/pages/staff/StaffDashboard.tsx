@@ -226,6 +226,38 @@ export default function StaffDashboard() {
   const staffName = (user as any)?.staffName || (user as any)?.name || (user as any)?.firstName || 'Staff Member';
   const initials = staffName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
 
+  const getRequesterName = (request: any) =>
+    request.studentName || request.requesterName || request.visitorName || request.name || 'Unknown';
+
+  const getRequesterPhoto = (request: any) =>
+    request.profilePhoto ||
+    request.profileImage ||
+    request.photoUrl ||
+    request.studentPhoto ||
+    request.studentProfilePhoto ||
+    request.requesterPhoto ||
+    request.requesterProfilePhoto ||
+    request.visitorPhoto ||
+    '';
+
+  const getRequesterInitials = (request: any) =>
+    getRequesterName(request)
+      .split(' ')
+      .map((n: string) => n[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+
+  const isPendingRequest = (request: any) =>
+    request.status === 'PENDING_STAFF' ||
+    (request.requestType === 'VISITOR' && (request.status === 'PENDING' || request.status === 'PENDING_STAFF'));
+
+  const handleInlineReject = (request: any) => {
+    const reason = window.prompt('Reason for rejection');
+    if (!reason?.trim()) return;
+    handleReject(request.id, reason.trim());
+  };
+
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'GOOD MORNING,';
@@ -269,24 +301,7 @@ export default function StaffDashboard() {
             searchValue={searchQuery}
             onSearchChange={setSearchQuery}
             searchPlaceholder="Search requests by name, purpose, or ID..."
-          >
-            <div className="ml-auto flex items-center gap-2">
-              {(['PENDING', 'APPROVED', 'REJECTED'] as ActiveTab[]).map(tab => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={cn(
-                    'h-10 px-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-colors',
-                    activeTab === tab
-                      ? 'bg-blue-700 text-white shadow-sm'
-                      : 'bg-slate-100 text-slate-500 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-300 dark:hover:text-white'
-                  )}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-          </DesktopToolbar>
+          />
         )}
 
         {/* Stats Tabs */}
@@ -331,41 +346,54 @@ export default function StaffDashboard() {
             <SkeletonList count={4} />
           ) : isDesktop && filteredRequests.length > 0 ? (
             <section className="desktop-card overflow-hidden">
-              <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-slate-950 dark:text-white">Requests Overview</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Review assigned requests for today</p>
-                </div>
-                <span className="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase tracking-widest">{filteredRequests.length} Requests</span>
+              <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4">
+                <h3 className="text-[18px] font-black text-slate-950 dark:text-white tracking-tight">Requests Overview</h3>
+                <span className="text-xs font-black text-blue-700 dark:text-blue-300 uppercase tracking-[0.18em] whitespace-nowrap">
+                  {filteredRequests.length} {filteredRequests.length === 1 ? 'Request' : 'Requests'}
+                </span>
               </div>
               <div className="overflow-x-auto">
                 <table className="desktop-table">
-                  <thead>
+                  <thead className="bg-slate-50/80 dark:bg-slate-900/60">
                     <tr>
-                      <th>Requester</th>
-                      <th>Type</th>
-                      <th>Purpose</th>
-                      <th>Date</th>
-                      <th>Status</th>
-                      <th className="text-right">Action</th>
+                      <th className="min-w-[300px]">Requester</th>
+                      <th className="min-w-[160px]">Type</th>
+                      <th className="min-w-[230px]">Purpose</th>
+                      <th className="min-w-[190px]">Date</th>
+                      <th className="min-w-[130px]">Status</th>
+                      <th className="min-w-[230px] text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredRequests.map((request) => {
                       const isVisitor = request.requestType === 'VISITOR';
+                      const requesterName = getRequesterName(request);
+                      const requesterPhoto = getRequesterPhoto(request);
+                      const isPending = isPendingRequest(request);
                       return (
                         <tr key={request.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/35 transition-colors">
                           <td>
-                            <div>
-                              <p className="font-bold text-slate-950 dark:text-white">{request.studentName || 'Unknown'}</p>
-                              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                {isVisitor ? request.visitorPhone || 'Visitor' : `${request.regNo || 'N/A'} - ${request.department || 'Dept'}`}
-                              </p>
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="w-11 h-11 rounded-2xl overflow-hidden shrink-0 bg-blue-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center">
+                                {requesterPhoto ? (
+                                  <img src={requesterPhoto} alt={requesterName} className="w-full h-full object-cover" />
+                                ) : (
+                                  <span className="text-[13px] font-black text-blue-700 dark:text-blue-300">
+                                    {getRequesterInitials(request)}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-black text-slate-950 dark:text-white truncate">{requesterName}</p>
+                                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                                  {isVisitor ? request.visitorPhone || 'Visitor' : `${request.regNo || 'N/A'} - ${request.department || 'Dept'}`}
+                                </p>
+                              </div>
                             </div>
                           </td>
-                          <td>{isVisitor ? 'Visitor' : request.passType === 'BULK' ? 'Bulk GatePass' : 'Single GatePass'}</td>
-                          <td className="max-w-[320px] truncate">{request.purpose || request.reason || 'General'}</td>
-                          <td>{formatDateTime(request.requestDate || request.createdAt)}</td>
+                          <td className="font-bold text-slate-700 dark:text-slate-200">{isVisitor ? 'Visitor' : request.passType === 'BULK' ? 'Bulk GatePass' : 'Single GatePass'}</td>
+                          <td className="max-w-[320px] truncate font-bold text-slate-800 dark:text-slate-100">{request.purpose || request.reason || 'General'}</td>
+                          <td className="font-semibold text-slate-700 dark:text-slate-300">{formatDateTime(request.requestDate || request.createdAt)}</td>
                           <td>
                             <span className={cn(
                               'inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase',
@@ -377,7 +405,38 @@ export default function StaffDashboard() {
                             </span>
                           </td>
                           <td className="text-right">
-                            <Button size="sm" variant="secondary" onClick={() => { setSelectedRequest(request); setShowDetailModal(true); }}>View</Button>
+                            <div className="flex justify-end gap-2">
+                              {isPending && (
+                                <>
+                                  <Button
+                                    size="sm"
+                                    variant="success"
+                                    disabled={processing}
+                                    onClick={() => handleApprove(request.id, '')}
+                                    className="h-9 rounded-xl px-3 text-[11px] uppercase tracking-widest"
+                                  >
+                                    Approve
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="danger"
+                                    disabled={processing}
+                                    onClick={() => handleInlineReject(request)}
+                                    className="h-9 rounded-xl px-3 text-[11px] uppercase tracking-widest"
+                                  >
+                                    Reject
+                                  </Button>
+                                </>
+                              )}
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                onClick={() => { setSelectedRequest(request); setShowDetailModal(true); }}
+                                className="h-9 rounded-xl px-3 text-[11px] uppercase tracking-widest"
+                              >
+                                Details
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -389,8 +448,10 @@ export default function StaffDashboard() {
           ) : filteredRequests.length > 0 ? (
             <div className="space-y-4">
               {filteredRequests.map((request) => {
-                const reqInitials = (request.studentName || 'ST').split(' ').map((n: any) => n[0]).join('').slice(0, 2).toUpperCase();
                 const isVisitor = request.requestType === 'VISITOR';
+                const requesterName = getRequesterName(request);
+                const requesterPhoto = getRequesterPhoto(request);
+                const isPending = isPendingRequest(request);
                 return (
                   <motion.div 
                     key={request.id}
@@ -403,12 +464,16 @@ export default function StaffDashboard() {
                   >
                     {/* Card Top Row */}
                     <div className="flex items-center gap-3.5 mb-4">
-                      <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-400 font-black text-[17px]">
-                        {reqInitials}
+                      <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-full overflow-hidden flex items-center justify-center text-slate-400 font-black text-[17px]">
+                        {requesterPhoto ? (
+                          <img src={requesterPhoto} alt={requesterName} className="w-full h-full object-cover" />
+                        ) : (
+                          getRequesterInitials(request)
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
-                           <h5 className="text-[16px] font-black text-slate-900 dark:text-white truncate tracking-tight">{request.studentName || 'Unknown'}</h5>
+                           <h5 className="text-[16px] font-black text-slate-900 dark:text-white truncate tracking-tight">{requesterName}</h5>
                            <div className="px-2 py-0.5 bg-slate-50 dark:bg-slate-800 rounded-md border border-slate-100 dark:border-slate-700">
                               <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider">
                                 {isVisitor ? (request.role || 'Visitor') : (request.passType === 'BULK' ? 'Bulk GatePass' : 'Single GatePass')}
@@ -456,6 +521,25 @@ export default function StaffDashboard() {
                     )}>
                       <span className="text-[10px] font-black text-white uppercase tracking-widest">{request.staffApproval}</span>
                     </div>
+
+                    {isPending && (
+                      <div className="grid grid-cols-2 gap-2 mt-4">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleApprove(request.id, ''); }}
+                          disabled={processing}
+                          className="h-11 rounded-2xl bg-emerald-600 text-white text-[11px] font-black uppercase tracking-widest disabled:opacity-50"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleInlineReject(request); }}
+                          disabled={processing}
+                          className="h-11 rounded-2xl bg-rose-600 text-white text-[11px] font-black uppercase tracking-widest disabled:opacity-50"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    )}
                   </motion.div>
                 );
               })}

@@ -18,7 +18,6 @@ import { useAdaptive } from '../../utils/useAdaptive';
 import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
 import DesktopStatCard from '../../components/desktop/DesktopStatCard';
 import DesktopToolbar from '../../components/desktop/DesktopToolbar';
-import DesktopSegmentedTabs from '../../components/desktop/DesktopSegmentedTabs';
 import EmptyState from '../../components/ui/EmptyState';
 
 type Tab = 'PENDING' | 'APPROVED' | 'REJECTED';
@@ -163,17 +162,7 @@ export default function NCIDashboard() {
           searchValue={searchQuery}
           onSearchChange={setSearchQuery}
           searchPlaceholder="Search visitor requests by name, purpose, phone, or email..."
-        >
-          <DesktopSegmentedTabs
-            value={activeTab}
-            onChange={setActiveTab}
-            options={[
-              { value: 'PENDING', label: 'Pending', count: stats.pending },
-              { value: 'APPROVED', label: 'Approved', count: stats.approved },
-              { value: 'REJECTED', label: 'Rejected', count: stats.rejected },
-            ]}
-          />
-        </DesktopToolbar>
+        />
       ) : (
       <div className="relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />

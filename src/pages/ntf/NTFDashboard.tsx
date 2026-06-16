@@ -21,7 +21,6 @@ import { useAdaptive } from '../../utils/useAdaptive';
 import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
 import DesktopStatCard from '../../components/desktop/DesktopStatCard';
 import DesktopToolbar from '../../components/desktop/DesktopToolbar';
-import DesktopSegmentedTabs from '../../components/desktop/DesktopSegmentedTabs';
 
 type Tab = 'PENDING' | 'APPROVED' | 'REJECTED';
 
@@ -221,15 +220,6 @@ export default function NTFDashboard() {
           onSearchChange={setSearchQuery}
           searchPlaceholder="Search visitor requests..."
         >
-          <DesktopSegmentedTabs
-            value={activeTab}
-            onChange={setActiveTab}
-            options={[
-              { value: 'PENDING', label: 'Pending', count: stats.pending },
-              { value: 'APPROVED', label: 'Approved', count: stats.approved },
-              { value: 'REJECTED', label: 'Rejected', count: stats.rejected },
-            ]}
-          />
           <Button variant="secondary" size="sm" onClick={fetchData} icon={<RefreshCw className={cn('w-4 h-4', isLoading && 'animate-spin')} />}>Refresh</Button>
         </DesktopToolbar>
       ) : (

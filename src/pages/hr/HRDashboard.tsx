@@ -20,7 +20,6 @@ import { usePageTitle } from '../../hooks/usePageTitle';
 import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
 import DesktopStatCard from '../../components/desktop/DesktopStatCard';
 import DesktopToolbar from '../../components/desktop/DesktopToolbar';
-import DesktopSegmentedTabs from '../../components/desktop/DesktopSegmentedTabs';
 import EmptyState from '../../components/ui/EmptyState';
 
 type Tab = 'PENDING' | 'APPROVED' | 'REJECTED';
@@ -179,17 +178,7 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
           searchValue={searchQuery}
           onSearchChange={setSearchQuery}
           searchPlaceholder="Search by purpose, HOD code, requester, or ID..."
-        >
-          <DesktopSegmentedTabs
-            value={activeTab}
-            onChange={setActiveTab}
-            options={[
-              { value: 'PENDING', label: 'Pending', count: stats.pending },
-              { value: 'APPROVED', label: 'Approved', count: stats.approved },
-              { value: 'REJECTED', label: 'Rejected', count: stats.rejected },
-            ]}
-          />
-        </DesktopToolbar>
+        />
       )}
 
       {/* Stats Tabs */}
@@ -197,7 +186,7 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
         {(['PENDING', 'APPROVED', 'REJECTED'] as Tab[]).map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
             className={cn('flex-1 py-3 text-[11px] font-bold uppercase tracking-wider border-b-2 transition-colors',
-              activeTab === t ? t === 'PENDING' ? 'border-blue-700 text-[var(--color-primary)]' : t === 'APPROVED' ? 'border-emerald-500 text-emerald-600' : 'border-rose-500 text-rose-600' : 'border-transparent text-slate-400')}>
+              activeTab === t ? t === 'PENDING' ? 'border-amber-500 text-amber-600' : t === 'APPROVED' ? 'border-emerald-500 text-emerald-600' : 'border-rose-500 text-rose-600' : 'border-transparent text-slate-400')}>
             <div>{t}</div>
             <div className={cn('text-xl font-bold mt-0.5', activeTab === t ? '' : 'text-slate-600 dark:text-white')}>
               {t === 'PENDING' ? stats.pending : t === 'APPROVED' ? stats.approved : stats.rejected}

@@ -1,45 +1,173 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CalendarDays, ChevronLeft, Menu } from 'lucide-react';
+import { CalendarDays, ChevronDown } from 'lucide-react';
+import AppHeader from '../components/common/AppHeader';
 import NotificationBell from '../components/common/NotificationBell';
+import { useAuth } from '../context/AuthContext';
+import { useProfile } from '../context/ProfileContext';
+import { ROLE_LABELS } from '../config/api.config';
 
 interface HeaderProps {
   onMenuClick: () => void;
   sidebarCollapsed: boolean;
 }
 
-const pageTitles: Record<string, string> = {
-  '/dashboard': 'Dashboard',
-  '/requests': 'My Requests',
-  '/history': 'History',
-  '/profile': 'Profile',
-  '/notifications': 'Notifications',
-  '/new-pass': 'New Request',
-  '/my-requests': 'My Requests',
-  '/gate-logs': 'Gate Logs',
-  '/exits': 'Exit Logs',
-  '/scanner': 'QR Scanner',
-  '/active-persons': 'Active Persons',
-  '/vehicles': 'Vehicles',
-  '/scan-history': 'Scan History',
-  '/visitor-register': 'Visitor Register',
-  '/visitor-qr': 'Visitor QR',
-  '/hod-contacts': 'HOD Directory',
-  '/users': 'Unit Directory',
-  '/bulk-pass': 'Bulk Student Pass',
-  '/hod-events': 'Events',
-  '/event-csv': 'Event CSV Upload',
-  '/guest-register': 'Pre-register guest',
-  '/new-request': 'New Request',
-  '/qr-codes': 'My QR Codes',
-  '/participants': 'Participants',
+interface HeaderCopy {
+  label: string;
+  title: string;
+  subtitle: string;
+}
+
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'GOOD MORNING';
+  if (hour < 17) return 'GOOD AFTERNOON';
+  return 'GOOD EVENING';
+};
+
+const getUserName = (user: any) => {
+  if (!user) return 'User';
+  return (
+    user.fullName ||
+    user.staffName ||
+    user.hodName ||
+    user.hrName ||
+    user.name ||
+    (user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : '') ||
+    'User'
+  );
+};
+
+const roleDashboardSubtitle: Record<string, string> = {
+  STUDENT: 'Request, track, and access your gate pass approvals from one clean workspace.',
+  STAFF: 'Create gate passes, review activity, and keep request movement clear.',
+  NON_TEACHING: 'Manage visitor passes, exits, and request activity from one workspace.',
+  NON_CLASS_INCHARGE: 'Monitor visitor movement, gate logs, and department activity.',
+  HOD: 'Review approvals, manage requests, and track department gate pass activity.',
+  HR: 'Oversee gate logs, exits, approvals, and staff request operations.',
+  ADMIN_OFFICER: 'Manage administrative passes, scan history, and operational activity.',
+  SECURITY: 'Monitor entries, scan passes, and keep campus movement visible.',
+};
+
+const routeCopy: Record<string, Omit<HeaderCopy, 'label'>> = {
+  '/requests': {
+    title: 'My Requests',
+    subtitle: "Track today's active gate pass requests from one clean workspace.",
+  },
+  '/my-requests': {
+    title: 'My Requests',
+    subtitle: "Track today's active gate pass requests from one clean workspace.",
+  },
+  '/history': {
+    title: 'Request History',
+    subtitle: 'Review your past gate pass requests, approvals, and activity.',
+  },
+  '/profile': {
+    title: 'Profile',
+    subtitle: 'Manage your student information and gate pass account details.',
+  },
+  '/notifications': {
+    title: 'Notifications',
+    subtitle: 'Review gate pass alerts, approvals, and system updates.',
+  },
+  '/new-request': {
+    title: 'Gate Pass Request',
+    subtitle: 'Create a new student gate pass request with the required details.',
+  },
+  '/new-pass': {
+    title: 'New Pass',
+    subtitle: 'Create and submit a gate pass request for approval.',
+  },
+  '/gate-logs': {
+    title: 'Gate Logs',
+    subtitle: 'Audit campus movement and verified gate pass scan activity.',
+  },
+  '/exits': {
+    title: 'Exit Logs',
+    subtitle: 'Track exit activity and visitor movement from one clean workspace.',
+  },
+  '/scanner': {
+    title: 'QR Scanner',
+    subtitle: 'Scan passes quickly and verify campus access in real time.',
+  },
+  '/active-persons': {
+    title: 'Active Persons',
+    subtitle: 'Monitor people currently inside campus with live gate status.',
+  },
+  '/vehicles': {
+    title: 'Vehicles',
+    subtitle: 'Register, review, and manage temporary vehicle movement.',
+  },
+  '/scan-history': {
+    title: 'Scan History',
+    subtitle: 'Review verified scans, entry records, and security activity.',
+  },
+  '/visitor-register': {
+    title: 'Visitor Register',
+    subtitle: 'Create visitor entries and keep guest access records organized.',
+  },
+  '/visitor-qr': {
+    title: 'Visitor QR',
+    subtitle: 'Find and verify visitor QR passes for campus access.',
+  },
+  '/hod-contacts': {
+    title: 'HOD Directory',
+    subtitle: 'Access department contacts for gate pass coordination.',
+  },
+  '/bulk-pass': {
+    title: 'Bulk Student Pass',
+    subtitle: 'Create and manage gate passes for multiple students at once.',
+  },
+  '/hod-events': {
+    title: 'Events',
+    subtitle: 'Manage event access, participants, and visitor pass workflows.',
+  },
+  '/event-csv': {
+    title: 'Event CSV',
+    subtitle: 'Upload and review participant data for event visitor passes.',
+  },
+  '/guest-register': {
+    title: 'Pre-register Guest',
+    subtitle: 'Prepare guest access details before visitors arrive at the gate.',
+  },
+  '/qr-codes': {
+    title: 'My QR Codes',
+    subtitle: 'Access approved QR passes ready for gate verification.',
+  },
+  '/participants': {
+    title: 'Participants',
+    subtitle: 'Review participant records and related event access details.',
+  },
 };
 
 export default function Header({ onMenuClick, sidebarCollapsed }: HeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, role } = useAuth();
+  const { profileImage } = useProfile();
 
-  const title = pageTitles[location.pathname] || 'RIT Gate';
-  const isDashboard = location.pathname === '/dashboard';
+  const userName = getUserName(user);
+  const initials = userName
+    .split(' ')
+    .map((part: string) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+  const roleLabel = ROLE_LABELS[role || ''] || role || 'User';
+
+  const copy: HeaderCopy = location.pathname === '/dashboard'
+    ? {
+      label: getGreeting(),
+      title: userName.toUpperCase(),
+      subtitle: roleDashboardSubtitle[role || ''] || 'Manage your gate pass workspace with clarity and control.',
+    }
+    : {
+      label: 'RIT GATE',
+      ...(routeCopy[location.pathname] || {
+        title: 'RIT Gate',
+        subtitle: 'Manage gate pass activity from one clean workspace.',
+      }),
+    };
+
   const currentDate = new Date().toLocaleDateString('en-IN', {
     weekday: 'short',
     day: '2-digit',
@@ -47,49 +175,41 @@ export default function Header({ onMenuClick, sidebarCollapsed }: HeaderProps) {
   });
 
   return (
-    <header className="sticky top-0 z-30 flex h-[68px] shrink-0 items-center overflow-visible border-b border-slate-200 bg-white/92 shadow-[0_1px_0_rgba(15,23,42,0.04)] backdrop-blur-xl dark:border-slate-800 dark:bg-[#0b1120]/95 lg:h-[64px]">
-      <div className="flex w-full items-center justify-between gap-4 px-5 lg:px-8 xl:px-10">
-        <div className="flex min-w-0 items-center gap-3">
-          <button
-            onClick={onMenuClick}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
-            aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            <Menu className="h-4 w-4" />
-          </button>
-
-          {!isDashboard && (
-            <button
-              onClick={() => navigate(-1)}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white lg:hidden"
-              aria-label="Go back"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-          )}
-
-          <div className="hidden min-w-0 lg:block">
-            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">
-              RIT Gate / {title}
-            </p>
-            <h1 className="mt-0.5 truncate text-[18px] font-bold leading-tight tracking-tight text-slate-950 dark:text-white">
-              {title}
-            </h1>
-          </div>
-
-          <h1 className="desktop-header-title truncate text-[18px] font-bold leading-none tracking-tight text-slate-950 dark:text-white lg:hidden">
-            {title}
-          </h1>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="hidden items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 lg:flex">
+    <AppHeader
+      label={copy.label}
+      title={copy.title}
+      subtitle={copy.subtitle}
+      onMenuClick={onMenuClick}
+      sidebarCollapsed={sidebarCollapsed}
+      actions={(
+        <>
+          <div className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-sm font-semibold text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-300 lg:flex">
             <CalendarDays className="h-4 w-4 text-slate-400" />
             {currentDate}
           </div>
           <NotificationBell />
-        </div>
-      </div>
-    </header>
+          <button
+            type="button"
+            onClick={() => navigate('/profile')}
+            className="hidden items-center gap-3 rounded-xl border border-slate-200 bg-white/85 py-1.5 pl-1.5 pr-3 text-left shadow-sm transition-colors hover:border-blue-200 hover:bg-blue-50 dark:border-slate-800 dark:bg-slate-900/80 dark:hover:border-blue-900 dark:hover:bg-blue-950/30 xl:flex"
+          >
+            <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-blue-700 text-xs font-black text-white shadow-sm shadow-blue-700/20">
+              {profileImage
+                ? <img src={profileImage} alt={userName} className="h-full w-full object-cover" />
+                : initials}
+            </span>
+            <span className="min-w-0">
+              <span className="block max-w-[140px] truncate text-sm font-bold leading-tight text-slate-950 dark:text-white">
+                {userName}
+              </span>
+              <span className="block max-w-[140px] truncate text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                {roleLabel}
+              </span>
+            </span>
+            <ChevronDown className="h-4 w-4 text-slate-400" />
+          </button>
+        </>
+      )}
+    />
   );
 }

@@ -1,17 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ArrowRight,
-  CalendarDays,
-  CheckCircle2,
-  Clock,
-  ClipboardList,
   ShieldCheck,
   QrCode,
   AlertCircle,
   FileText,
   Ban,
-  UserCheck
 } from 'lucide-react';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useAuth } from '../../context/AuthContext';
@@ -144,13 +138,6 @@ export default function StudentHome() {
 
   const gatePassDisabled = isStudentPassDisabled();
   const displayName = `${user?.firstName || 'Student'} ${user?.lastName || ''}`.trim();
-  const pendingCount = filteredRequests.filter((request) => {
-    const status = request.status || '';
-    return status.includes('PENDING') || status.startsWith('APPROVED_BY');
-  }).length;
-  const approvedCount = filteredRequests.filter((request) => request.status === 'APPROVED').length;
-  const latestRequest = filteredRequests[0];
-  const campusStatus = user?.currentStatus || 'INSIDE';
 
   const renderModals = () => (
     selectedRequest ? (
@@ -175,58 +162,17 @@ export default function StudentHome() {
   );
 
   if (isDesktop) {
-    const statusCards = [
-      {
-        label: 'Today Requests',
-        value: filteredRequests.length,
-        hint: filteredRequests.length === 1 ? 'Request created today' : 'Requests created today',
-        icon: ClipboardList,
-        accent: 'text-blue-700 bg-blue-50 border-blue-100 dark:text-blue-300 dark:bg-blue-950/35 dark:border-blue-900/50',
-      },
-      {
-        label: 'Approved',
-        value: approvedCount,
-        hint: 'Ready for QR access',
-        icon: CheckCircle2,
-        accent: 'text-emerald-700 bg-emerald-50 border-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/30 dark:border-emerald-900/50',
-      },
-      {
-        label: 'Pending',
-        value: pendingCount,
-        hint: 'Awaiting approval',
-        icon: Clock,
-        accent: 'text-amber-700 bg-amber-50 border-amber-100 dark:text-amber-300 dark:bg-amber-950/30 dark:border-amber-900/50',
-      },
-      {
-        label: 'Campus Status',
-        value: campusStatus,
-        hint: user?.department || 'Student profile',
-        icon: UserCheck,
-        accent: 'text-cyan-700 bg-cyan-50 border-cyan-100 dark:text-cyan-300 dark:bg-cyan-950/30 dark:border-cyan-900/50',
-      },
-    ];
-
     return (
       <div className="student-desktop-dashboard">
         <DesktopPageHeader
           eyebrow={getGreeting().replace(',', '')}
           title={displayName}
           subtitle="Request, track, and access your gate pass approvals from one clean workspace."
-          action={
-            <Button
-              size="md"
-              disabled={gatePassDisabled}
-              onClick={() => !gatePassDisabled && (window.location.href = '/new-request')}
-              icon={gatePassDisabled ? <Ban className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
-            >
-              {gatePassDisabled ? 'Window Closed' : 'New Request'}
-            </Button>
-          }
         />
 
         <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
           <div className="space-y-5">
-            <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+            <section>
               <motion.button
                 type="button"
                 whileHover={{ y: gatePassDisabled ? 0 : -2 }}
@@ -287,67 +233,9 @@ export default function StudentHome() {
                   </div>
                 </div>
               </motion.button>
-
-              <aside className="desktop-card p-6">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">
-                      Latest Activity
-                    </p>
-                    <h3 className="mt-2 text-lg font-bold text-slate-950 dark:text-white">
-                      {latestRequest ? latestRequest.purpose || 'Gate Pass Request' : 'No activity today'}
-                    </h3>
-                  </div>
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                    <CalendarDays className="h-5 w-5" />
-                  </div>
-                </div>
-
-                <div className="mt-6 space-y-4">
-                  <div className="flex items-start justify-between gap-4 border-t border-slate-100 pt-4 dark:border-slate-800">
-                    <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">Request status</span>
-                    <span className="text-right text-sm font-bold text-slate-950 dark:text-white">
-                      {latestRequest ? getStatusConfig(latestRequest.status).label : 'Clear'}
-                    </span>
-                  </div>
-                  <div className="flex items-start justify-between gap-4 border-t border-slate-100 pt-4 dark:border-slate-800">
-                    <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">Pass window</span>
-                    <span className="text-right text-sm font-bold text-slate-950 dark:text-white">
-                      {gatePassDisabled ? 'Closed after 3:00 PM' : 'Open now'}
-                    </span>
-                  </div>
-                  <div className="flex items-start justify-between gap-4 border-t border-slate-100 pt-4 dark:border-slate-800">
-                    <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">Student ID</span>
-                    <span className="text-right text-sm font-bold text-slate-950 dark:text-white">
-                      {user?.regNo || 'Not available'}
-                    </span>
-                  </div>
-                </div>
-              </aside>
             </section>
 
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              {statusCards.map((card) => (
-                <div key={card.label} className="desktop-metric-card">
-                  <div className={cn('flex h-10 w-10 items-center justify-center rounded-lg border', card.accent)}>
-                    <card.icon className="h-5 w-5" />
-                  </div>
-                  <div className="mt-5">
-                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">
-                      {card.label}
-                    </p>
-                    <p className="mt-2 truncate text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
-                      {card.value}
-                    </p>
-                    <p className="mt-1 truncate text-sm font-medium text-slate-500 dark:text-slate-400">
-                      {card.hint}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </section>
-
-            <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+            <section>
               <div className="desktop-card overflow-hidden">
                 <div className="flex items-center justify-between gap-4 border-b border-slate-100 px-6 py-5 dark:border-slate-800">
                   <div>
@@ -358,9 +246,6 @@ export default function StudentHome() {
                       Today&apos;s gate pass activity
                     </h3>
                   </div>
-                  <Button variant="secondary" size="sm" onClick={() => (window.location.href = '/requests')}>
-                    View All
-                  </Button>
                 </div>
 
                 {loading ? (
@@ -376,7 +261,6 @@ export default function StudentHome() {
                           <th>Type</th>
                           <th>Date</th>
                           <th>Status</th>
-                          <th className="text-right">Action</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -399,13 +283,6 @@ export default function StudentHome() {
                                   {status.label}
                                 </span>
                               </td>
-                              <td className="text-right">
-                                {request.status === 'APPROVED' && request.passType !== 'BULK' ? (
-                                  <Button size="sm" onClick={(e) => { e.stopPropagation(); handleViewQR(request); }} icon={<QrCode className="w-4 h-4" />}>View QR</Button>
-                                ) : (
-                                  <Button size="sm" variant="secondary" onClick={(e) => { e.stopPropagation(); setSelectedRequest(request); setShowDetailsModal(true); }}>View</Button>
-                                )}
-                              </td>
                             </tr>
                           );
                         })}
@@ -415,51 +292,12 @@ export default function StudentHome() {
                 ) : (
                   <EmptyState
                     title="No recent requests"
-                    description="Requests created today will appear here with approval status and QR actions."
+                    description="Requests created today will appear here with approval status."
                     icon={<FileText className="w-7 h-7" />}
                     className="border-0 shadow-none lg:rounded-none lg:py-14"
-                    action={
-                      <Button
-                        size="sm"
-                        disabled={gatePassDisabled}
-                        onClick={() => !gatePassDisabled && (window.location.href = '/new-request')}
-                      >
-                        {gatePassDisabled ? 'Request window closed' : 'Create request'}
-                      </Button>
-                    }
                   />
                 )}
               </div>
-
-              <aside className="desktop-card p-6">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">
-                  Approval Flow
-                </p>
-                <h3 className="mt-2 text-lg font-bold text-slate-950 dark:text-white">
-                  What happens next
-                </h3>
-                <div className="mt-6 space-y-5">
-                  {['Submit request', 'Staff review', 'HOD approval', 'QR available'].map((step, index) => (
-                    <div key={step} className="flex gap-3">
-                      <div className={cn(
-                        'mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold',
-                        index === 0 ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
-                      )}>
-                        {index + 1}
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-slate-950 dark:text-white">{step}</p>
-                        <p className="mt-0.5 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                          {index === 0 && 'Create the request before the daily cutoff.'}
-                          {index === 1 && 'Your assigned staff member checks the details.'}
-                          {index === 2 && 'Department approval unlocks pass readiness.'}
-                          {index === 3 && 'Open the approved request to show the QR at the gate.'}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </aside>
             </section>
           </div>
         </TopRefreshControl>

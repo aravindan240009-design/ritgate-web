@@ -55,7 +55,8 @@ export default function SuccessModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 16 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] shadow-2xl overflow-hidden"
+            className="relative bg-white dark:bg-slate-900 rounded-[28px] shadow-2xl overflow-hidden"
+            style={{ width: 'calc(100vw - 48px)', maxWidth: 470, boxSizing: 'border-box' }}
           >
             {/* Hero Section */}
             <div className="pt-4.5 pb-1.5 flex flex-col items-center">

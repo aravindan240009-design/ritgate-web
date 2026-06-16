@@ -1,10 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUpDown, Calendar, Download, Search, Clock, User, Building2, FileText, AlertCircle, RefreshCw, X } from 'lucide-react';
+import { ArrowUpDown, Calendar, CheckCircle2, Download, Search, Clock, User, Building2, FileText, AlertCircle, RefreshCw, X } from 'lucide-react';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
-import Modal from '../../components/ui/Modal';
 import { SkeletonList } from '../../components/ui/Skeleton';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -304,26 +303,90 @@ export default function HRGateLogs({ onBack }: HRGateLogsProps) {
       )}
 
       {/* Date Range Picker Modal */}
-      <Modal isOpen={showDatePicker} onClose={() => setShowDatePicker(false)} title="Select Date Range" size="sm">
-        <div className="space-y-5 pt-2">
-          <div className="space-y-3">
-            <div>
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">From Date</label>
-              <input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/20" />
-            </div>
-            <div>
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">To Date</label>
-              <input type="date" value={toDate} onChange={e => setToDate(e.target.value)} min={fromDate}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/20" />
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <Button onClick={handleClearRange} variant="secondary" size="sm" className="flex-1">Clear</Button>
-            <Button onClick={handleApplyRange} disabled={!fromDate || !toDate} size="sm" className="flex-[2]">Apply Range</Button>
-          </div>
-        </div>
-      </Modal>
+      <AnimatePresence>
+        {showDatePicker && (
+          <motion.div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/35 px-4 backdrop-blur-[7px]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="w-full max-w-[650px] overflow-hidden rounded-[22px] border border-blue-200/70 bg-white shadow-[0_28px_90px_-32px_rgba(37,99,235,0.75)] dark:border-blue-900/50 dark:bg-slate-950"
+              initial={{ opacity: 0, y: 18, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 18, scale: 0.98 }}
+              transition={{ duration: 0.18, ease: 'easeOut' }}
+            >
+              <div className="flex items-center justify-between px-7 pt-7">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 ring-1 ring-blue-100 dark:bg-blue-950/50 dark:text-blue-300 dark:ring-blue-900">
+                    <Calendar className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-lg font-black tracking-tight text-slate-950 dark:text-white">Select Date Range</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowDatePicker(false)}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 text-slate-500 ring-1 ring-slate-100 transition hover:bg-slate-100 hover:text-slate-900 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-800"
+                  aria-label="Close date range picker"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="space-y-5 px-7 py-7">
+                <div>
+                  <label className="mb-3 block text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">From Date</label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      value={fromDate}
+                      onChange={e => setFromDate(e.target.value)}
+                      className="h-14 w-full rounded-xl border border-slate-200 bg-white px-4 pr-14 text-sm font-bold text-slate-700 shadow-[0_12px_28px_-20px_rgba(15,23,42,0.55)] outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                    />
+                    <Calendar className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-blue-700" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-3 block text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">To Date</label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      value={toDate}
+                      onChange={e => setToDate(e.target.value)}
+                      min={fromDate}
+                      className="h-14 w-full rounded-xl border border-slate-200 bg-white px-4 pr-14 text-sm font-bold text-slate-700 shadow-[0_12px_28px_-20px_rgba(15,23,42,0.55)] outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                    />
+                    <Calendar className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-blue-700" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 border-t border-slate-100 px-7 py-5 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={handleClearRange}
+                  className="flex h-12 items-center justify-center gap-2 rounded-xl border border-blue-200 bg-white text-sm font-black text-slate-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 dark:border-blue-900/60 dark:bg-slate-950 dark:text-slate-200"
+                >
+                  <Calendar className="h-4 w-4 text-blue-500" />
+                  Clear
+                </button>
+                <button
+                  type="button"
+                  onClick={handleApplyRange}
+                  disabled={!fromDate || !toDate}
+                  className="flex h-12 items-center justify-center gap-2 rounded-xl bg-blue-600 text-sm font-black text-white shadow-[0_16px_30px_-16px_rgba(37,99,235,0.85)] transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  Apply Range
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -178,10 +178,10 @@ export default function ProfilePage({
       )}
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-5 pt-6 pb-32 min-h-[calc(100vh-100px)] lg:min-h-0 lg:px-0 lg:pt-0 lg:pb-0 lg:grid lg:grid-cols-[304px_1fr] lg:gap-5 xl:gap-6 lg:items-start lg:w-full">
-          <div className="flex flex-col items-center mb-8 lg:sticky lg:top-24 lg:mb-0 lg:row-span-3 lg:self-start lg:bg-white lg:dark:bg-slate-900 lg:border lg:border-slate-100 lg:dark:border-slate-800 lg:rounded-[10px] lg:px-7 lg:py-8 lg:shadow-[0_10px_28px_-20px_rgba(15,23,42,0.35)] lg:w-full">
-            <div className="relative mb-5">
-              <div className="w-[110px] h-[110px] rounded-full border-2 border-blue-700 p-1 flex items-center justify-center bg-white dark:bg-slate-900 shadow-xl shadow-blue-100">
+        <div className="px-5 pt-6 pb-32 min-h-[calc(100vh-100px)] lg:mx-auto lg:grid lg:min-h-0 lg:w-full lg:max-w-[1180px] lg:grid-cols-[360px_minmax(0,1fr)] lg:items-start lg:gap-7 lg:px-0 lg:pt-0 lg:pb-0 xl:max-w-[1280px] xl:gap-8">
+          <div className="flex flex-col items-center mb-8 lg:sticky lg:top-24 lg:mb-0 lg:row-span-3 lg:min-h-[630px] lg:self-start lg:bg-white lg:dark:bg-slate-900 lg:border lg:border-slate-100 lg:dark:border-slate-800 lg:rounded-[10px] lg:px-8 lg:py-10 lg:shadow-[0_18px_42px_-28px_rgba(15,23,42,0.45)] lg:w-full">
+            <div className="relative mb-6">
+              <div className="w-[110px] h-[110px] rounded-full border-2 border-blue-700 p-1 flex items-center justify-center bg-white dark:bg-slate-900 shadow-xl shadow-blue-100 lg:h-[136px] lg:w-[136px] lg:border-[3px]">
                 {profileImage ? (
                   <img
                     src={profileImage}
@@ -189,36 +189,36 @@ export default function ProfilePage({
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-[38px] font-black text-blue-700">
+                  <div className="w-full h-full rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-[38px] font-black text-blue-700 lg:text-[46px]">
                     {initials}
                   </div>
                 )}
               </div>
             </div>
-            <h2 className="text-[21px] font-black text-slate-900 dark:text-white uppercase tracking-tight mb-1 text-center">
+            <h2 className="text-[21px] font-black text-slate-900 dark:text-white uppercase tracking-tight mb-1 text-center lg:text-[27px]">
               {userName}
             </h2>
-            <p className="text-[12px] font-bold text-slate-400 opacity-80 text-center">
+            <p className="text-[12px] font-bold text-slate-400 opacity-80 text-center lg:text-[13px] lg:tracking-[0.08em]">
               {roleLabel} | DEPT: {department}
             </p>
-            <div className="hidden lg:block w-full mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
-              <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">
+            <div className="hidden lg:block w-full mt-9 pt-7 border-t border-slate-100 dark:border-slate-800">
+              <p className="text-[12px] font-black text-slate-400 uppercase tracking-[0.18em] mb-5">
                 Account
               </p>
-              <div className="space-y-3 text-left">
+              <div className="space-y-5 text-left">
                 <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.18em] mb-2">
                     ID
                   </p>
-                  <p className="text-[14px] font-black text-slate-900 dark:text-white truncate">
+                  <p className="text-[15px] font-black text-slate-900 dark:text-white truncate">
                     {userId || "N/A"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.18em] mb-2">
                     Department
                   </p>
-                  <p className="text-[14px] font-black text-slate-900 dark:text-white truncate">
+                  <p className="text-[15px] font-black text-slate-900 dark:text-white truncate">
                     {department}
                   </p>
                 </div>
@@ -226,7 +226,7 @@ export default function ProfilePage({
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 rounded-[24px] lg:rounded-[10px] p-6 lg:px-8 lg:py-4 flex justify-between border border-slate-100 dark:border-slate-800 shadow-[0_10px_28px_-22px_rgba(15,23,42,0.45)] mb-8 lg:mb-5 lg:col-start-2">
+          <div className="bg-white dark:bg-slate-900 rounded-[24px] lg:rounded-[10px] p-6 lg:h-[86px] lg:px-9 lg:py-4 flex justify-between border border-slate-100 dark:border-slate-800 shadow-[0_18px_42px_-30px_rgba(15,23,42,0.5)] mb-8 lg:mb-7 lg:col-start-2">
             {[
               {
                 label: "APPROVED",
@@ -245,26 +245,26 @@ export default function ProfilePage({
               },
             ].map((stat, i) => (
               <React.Fragment key={stat.label}>
-                <div className="flex flex-col items-center flex-1">
+                <div className="flex flex-col items-center justify-center flex-1">
                   <span
-                    className={cn("text-[22px] font-black mb-0.5", stat.color)}
+                    className={cn("text-[22px] font-black mb-0.5 lg:text-[24px]", stat.color)}
                   >
                     {stat.value}
                   </span>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mt-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.18em] leading-none mt-1">
                     {stat.label}
                   </span>
                 </div>
                 {i < 2 && (
-                  <div className="w-[1px] h-10 bg-slate-100 dark:bg-slate-800 self-center" />
+                  <div className="w-[1px] h-10 bg-slate-100 dark:bg-slate-800 self-center lg:h-12" />
                 )}
               </React.Fragment>
             ))}
           </div>
 
-          <div className="mb-8 lg:mb-5 lg:col-start-2">
-            <div className="flex items-center justify-between mb-3 px-1">
-              <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
+          <div className="mb-8 lg:mb-7 lg:col-start-2">
+            <div className="flex items-center justify-between mb-4 px-1">
+              <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest lg:text-[12px] lg:tracking-[0.18em]">
                 Interface Theme
               </h3>
               <button
@@ -275,26 +275,26 @@ export default function ProfilePage({
                 <RotateCw className="h-3 w-3" />
               </button>
             </div>
-            <div className="lg:w-full">
+            <div className="lg:w-full [&>*]:lg:rounded-[10px]">
               <ThemePresetSelector />
             </div>
           </div>
 
           <div className="mb-10 lg:mb-0 lg:col-start-2">
-            <div className="mb-4 px-2">
-              <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
+            <div className="mb-4 px-2 lg:px-1">
+              <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest lg:text-[12px] lg:tracking-[0.18em]">
                 Personal Information
               </h3>
             </div>
-            <div className="bg-white dark:bg-slate-900 rounded-[24px] lg:rounded-[10px] lg:w-full border border-slate-100 dark:border-slate-800 shadow-[0_10px_28px_-22px_rgba(15,23,42,0.45)] overflow-hidden divide-y divide-slate-50 dark:divide-slate-800/50">
+            <div className="bg-white dark:bg-slate-900 rounded-[24px] lg:rounded-[10px] lg:w-full border border-slate-100 dark:border-slate-800 shadow-[0_18px_42px_-30px_rgba(15,23,42,0.5)] overflow-hidden divide-y divide-slate-50 dark:divide-slate-800/50">
               {menuItems.map((item) => (
                 <div
                   key={item.label}
-                  className="p-5 lg:px-4 lg:py-3.5 flex items-center gap-4"
+                  className="p-5 lg:min-h-[78px] lg:px-5 lg:py-4 flex items-center gap-4"
                 >
                   <div
                     className={cn(
-                      "w-11 h-11 lg:w-9 lg:h-9 rounded-2xl lg:rounded-lg bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center shrink-0",
+                      "w-11 h-11 lg:w-10 lg:h-10 rounded-2xl lg:rounded-lg bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center shrink-0",
                       item.color,
                     )}
                   >
@@ -304,7 +304,7 @@ export default function ProfilePage({
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">
                       {item.label}
                     </p>
-                    <p className="text-[14px] font-black text-slate-900 dark:text-white truncate uppercase tracking-tight italic">
+                    <p className="text-[14px] font-black text-slate-900 dark:text-white truncate uppercase tracking-tight italic lg:text-[15px]">
                       {item.value || "N/A"}
                     </p>
                   </div>

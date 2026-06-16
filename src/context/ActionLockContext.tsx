@@ -50,7 +50,8 @@ export const ActionLockProvider: React.FC<{ children: ReactNode }> = ({ children
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-              className="bg-white dark:bg-slate-800 rounded-3xl p-8 flex flex-col items-center gap-6 shadow-2xl max-w-sm w-full mx-4 border border-gray-100 dark:border-slate-700"
+              className="bg-white dark:bg-slate-800 rounded-3xl p-8 flex flex-col items-center gap-6 shadow-2xl border border-gray-100 dark:border-slate-700"
+              style={{ width: 'min(470px, calc(100vw - 48px))' }}
             >
               <div className="relative">
                 <div className="w-16 h-16 border-4 border-blue-100 dark:border-slate-700 rounded-full" />

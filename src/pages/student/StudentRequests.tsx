@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Search, 
   FileText, 
   Calendar, 
   Users, 
@@ -39,7 +38,6 @@ export default function StudentRequests() {
   const [refreshing, setRefreshing] = useState(false);
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
   
   const [showQRModal, setShowQRModal] = useState(false);
   const [showSingleModal, setShowSingleModal] = useState(false);
@@ -98,12 +96,7 @@ export default function StudentRequests() {
     }
   };
 
-  const filteredRequests = requests.filter(r => {
-    const matchesSearch = searchQuery === '' ||
-      r.purpose?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.id?.toString().includes(searchQuery);
-    return matchesSearch;
-  });
+  const filteredRequests = requests;
 
   const getStatusConfig = (status: string) => {
     if (status === 'APPROVED') return { text: 'ACTIVE', color: 'text-emerald-600', bg: 'bg-emerald-50', dot: 'bg-emerald-500' };
@@ -125,23 +118,6 @@ export default function StudentRequests() {
           subtitle="Track today's active gate pass requests"
         />
       )}
-
-      <div className="px-5 pt-4 space-y-4 lg:hidden">
-        {/* Search Bar */}
-        <div className="relative">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-            <Search className="w-5 h-5" />
-          </div>
-          <input 
-            type="text"
-            placeholder="Search requests..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-12 pl-12 pr-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 shadow-sm outline-none"
-          />
-        </div>
-      </div>
-
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
         <div className="px-5 pt-4 pb-28 lg:px-0 lg:pt-6 lg:pb-8">
           {loading ? (

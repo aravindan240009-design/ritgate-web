@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, 
@@ -37,7 +36,6 @@ export default function StaffMyRequests() {
   const user = rawUser as Staff;
   const { refreshCount } = useRefresh();
   const { error: showToastError } = useToast();
-  const navigate = useNavigate();
   const staffCode = getUserId();
 
   const [refreshing, setRefreshing] = useState(false);
@@ -152,7 +150,6 @@ export default function StaffMyRequests() {
         <DesktopPageHeader
           title="My Requests"
           subtitle="View and track your gate pass request history"
-          action={<Button onClick={() => navigate('/new-pass')}>Create New Pass</Button>}
         />
       )}
 

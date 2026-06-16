@@ -99,12 +99,33 @@ export default function HODNewPass() {
 
                <div className="grid gap-4 lg:grid-cols-3 lg:gap-6">
                   {[
-                    { id: 'SINGLE', title: PASS_COPY.singleTitle, sub: PASS_COPY.singleSubtitle, icon: UserPlus, color: 'text-white', bg: 'bg-gradient-to-br from-[#4facfe] to-[#00f2fe]', ring: 'lg:group-hover:border-cyan-200 lg:group-hover:shadow-cyan-100/70 dark:lg:group-hover:border-cyan-900/60', label: 'Self pass', restricted: true },
-                    { id: 'BULK', title: PASS_COPY.bulkTitle, sub: PASS_COPY.bulkSubtitle, icon: Users, color: 'text-white', bg: 'bg-gradient-to-br from-[#667eea] to-[#764ba2]', ring: 'lg:group-hover:border-violet-200 lg:group-hover:shadow-violet-100/70 dark:lg:group-hover:border-violet-900/60', label: 'Department pass', restricted: true },
-                    { id: 'GUEST', title: PASS_COPY.guestTitle, sub: PASS_COPY.guestSubtitle, icon: FileText, color: 'text-white', bg: 'bg-gradient-to-br from-[#0d9488] to-[#14b8a6]', ring: 'lg:group-hover:border-teal-200 lg:group-hover:shadow-teal-100/70 dark:lg:group-hover:border-teal-900/60', label: 'Visitor pass', restricted: false },
+                    { id: 'SINGLE', title: PASS_COPY.singleTitle, sub: PASS_COPY.singleSubtitle, icon: UserPlus, accent: 'blue', restricted: true },
+                    { id: 'BULK', title: PASS_COPY.bulkTitle, sub: PASS_COPY.bulkSubtitle, icon: Users, accent: 'violet', restricted: true },
+                    { id: 'GUEST', title: PASS_COPY.guestTitle, sub: PASS_COPY.guestSubtitle, icon: FileText, accent: 'emerald', restricted: false },
                   ].map((card) => {
                     const Icon = card.icon;
                     const isDisabled = card.restricted && passDisabled;
+                    const accentMap = {
+                      blue: {
+                        icon: 'bg-blue-50 text-blue-700 ring-blue-100 shadow-blue-100/70',
+                        glow: 'from-blue-500/0 via-blue-500/0 to-blue-500/12',
+                        line: 'bg-blue-700',
+                        arrow: 'text-blue-700',
+                      },
+                      violet: {
+                        icon: 'bg-violet-50 text-violet-600 ring-violet-100 shadow-violet-100/70',
+                        glow: 'from-violet-500/0 via-violet-500/0 to-violet-500/12',
+                        line: 'bg-violet-600',
+                        arrow: 'text-violet-600',
+                      },
+                      emerald: {
+                        icon: 'bg-emerald-50 text-emerald-600 ring-emerald-100 shadow-emerald-100/70',
+                        glow: 'from-emerald-500/0 via-emerald-500/0 to-emerald-500/12',
+                        line: 'bg-emerald-500',
+                        arrow: 'text-emerald-600',
+                      },
+                    };
+                    const accent = accentMap[card.accent as keyof typeof accentMap] ?? accentMap.blue;
                     return (
                       <motion.button
                         key={card.id}
@@ -115,39 +136,36 @@ export default function HODNewPass() {
                           navigate(`/new-pass?stage=${card.id.toLowerCase()}`);
                         }}
                         className={cn(
-                          "group w-full p-6 rounded-[32px] border flex items-center gap-5 text-left shadow-sm transition-all",
-                          "lg:min-h-[260px] lg:flex-col lg:items-start lg:justify-between lg:rounded-3xl lg:p-7 lg:shadow-[0_18px_50px_rgba(15,23,42,0.06)] lg:hover:-translate-y-1 lg:hover:shadow-2xl",
+                          "group relative w-full overflow-hidden rounded-[14px] border text-left transition-all",
+                          "flex items-center gap-5 p-6 shadow-sm lg:min-h-[340px] lg:flex-col lg:items-start lg:justify-between lg:p-8 lg:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.45)] lg:hover:-translate-y-1 lg:hover:shadow-[0_26px_60px_-34px_rgba(15,23,42,0.65)]",
                           isDisabled
                             ? "bg-slate-50 dark:bg-slate-900/40 border-slate-100 dark:border-slate-800 opacity-60 cursor-not-allowed"
-                            : cn("bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 active:shadow-none", card.ring)
+                            : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 active:shadow-none"
                         )}
                       >
-                         <div className="flex w-full items-start gap-5 lg:flex-col">
-                           <div className="flex w-full items-start justify-between gap-4">
-                             <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg lg:w-16 lg:h-16 lg:rounded-[22px]", isDisabled ? "bg-slate-200 dark:bg-slate-800" : card.bg)}>
-                                <Icon className={cn("w-7 h-7 lg:w-8 lg:h-8", isDisabled ? "text-slate-400" : card.color)} />
-                             </div>
-                             <span className="hidden lg:inline-flex rounded-full bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400 ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700">
-                               {card.label}
-                             </span>
-                           </div>
-                           <div className="flex-1 min-w-0 lg:pt-2">
-                              <h3 className={cn("text-[17px] font-black tracking-tight leading-none mb-1.5 lg:text-[21px] lg:leading-tight", isDisabled ? "text-slate-400" : "text-slate-900 dark:text-white")}>{card.title}</h3>
-                              <p className="text-[13px] font-bold text-slate-400 lg:max-w-[260px] lg:text-[14px] lg:leading-relaxed">
-                                {isDisabled ? PASS_COPY.unavailableAfterFive : card.sub}
-                              </p>
-                           </div>
+                         {!isDisabled && (
+                           <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-br", accent.glow)} />
+                         )}
+                         <div className={cn(
+                           "relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full ring-1 lg:h-[76px] lg:w-[76px] lg:shadow-xl",
+                           isDisabled ? "bg-slate-200 text-slate-400 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700" : accent.icon,
+                         )}>
+                           <Icon className="h-7 w-7 lg:h-9 lg:w-9" />
                          </div>
-                         <div className="flex shrink-0 items-center">
-                           {isDisabled ? (
-                             <Ban className="w-5 h-5 text-rose-400 shrink-0" />
-                           ) : (
-                             <div className="flex items-center gap-2 text-slate-300 transition-colors lg:text-slate-400 lg:group-hover:text-slate-900 dark:lg:group-hover:text-white">
-                               <span className="hidden text-xs font-black uppercase tracking-[0.16em] lg:inline">Create</span>
-                               <ChevronRight className="w-5 h-5 transition-transform lg:group-hover:translate-x-1" />
-                             </div>
-                           )}
+                         <div className="relative z-10 flex-1 min-w-0 lg:w-full">
+                            <h3 className={cn("text-[16px] font-black tracking-tight mb-2 lg:text-[19px]", isDisabled ? "text-slate-400" : "text-slate-900 dark:text-white")}>{card.title}</h3>
+                            <div className={cn("mb-5 hidden h-0.5 w-8 rounded-full lg:block", isDisabled ? "bg-slate-200 dark:bg-slate-700" : accent.line)} />
+                            <p className="text-[12px] font-bold leading-relaxed text-slate-500 dark:text-slate-400 lg:max-w-[220px] lg:text-[14px]">
+                              {isDisabled ? PASS_COPY.unavailableAfterFive : card.sub}
+                            </p>
                          </div>
+                         {isDisabled ? (
+                           <Ban className="relative z-10 h-5 w-5 text-rose-400" />
+                         ) : (
+                           <span className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-slate-400 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.6)] ring-1 ring-slate-100 transition-all group-hover:translate-x-1 dark:bg-slate-950 dark:ring-slate-800 lg:mt-auto">
+                             <ChevronRight className={cn("h-5 w-5", accent.arrow)} />
+                           </span>
+                         )}
                       </motion.button>
                     );
                   })}

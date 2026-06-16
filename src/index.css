@@ -365,6 +365,92 @@
   .desktop-page :where(table) {
     font-variant-numeric: tabular-nums;
   }
+
+  .desktop-page :where(.bg-white, .dark\:bg-slate-900, .dark\:bg-slate-800):where(.rounded-xl, .rounded-2xl, .rounded-3xl, .rounded-\[10px\], .rounded-\[18px\], .rounded-\[20px\], .rounded-\[24px\], .rounded-\[28px\], .rounded-\[32px\]) {
+    background-color: rgba(255, 255, 255, 0.78) !important;
+    border-color: rgba(255, 255, 255, 0.58) !important;
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  }
+
+  .desktop-page :where(.bg-slate-50, .dark\:bg-slate-800\/50, .dark\:bg-slate-800) {
+    background-color: rgba(248, 251, 255, 0.68) !important;
+    border-color: rgba(148, 163, 184, 0.18) !important;
+  }
+
+  .desktop-page :where(.shadow-sm, .shadow-xl, .shadow-2xl):where(.bg-white, .dark\:bg-slate-900, .rounded-xl, .rounded-2xl, .rounded-3xl) {
+    box-shadow: 0 22px 52px -38px rgba(15, 23, 42, 0.62) !important;
+  }
+
+  .desktop-page :where(button, a[role="button"], .cursor-pointer) {
+    transition-property: transform, box-shadow, border-color, background-color, color, opacity;
+    transition-duration: 220ms;
+    transition-timing-function: var(--ease);
+  }
+
+  .desktop-page :where(button, a[role="button"]):active {
+    transform: scale(0.98);
+  }
+
+  .desktop-page :where(button[class*="bg-blue-"], button[class*="bg-[var(--color-primary)]"], a[class*="bg-blue-"]) {
+    background: var(--gradient-primary) !important;
+    color: #fff !important;
+    box-shadow: 0 16px 34px -18px rgba(37, 99, 235, 0.85) !important;
+    border-color: rgba(96, 165, 250, 0.35) !important;
+  }
+
+  .desktop-page :where(button[class*="bg-emerald-"], a[class*="bg-emerald-"]) {
+    background: var(--gradient-success) !important;
+    color: #fff !important;
+    box-shadow: 0 16px 34px -18px rgba(16, 185, 129, 0.85) !important;
+    border-color: rgba(16, 185, 129, 0.35) !important;
+  }
+
+  .desktop-page :where(button[class*="bg-rose-"], a[class*="bg-rose-"]) {
+    background: var(--gradient-danger) !important;
+    color: #fff !important;
+    box-shadow: 0 16px 34px -18px rgba(244, 63, 94, 0.9) !important;
+    border-color: rgba(244, 63, 94, 0.35) !important;
+  }
+
+  .desktop-page :where(button[class*="bg-slate-50"], button[class*="bg-white"], button[class*="bg-slate-100"]) {
+    background: rgba(255, 255, 255, 0.72) !important;
+    border-color: rgba(148, 163, 184, 0.25) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  .desktop-page :where(span[class*="bg-amber-"], div[class*="bg-amber-"]):where(.rounded-md, .rounded-lg, .rounded-xl, .rounded-full, .rounded-\[8px\]) {
+    background: rgba(245, 158, 11, 0.14) !important;
+    color: #b45309 !important;
+    border-color: rgba(245, 158, 11, 0.25) !important;
+  }
+
+  .desktop-page :where(span[class*="bg-emerald-"], div[class*="bg-emerald-"]):where(.rounded-md, .rounded-lg, .rounded-xl, .rounded-full, .rounded-\[8px\]) {
+    background: rgba(16, 185, 129, 0.14) !important;
+    color: #047857 !important;
+    border-color: rgba(16, 185, 129, 0.25) !important;
+  }
+
+  .desktop-page :where(span[class*="bg-rose-"], div[class*="bg-rose-"]):where(.rounded-md, .rounded-lg, .rounded-xl, .rounded-full, .rounded-\[8px\]) {
+    background: rgba(244, 63, 94, 0.14) !important;
+    color: #be123c !important;
+    border-color: rgba(244, 63, 94, 0.25) !important;
+  }
+
+  .desktop-page :where(span[class*="bg-blue-"], div[class*="bg-blue-"]):where(.rounded-md, .rounded-lg, .rounded-xl, .rounded-full, .rounded-\[8px\]) {
+    background: rgba(37, 99, 235, 0.12) !important;
+    color: #1d4ed8 !important;
+    border-color: rgba(37, 99, 235, 0.24) !important;
+  }
+
+  .desktop-page :where(.desktop-table tbody tr, table tbody tr) {
+    transition: background-color 180ms var(--ease), transform 180ms var(--ease), box-shadow 180ms var(--ease);
+  }
+
+  .desktop-page :where(.desktop-table tbody tr:hover, table tbody tr:hover) {
+    background: rgba(239, 246, 255, 0.62) !important;
+  }
 }
 
 /* ── Large desktop refinements (≥1280px) ───────────────── */
@@ -652,6 +738,21 @@ html, body {
   50%       { opacity: 0.5; transform: scale(1.5); }
 }
 .animate-pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+
+@keyframes premium-glow {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.42; }
+  50% { transform: translate3d(18px, -12px, 0) scale(1.04); opacity: 0.58; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .desktop-shell-bg::before {
+    animation: premium-glow 12s var(--ease) infinite;
+  }
+
+  .desktop-shell-bg::after {
+    animation: premium-glow 14s var(--ease) infinite reverse;
+  }
+}
 
 /* ── Desktop Premium Animations ────────────────────────── */
 @keyframes fade-up {

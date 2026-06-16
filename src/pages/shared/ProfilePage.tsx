@@ -121,7 +121,7 @@ export default function ProfilePage({ user: propUser, onBack }: ProfilePageProps
     <div className="flex flex-col min-h-screen bg-[#F8FAFC] dark:bg-slate-950 overflow-hidden lg:min-h-0 lg:bg-transparent lg:overflow-visible">
       {/* Header */}
       {!isDesktop && <header
-        className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shrink-0"
+        className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shrink-0 md:hidden"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
         <div className="px-4 h-[72px] flex items-center justify-between">

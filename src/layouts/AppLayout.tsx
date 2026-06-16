@@ -9,7 +9,6 @@ import { useNotifications } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
 import { useAdaptive } from '../utils/useAdaptive';
 import { useScrollInputIntoView } from '../hooks/useScrollIntoView';
-import { cn } from '../utils/cn';
 
 export default function AppLayout() {
   const { isMobile, isTablet, isDesktop } = useAdaptive();
@@ -41,7 +40,7 @@ export default function AppLayout() {
   };
 
   // Sidebar width for margin offset
-  const sidebarWidth = isMobile ? 0 : sidebarCollapsed ? 72 : 272;
+  const sidebarWidth = isMobile ? 0 : sidebarCollapsed ? 76 : 280;
 
   // ── MOBILE LAYOUT ──────────────────────────────────────────────────────────
   if (isMobile) {
@@ -112,17 +111,17 @@ export default function AppLayout() {
               transition={{ duration: 0.2 }}
               className="overflow-hidden shrink-0"
             >
-              <div className="bg-amber-500 text-white px-6 py-2.5 flex items-center justify-between gap-4">
+              <div className="border-b border-amber-200/80 bg-amber-50 px-7 py-3 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/35 dark:text-amber-100 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <Clock className="w-4 h-4 shrink-0" />
                   <p className="text-sm font-medium">Your session expires in 5 minutes. Save your work.</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <button onClick={logout} className="px-3 py-1 rounded-md bg-white text-amber-600 text-xs font-bold hover:bg-amber-50 transition-colors">
+                  <button onClick={logout} className="px-3 py-1.5 rounded-lg bg-amber-600 text-white text-xs font-bold hover:bg-amber-700 transition-colors">
                     Log out now
                   </button>
-                  <button onClick={() => setDismissedExpiry(true)} className="p-1 rounded hover:bg-white/10 transition-colors">
-                    <X className="w-4 h-4 text-white/70" />
+                  <button onClick={() => setDismissedExpiry(true)} className="p-1 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors">
+                    <X className="w-4 h-4 text-amber-700 dark:text-amber-200" />
                   </button>
                 </div>
               </div>
@@ -140,25 +139,27 @@ export default function AppLayout() {
               transition={{ duration: 0.2 }}
               className="overflow-hidden shrink-0"
             >
-              <div className="bg-[var(--color-primary)] text-white px-6 py-2.5 flex items-center justify-between gap-4">
+              <div className="border-b border-blue-100 bg-white px-7 py-3 text-slate-700 shadow-sm shadow-slate-200/40 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <Bell className="w-4 h-4 shrink-0" />
-                  <p className="text-sm font-medium">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                    <Bell className="w-4 h-4 shrink-0" />
+                  </span>
+                  <p className="text-sm font-semibold">
                     Enable push notifications to get gate pass updates instantly.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     onClick={handleEnablePush}
-                    className="px-3 py-1 rounded-md bg-white text-[var(--color-primary)] text-xs font-bold hover:bg-blue-50 transition-colors"
+                    className="px-3 py-1.5 rounded-lg bg-blue-700 text-white text-xs font-bold hover:bg-blue-800 transition-colors"
                   >
                     Enable
                   </button>
                   <button
                     onClick={() => setShowNotifPrompt(false)}
-                    className="p-1 rounded hover:bg-white/10 transition-colors"
+                    className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition-colors"
                   >
-                    <X className="w-4 h-4 text-white/70" />
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -166,13 +167,8 @@ export default function AppLayout() {
           )}
         </AnimatePresence>
 
-        {/* Page content */}
-        <main className={cn(
-          'flex-1 overflow-y-auto',
-          isDesktop
-            ? 'px-7 xl:px-10 py-7 xl:py-8'
-            : 'px-4 py-6', // tablet
-        )}>
+        {/* Page content - generous, responsive padding across tablet to desktop */}
+        <main className="flex-1 overflow-y-auto px-6 py-6 lg:px-8 lg:py-7 xl:px-10 xl:py-8 2xl:px-12">
           <div className="desktop-page">
             <AnimatePresence mode="wait">
               <motion.div

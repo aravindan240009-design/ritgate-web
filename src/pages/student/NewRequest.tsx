@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import PurposeSelect from '../../components/common/PurposeSelect';
 import {
   ArrowLeft,
+  ArrowRight,
   ShieldCheck,
   Layout,
   AlignLeft,
@@ -26,6 +27,8 @@ import SuccessModal from '../../components/common/SuccessModal';
 import ErrorModal from '../../components/common/ErrorModal';
 import { cn } from '../../utils/cn';
 import { getRequestDate } from '../../utils/dateUtils';
+import { useAdaptive } from '../../utils/useAdaptive';
+import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
 import type { Student } from '../../types';
 
 /** Returns current hour in IST (UTC+5:30) */
@@ -40,6 +43,7 @@ export default function NewRequest() {
   const navigate = useNavigate();
   const { user: rawUser } = useAuth();
   const user = rawUser as Student;
+  const { isDesktop } = useAdaptive();
   const { success: showToastSuccess, error: showToastError } = useToast();
   const { withLock, isLocked } = useActionLock();
 
@@ -123,10 +127,10 @@ export default function NewRequest() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 flex flex-col">
-      {/* Header */}
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 flex flex-col lg:min-h-0 lg:bg-transparent">
+      {/* Header — mobile only (dashboard uses the AppLayout header) */}
       <header
-        className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800"
+        className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 lg:hidden"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
         <div className="px-4 h-[64px] flex items-center">
@@ -142,8 +146,15 @@ export default function NewRequest() {
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-5 pt-6 pb-32">
-        <div className="max-w-md mx-auto space-y-6">
+      <main className="flex-1 overflow-y-auto px-5 pt-6 pb-32 lg:px-0 lg:pt-0 lg:pb-12">
+        <div className="max-w-md mx-auto space-y-6 lg:max-w-2xl">
+          {isDesktop && (
+            <DesktopPageHeader
+              eyebrow="Gate Pass"
+              title="New Gate Pass Request"
+              subtitle="Provide your purpose and details, then submit for staff authorization"
+            />
+          )}
           {/* Profile Banner */}
           <div className="bg-[var(--color-primary)] rounded-[28px] p-5 flex items-center gap-4 shadow-lg shadow-blue-200 dark:shadow-none">
             <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 text-white text-[22px] font-black">
@@ -243,11 +254,41 @@ export default function NewRequest() {
               )}
             </div>
           </div>
+
+          {/* Desktop submit — inline (mobile uses the fixed bottom bar) */}
+          {isDesktop && (
+            <div className="pt-2">
+              <button
+                onClick={() => setShowConfirmSubmit(true)}
+                disabled={!isFormValid || isLocked}
+                className={cn(
+                  "group relative flex h-14 w-full items-center justify-center overflow-hidden rounded-lg border border-slate-950 bg-slate-950 px-5 text-white shadow-[0_14px_32px_-22px_rgba(15,23,42,0.9)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-900 hover:shadow-[0_18px_40px_-24px_rgba(15,23,42,0.95)] dark:border-blue-500 dark:bg-blue-600 dark:hover:bg-blue-500",
+                  (!isFormValid || isLocked) && "cursor-not-allowed border-slate-200 bg-slate-200 text-slate-400 shadow-none hover:translate-y-0 hover:bg-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-500 dark:hover:bg-slate-800"
+                )}
+              >
+                <span className={cn(
+                  "absolute inset-y-0 left-0 w-1 bg-blue-500 transition-opacity",
+                  (!isFormValid || isLocked) && "opacity-0"
+                )} />
+                {isLocked ? (
+                  <span className="flex items-center gap-3 text-sm font-bold">
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Submitting request
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-3 text-sm font-bold tracking-wide">
+                    Review & Submit Request
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </span>
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </main>
 
-      {/* Submit Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-5 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-t border-slate-100 dark:border-slate-800 z-40">
+      {/* Submit Button — mobile fixed bar */}
+      <div className="fixed bottom-0 left-0 right-0 p-5 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-t border-slate-100 dark:border-slate-800 z-40 lg:hidden">
         <button 
           onClick={() => setShowConfirmSubmit(true)}
           disabled={!isFormValid || isLocked}
@@ -275,6 +316,7 @@ export default function NewRequest() {
         title="Submit Request"
         message="Are you sure you want to submit this gate pass request for authorization?"
         confirmText="Yes, Submit"
+        confirmColor="bg-blue-600 hover:bg-blue-700"
       />
 
       <SuccessModal 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ChevronLeft, ChevronRight, LogOut, Sun, Moon, ShieldCheck,
+  ChevronLeft, LogOut, Sun, Moon, ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -48,14 +48,14 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
   return (
     <motion.aside
-      animate={{ width: collapsed ? 72 : 272 }}
+      animate={{ width: collapsed ? 76 : 280 }}
       transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed left-0 top-0 h-screen z-40 flex flex-col bg-white/96 dark:bg-[#050b16]/96 backdrop-blur-xl border-r border-slate-200/70 dark:border-slate-800/80 overflow-hidden shadow-[8px_0_30px_rgba(15,23,42,0.035)]"
+      className="fixed left-0 top-0 h-screen z-40 flex flex-col bg-white dark:bg-[#0b1120] border-r border-slate-200 dark:border-slate-800 overflow-hidden shadow-[10px_0_30px_rgba(15,23,42,0.04)]"
     >
       {/* ── Brand ─────────────────────────────────────────── */}
       <div className={cn(
-        'flex items-center border-b border-slate-100 dark:border-slate-800 shrink-0',
-        collapsed ? 'h-[68px] justify-center px-0' : 'h-[68px] px-5 gap-3',
+        'relative flex items-center border-b border-slate-100 dark:border-slate-800 shrink-0',
+        collapsed ? 'h-[72px] justify-center px-0' : 'h-[72px] px-5 gap-3',
       )}>
         <div className="shrink-0">
           <RITLogo size={collapsed ? 30 : 32} />
@@ -72,12 +72,21 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
               <span className="text-[15px] font-bold text-slate-900 dark:text-white leading-none tracking-tight">
                 RIT <span className="text-[var(--color-primary)]">Gate</span>
               </span>
-              <span className="text-[10px] font-medium text-slate-400 mt-0.5 tracking-wide">
+              <span className="text-[10px] font-semibold text-slate-400 mt-1 tracking-[0.14em] uppercase">
                 Gate Pass System
               </span>
             </motion.div>
           )}
         </AnimatePresence>
+        {!collapsed && (
+          <button
+            onClick={onToggle}
+            className="absolute right-4 top-1/2 h-8 w-8 -translate-y-1/2 rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+            aria-label="Collapse sidebar"
+          >
+            <ChevronLeft className="mx-auto h-4 w-4" />
+          </button>
+        )}
       </div>
 
       {/* ── User Card ─────────────────────────────────────── */}
@@ -91,8 +100,8 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
             className="overflow-hidden shrink-0"
           >
             <div className="px-4 py-4 border-b border-slate-100 dark:border-slate-800">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl overflow-hidden shrink-0 bg-gradient-to-br from-blue-700 to-sky-500 flex items-center justify-center shadow-sm shadow-blue-500/20">
+              <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-900/70">
+                <div className="w-11 h-11 rounded-lg overflow-hidden shrink-0 bg-blue-700 flex items-center justify-center shadow-sm shadow-blue-500/20">
                   {profileImage
                     ? <img src={profileImage} alt={userName} className="w-full h-full object-cover" />
                     : <span className="text-white font-bold text-sm">{initials}</span>
@@ -102,9 +111,9 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                   <p className="text-[13px] font-semibold text-slate-900 dark:text-white truncate leading-tight">
                     {userName}
                   </p>
-                  <div className="flex items-center gap-1 mt-0.5">
+                  <div className="flex items-center gap-1 mt-1">
                     <ShieldCheck className="w-3 h-3 text-emerald-500 shrink-0" />
-                    <span className="text-[11px] text-slate-400 truncate">{roleLabel}</span>
+                    <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate">{roleLabel}</span>
                   </div>
                 </div>
               </div>
@@ -115,8 +124,8 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
       {/* Collapsed avatar */}
       {collapsed && (
-        <div className="flex justify-center py-3 border-b border-slate-100 dark:border-slate-800 shrink-0">
-          <div className="w-9 h-9 rounded-xl overflow-hidden bg-[var(--color-primary)] flex items-center justify-center">
+        <div className="flex justify-center py-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
+          <div className="w-10 h-10 rounded-lg overflow-hidden bg-blue-700 flex items-center justify-center">
             {profileImage
               ? <img src={profileImage} alt={userName} className="w-full h-full object-cover" />
               : <span className="text-white font-bold text-sm">{initials}</span>
@@ -126,7 +135,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       )}
 
       {/* ── Navigation ────────────────────────────────────── */}
-      <nav className="flex-1 overflow-y-auto sidebar-scroll py-4 px-3 space-y-1">
+      <nav className="flex-1 overflow-y-auto sidebar-scroll py-4 px-4 space-y-1">
         {navItems.map((item) => {
           const isActive =
             location.pathname === item.path ||
@@ -138,22 +147,22 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
               to={item.path}
               title={collapsed ? item.label : undefined}
               className={cn(
-                'group flex items-center gap-3 rounded-2xl min-h-[44px] transition-all duration-150 relative select-none',
+                'group flex items-center gap-3 rounded-lg min-h-[42px] transition-all duration-150 relative select-none',
                 collapsed ? 'justify-center px-0 py-2' : 'px-3 py-2',
                 isActive
-                  ? 'bg-blue-50 dark:bg-blue-500/10 text-[var(--color-primary)] dark:text-blue-300'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white',
+                  ? 'bg-blue-700 text-white shadow-sm shadow-blue-700/15'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-950 dark:hover:text-white',
               )}
             >
               {/* Active left bar */}
               {isActive && !collapsed && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-[var(--color-primary)] rounded-r-full" />
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-white/80 rounded-r-full" />
               )}
 
               <item.icon className={cn(
                 'shrink-0 transition-transform duration-150',
                 collapsed ? 'w-5 h-5' : 'w-[18px] h-[18px]',
-                isActive ? 'text-[var(--color-primary)] dark:text-blue-400' : '',
+                isActive ? 'text-white' : '',
                 !isActive && 'group-hover:scale-110',
               )} />
 
@@ -179,7 +188,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       </nav>
 
       {/* ── Bottom Controls ───────────────────────────────── */}
-      <div className="shrink-0 border-t border-slate-100 dark:border-slate-800 py-2 px-2 space-y-0.5">
+      <div className="shrink-0 border-t border-slate-100 dark:border-slate-800 py-3 px-3 space-y-1">
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}

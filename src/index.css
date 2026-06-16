@@ -3,6 +3,18 @@
 /* Tell Tailwind v4 to use .dark class for dark: variants */
 @variant dark (&:where(.dark, .dark *));
 
+/* ──────────────────────────────────────────────────────────
+   Breakpoints — align Tailwind with the adaptive model.
+   `lg:` becomes the "dashboard mode" switch (tablet + desktop)
+   so tablets inherit the full professional desktop UI instead of
+   stretched mobile layouts. `xl:` (1280px) adds large-desktop polish.
+   ────────────────────────────────────────────────────────── */
+@theme {
+  --breakpoint-lg: 769px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
 
 /* ══════════════════════════════════════════════════════════
    RITGate Design System — Adaptive Foundation
@@ -61,43 +73,39 @@
   --duration-slow: 0.25s;
   --duration-premium: 0.35s;
 
-  --sidebar-width: 256px;
-  --sidebar-collapsed: 68px;
+  --sidebar-width: 280px;
+  --sidebar-collapsed: 76px;
   --header-height: 60px;
   --mobile-nav-height: 60px;
   --container-max: 1280px;
 }
 
-@media (min-width: 1025px) {
+/* ══════════════════════════════════════════════════════════
+   Dashboard layer — applies to tablet AND desktop (≥769px).
+   Tablet is rendered as a compact desktop for a consistent,
+   professional experience across all wide screens.
+   ══════════════════════════════════════════════════════════ */
+@media (min-width: 769px) {
   :root {
     --header-height: 60px;
-    --sidebar-width: 272px;
-    --container-max: 1360px;
+    --sidebar-width: 280px;
+    --container-max: 1280px;
   }
 
   body {
-    background:
-      radial-gradient(circle at 20% 0%, rgba(59, 130, 246, 0.08), transparent 32rem),
-      linear-gradient(180deg, #f8fbff 0%, #f3f7fb 100%);
+    background: #f5f7fb;
   }
 
   .dark body {
-    background:
-      radial-gradient(circle at 20% 0%, rgba(59, 130, 246, 0.12), transparent 32rem),
-      linear-gradient(180deg, #08111f 0%, #0f172a 100%);
+    background: #0b1120;
   }
 
   .desktop-shell-bg {
-    background:
-      linear-gradient(135deg, rgba(255,255,255,0.92), rgba(248,250,252,0.74)),
-      radial-gradient(circle at 100% 0%, rgba(14,165,233,0.08), transparent 24rem);
+    background: #f5f7fb;
   }
 
   .dark .desktop-shell-bg {
-    background:
-      linear-gradient(135deg, rgba(11,18,32,0.98), rgba(15,23,42,0.94)),
-      radial-gradient(circle at 100% 0%, rgba(59,130,246,0.16), transparent 28rem),
-      radial-gradient(circle at 0% 100%, rgba(14,165,233,0.08), transparent 26rem);
+    background: #0b1120;
   }
 
   .desktop-page {
@@ -113,32 +121,62 @@
   .desktop-card,
   .desktop-stat-card,
   .desktop-toolbar {
-    background: rgba(255, 255, 255, 0.94);
-    border: 1px solid rgba(226, 232, 240, 0.9);
-    box-shadow: 0 14px 36px rgba(15, 23, 42, 0.06);
-    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 14px 36px -28px rgba(15, 23, 42, 0.42);
+    border-radius: 8px;
   }
 
   .dark .desktop-card,
   .dark .desktop-stat-card,
   .dark .desktop-toolbar {
-    background: rgba(17, 25, 40, 0.92);
-    border-color: rgba(71, 85, 105, 0.72);
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.2);
+    background: rgba(15, 23, 42, 0.94);
+    border-color: rgba(51, 65, 85, 0.9);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28), 0 14px 34px -26px rgba(0, 0, 0, 0.75);
+  }
+
+  .desktop-metric-card {
+    min-width: 0;
+    border-radius: 8px;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    background: rgba(255, 255, 255, 0.98);
+    padding: 20px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 14px 34px -28px rgba(15, 23, 42, 0.42);
+    transition: transform 180ms var(--ease), border-color 180ms var(--ease), box-shadow 180ms var(--ease);
+  }
+
+  .desktop-metric-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(37, 99, 235, 0.28);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 18px 42px -30px rgba(15, 23, 42, 0.55);
+  }
+
+  .dark .desktop-metric-card {
+    border-color: rgba(51, 65, 85, 0.9);
+    background: rgba(15, 23, 42, 0.94);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28), 0 14px 34px -26px rgba(0, 0, 0, 0.75);
+  }
+
+  .dark .desktop-metric-card:hover {
+    border-color: rgba(59, 130, 246, 0.34);
   }
 
   .desktop-stat-card {
     padding: 22px;
-    transition: transform 160ms var(--ease), box-shadow 160ms var(--ease), border-color 160ms var(--ease);
+    position: relative;
+    overflow: hidden;
+    transition: transform 200ms var(--ease), box-shadow 200ms var(--ease), border-color 200ms var(--ease);
   }
 
   .desktop-stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 42px rgba(15, 23, 42, 0.08);
+    transform: translateY(-3px);
+    border-color: rgba(37, 99, 235, 0.22);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 20px 44px -14px rgba(15, 23, 42, 0.18);
   }
 
   .dark .desktop-stat-card:hover {
-    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.28);
+    border-color: rgba(59, 130, 246, 0.32);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 22px 50px -14px rgba(0, 0, 0, 0.55);
   }
 
   .desktop-toolbar {
@@ -151,7 +189,7 @@
   .desktop-input {
     width: 100%;
     height: 46px;
-    border-radius: 16px;
+    border-radius: 8px;
     border: 1px solid rgba(226, 232, 240, 0.95);
     background: rgba(248, 250, 252, 0.85);
     color: #0f172a;
@@ -220,7 +258,7 @@
   }
 
   .desktop-page :where(input:not([type="checkbox"]):not([type="radio"]), textarea, select):not(.desktop-input) {
-    border-radius: 16px;
+    border-radius: 8px;
     border-color: rgba(226, 232, 240, 0.95);
     background-color: rgba(255, 255, 255, 0.92);
     box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
@@ -238,14 +276,15 @@
   }
 
   .desktop-page :where(.rounded-2xl, .rounded-\[24px\], .rounded-\[28px\], .rounded-\[32px\]):where(.bg-white, .dark\:bg-slate-900) {
-    border-color: rgba(226, 232, 240, 0.9);
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.055);
+    border-radius: 8px !important;
+    border-color: rgba(226, 232, 240, 0.85);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 14px 34px -28px rgba(15, 23, 42, 0.42);
   }
 
   .dark .desktop-page :where(.rounded-2xl, .rounded-\[24px\], .rounded-\[28px\], .rounded-\[32px\]):where(.bg-white, .dark\:bg-slate-900) {
-    border-color: rgba(71, 85, 105, 0.72);
+    border-color: rgba(71, 85, 105, 0.6);
     background-color: rgba(17, 25, 40, 0.92);
-    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.22);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28), 0 14px 34px -26px rgba(0, 0, 0, 0.75);
   }
 
   .dark .desktop-page :where(.bg-white, .dark\:bg-slate-900) {
@@ -283,6 +322,26 @@
 
   .desktop-page :where(table) {
     font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ── Large desktop refinements (≥1280px) ───────────────── */
+@media (min-width: 1280px) {
+  :root {
+    --container-max: 1320px;
+  }
+
+  .desktop-stat-card {
+    padding: 24px 26px;
+  }
+
+  .desktop-table th { padding: 15px 22px; }
+  .desktop-table td { padding: 18px 22px; }
+}
+
+@media (min-width: 1600px) {
+  :root {
+    --container-max: 1440px;
   }
 }
 
@@ -344,8 +403,8 @@ html, body {
   scroll-behavior: smooth;
 }
 
-/* Desktop: natural page scroll, no nested overflow */
-@media (min-width: 1025px) {
+/* Dashboard (tablet + desktop): natural page scroll, no nested overflow */
+@media (min-width: 769px) {
   html, body {
     overflow-y: auto;
     overflow-x: hidden;
@@ -355,17 +414,9 @@ html, body {
     height: auto !important;
     overflow: visible !important;
   }
-  /* Main content area should not have overflow */
+  /* Main content area should not have overflow (single page scrollbar) */
   main {
     overflow: visible !important;
-  }
-}
-
-/* Tablet: natural browser scroll */
-@media (min-width: 769px) and (max-width: 1024px) {
-  html, body {
-    overflow-y: auto;
-    overflow-x: hidden;
   }
 }
 

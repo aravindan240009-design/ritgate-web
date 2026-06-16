@@ -18,7 +18,7 @@ export default function DesktopToolbar({
   className,
 }: DesktopToolbarProps) {
   return (
-    <div className={cn('desktop-toolbar', className)}>
+    <div className={cn('desktop-toolbar animate-fade-up', className)}>
       {onSearchChange && (
         <div className="relative flex-1 min-w-[260px] max-w-[460px]">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />

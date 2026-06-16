@@ -36,11 +36,11 @@ export default function Card({ children, className, hover = false, glass = false
       onClick={onClick}
       {...interactionProps}
       className={cn(
-        'native-card lg:desktop-card transition-all duration-200',
+        'native-card lg:desktop-card transition-all duration-[220ms] ease-out',
         glass
-          ? 'bg-white/10 backdrop-blur-md border-white/20 shadow-lg'
-          : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 shadow-sm',
-        (hover || onClick) && 'cursor-pointer hover:shadow-base',
+          ? 'bg-white/60 backdrop-blur-2xl border-white/50 shadow-[0_24px_60px_-34px_rgba(37,99,235,0.55)]'
+          : 'bg-white/80 dark:bg-slate-900/82 border-white/60 dark:border-slate-800/80 shadow-[0_18px_45px_-34px_rgba(15,23,42,0.65)]',
+        (hover || onClick) && 'cursor-pointer hover:-translate-y-1 hover:border-blue-200/80 hover:shadow-[0_24px_54px_-30px_rgba(37,99,235,0.38)]',
         paddings[padding],
         className,
       )}

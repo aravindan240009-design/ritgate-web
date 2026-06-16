@@ -20,7 +20,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       <div className="w-full space-y-1.5">
         <label
           htmlFor={inputId}
-          className="text-xs font-semibold text-slate-500 px-1 flex items-center gap-1"
+          className="text-[11px] font-black uppercase tracking-[0.14em] text-slate-500 px-1 flex items-center gap-1"
         >
           {label}
           {required && <span className="text-rose-500">*</span>}
@@ -35,10 +35,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={cn(
-              'w-full h-11 px-4 text-sm bg-slate-50 dark:bg-slate-900',
-              'border-none rounded-xl transition-all duration-200 outline-none',
+              'w-full h-12 px-4 text-sm font-semibold bg-white/72 dark:bg-slate-900/72',
+              'border border-slate-200/80 rounded-2xl transition-all duration-[220ms] ease-out outline-none shadow-[0_12px_30px_-26px_rgba(15,23,42,0.7)] backdrop-blur-xl',
               'text-slate-900 dark:text-white placeholder:text-slate-400',
-              'focus:ring-2 focus:ring-blue-500/20 focus:bg-white dark:focus:bg-slate-800',
+              'focus:border-blue-300 focus:ring-4 focus:ring-blue-500/10 focus:bg-white dark:focus:bg-slate-800',
               icon && 'pl-11',
               iconRight && 'pr-11',
               error && 'ring-2 ring-rose-500/20 bg-rose-50/10',

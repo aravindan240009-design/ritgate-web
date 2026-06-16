@@ -179,8 +179,8 @@ export default function Header({ onMenuClick, sidebarCollapsed }: HeaderProps) {
       sidebarCollapsed={sidebarCollapsed}
       actions={(
         <>
-          <div className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-sm font-semibold text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-300 lg:flex">
-            <CalendarDays className="h-4 w-4 text-slate-400" />
+          <div className="hidden items-center gap-2 rounded-2xl border border-white/60 bg-white/70 px-4 py-2.5 text-sm font-bold text-slate-600 shadow-[0_14px_34px_-28px_rgba(15,23,42,0.75)] backdrop-blur-xl dark:border-slate-700/70 dark:bg-slate-900/70 dark:text-slate-300 lg:flex">
+            <CalendarDays className="h-4 w-4 text-blue-500" />
             {currentDate}
           </div>
           <NotificationBell />

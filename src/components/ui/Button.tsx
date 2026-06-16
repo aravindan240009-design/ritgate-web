@@ -14,19 +14,19 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants = {
-  primary: 'bg-[var(--color-primary)] text-white shadow-lg active:opacity-90 hover:opacity-90',
-  secondary: 'bg-white text-slate-900 border border-slate-200 shadow-sm dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700',
-  danger: 'bg-gradient-to-br from-rose-600 to-rose-700 text-white shadow-lg shadow-rose-500/20',
-  ghost: 'bg-transparent text-[var(--color-primary)] dark:text-blue-400',
-  outline: 'border-2 border-[var(--color-primary)] text-[var(--color-primary)] dark:border-blue-400 dark:text-blue-400',
-  success: 'bg-gradient-to-br from-emerald-600 to-emerald-700 text-white shadow-lg shadow-emerald-500/20',
+  primary: 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-[0_16px_32px_-18px_rgba(37,99,235,0.9)] hover:from-blue-500 hover:to-blue-700 hover:shadow-[0_20px_42px_-18px_rgba(37,99,235,0.95)]',
+  secondary: 'bg-white/78 text-slate-900 border border-slate-200/80 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.6)] backdrop-blur-xl hover:border-blue-200 hover:bg-blue-50/70 dark:bg-slate-900/72 dark:text-slate-100 dark:border-slate-700/80 dark:hover:bg-blue-950/30',
+  danger: 'bg-gradient-to-br from-rose-500 to-rose-700 text-white shadow-[0_16px_34px_-18px_rgba(244,63,94,0.95)] hover:from-rose-400 hover:to-rose-700',
+  ghost: 'bg-transparent text-[var(--color-primary)] hover:bg-blue-50/80 dark:text-blue-400 dark:hover:bg-blue-950/30',
+  outline: 'border border-blue-300/80 bg-white/45 text-[var(--color-primary)] shadow-sm backdrop-blur-xl hover:bg-blue-50 dark:border-blue-800 dark:text-blue-300 dark:bg-slate-950/40',
+  success: 'bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-[0_16px_34px_-18px_rgba(16,185,129,0.9)] hover:from-emerald-400 hover:to-emerald-700',
 };
 
 const sizes = {
-  sm: 'h-10 px-4 text-sm rounded-xl gap-2',
-  md: 'h-11 px-5 text-sm rounded-xl gap-2',
+  sm: 'h-10 px-4 text-sm rounded-[14px] gap-2',
+  md: 'h-11 px-5 text-sm rounded-[15px] gap-2',
   lg: 'h-12 px-6 text-base rounded-2xl gap-2.5',
-  xl: 'h-14 px-8 text-base font-bold uppercase tracking-widest rounded-2xl gap-3', // 56px match
+  xl: 'h-14 px-8 text-base font-bold uppercase tracking-widest rounded-[18px] gap-3',
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -37,9 +37,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         whileTap={transitions.feedback.tap}
         transition={{ duration: transitions.feedback.duration }}
         className={cn(
-          'inline-flex items-center justify-center font-bold tracking-tight transition-all duration-200 outline-none select-none',
+          'inline-flex items-center justify-center font-bold tracking-tight transition-all duration-[220ms] ease-out outline-none select-none',
           'focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:ring-offset-2',
-          'disabled:opacity-40 disabled:cursor-not-allowed',
+          'disabled:opacity-45 disabled:cursor-not-allowed disabled:shadow-none',
+          'hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]',
           variants[variant],
           sizes[size],
           fullWidth && 'w-full',

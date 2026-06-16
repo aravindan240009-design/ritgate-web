@@ -52,7 +52,7 @@ export default function DesktopStatCard({ label, value, icon: Icon, hint, tone =
     <Comp
       onClick={onClick}
       className={cn(
-        'desktop-stat-card group text-left',
+        'desktop-stat-card group text-left animate-fade-up',
         onClick && 'cursor-pointer',
         active && cn('ring-2', t.ring),
       )}

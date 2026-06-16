@@ -44,26 +44,26 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md', s
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center px-4">
           {/* Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            transition={{ duration: 0.22 }}
+            className="absolute inset-0 bg-slate-950/45 backdrop-blur-[7px]"
             onClick={onClose}
           />
 
           {/* Content */}
           <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.97 }}
+            initial={{ opacity: 0, y: 28, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 40, scale: 0.97 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, y: 22, scale: 0.97 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
             className={cn(
-              'relative w-full bg-white dark:bg-slate-800 shadow-2xl z-10',
-              'sm:rounded-2xl rounded-t-2xl',
+              'relative w-full bg-white/88 dark:bg-slate-900/90 shadow-[0_28px_90px_-32px_rgba(37,99,235,0.65)] z-10 backdrop-blur-2xl border border-white/55 dark:border-slate-700/70',
+              'sm:rounded-[24px] rounded-t-[24px]',
               'max-h-[90vh] flex flex-col',
               'safe-area-bottom',
               sizes[size],
@@ -77,12 +77,12 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md', s
 
             {/* Header */}
             {(title || showClose) && (
-              <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-slate-700">
-                {title && <h2 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h2>}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100/80 dark:border-slate-800">
+                {title && <h2 className="text-lg font-black tracking-tight text-slate-950 dark:text-white">{title}</h2>}
                 {showClose && (
                   <button
                     onClick={onClose}
-                    className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                    className="min-h-[42px] min-w-[42px] flex items-center justify-center rounded-full bg-slate-50 text-slate-500 ring-1 ring-slate-100 transition-all hover:bg-slate-100 hover:text-slate-900 dark:bg-slate-800 dark:ring-slate-700 dark:hover:bg-slate-700"
                     aria-label="Close"
                   >
                     <X className="w-5 h-5 text-gray-500 dark:text-slate-400" />
@@ -92,7 +92,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md', s
             )}
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto scroll-momentum px-5 py-4 pt-8">
+            <div className="flex-1 overflow-y-auto scroll-momentum px-6 py-5">
               {children}
             </div>
           </motion.div>

@@ -28,7 +28,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
     <motion.aside
       animate={{ width: collapsed ? 76 : 280 }}
       transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed left-0 top-0 h-screen z-40 flex flex-col bg-white dark:bg-[#0b1120] border-r border-slate-200 dark:border-slate-800 overflow-hidden shadow-[10px_0_30px_rgba(15,23,42,0.04)]"
+      className="fixed left-0 top-0 h-screen z-40 flex flex-col overflow-hidden border-r border-white/55 bg-white/78 shadow-[18px_0_54px_-46px_rgba(15,23,42,0.75)] backdrop-blur-2xl dark:border-slate-800/80 dark:bg-[#0b1120]/86"
     >
       {/* ── Brand ─────────────────────────────────────────── */}
       <div className={cn(
@@ -59,7 +59,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         <button
           onClick={onToggle}
           className={cn(
-            "absolute right-4 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-md shadow-slate-200/50 transition-all hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:shadow-none dark:hover:bg-slate-800 dark:hover:text-white",
+            "absolute right-4 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/70 bg-white/82 text-slate-500 shadow-[0_12px_28px_-18px_rgba(15,23,42,0.65)] backdrop-blur-xl transition-all hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-900/82 dark:text-slate-300 dark:shadow-none dark:hover:bg-slate-800 dark:hover:text-white",
             collapsed && "right-1/2 translate-x-1/2",
           )}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -86,8 +86,8 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 'group flex items-center gap-3 rounded-lg min-h-[42px] transition-all duration-150 relative select-none',
                 collapsed ? 'justify-center px-0 py-2' : 'px-3 py-2',
                 isActive
-                  ? 'bg-blue-700 text-white shadow-sm shadow-blue-700/15'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-950 dark:hover:text-white',
+                  ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-[0_18px_34px_-22px_rgba(37,99,235,0.95)]'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-blue-50/70 dark:hover:bg-white/10 hover:text-slate-950 dark:hover:text-white hover:shadow-[0_12px_30px_-28px_rgba(37,99,235,0.7)]',
               )}
             >
               {/* Active left bar */}
@@ -131,7 +131,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
           title={collapsed ? (theme === 'dark' ? 'Light Mode' : 'Dark Mode') : undefined}
           className={cn(
             'group flex items-center gap-3 rounded-lg min-h-[40px] w-full transition-all duration-150',
-            'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white',
+            'text-slate-500 dark:text-slate-400 hover:bg-blue-50/70 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white',
             collapsed ? 'justify-center px-0 py-2' : 'px-3 py-2',
           )}
         >

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Mail,
@@ -11,16 +11,7 @@ import { usePageTitle } from "../../hooks/usePageTitle";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useProfile } from "../../context/ProfileContext";
-import {
-  getStudentGatePassRequests,
-  getStaffOwnRequests,
-  getHODMyRequests,
-  getHRAllRequests,
-  getNCIOwnRequests,
-  getNTFOwnRequests,
-} from "../../services/api.service";
 import { cn } from "../../utils/cn";
-import { isToday } from "../../utils/dateUtils";
 import { useAdaptive } from "../../utils/useAdaptive";
 import TopRefreshControl from "../../components/common/TopRefreshControl";
 import ThemePresetSelector from "../../components/common/ThemePresetSelector";
@@ -42,9 +33,7 @@ export default function ProfilePage({
   const { resetTheme } = useTheme();
   const { profileImage } = useProfile();
 
-  const [loadingStats, setLoadingStats] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [stats, setStats] = useState({ approved: 0, rejected: 0, pending: 0 });
 
   const userId = getUserId();
   const email = (user as any)?.email || (user as any)?.mail || "";
@@ -87,56 +76,9 @@ export default function ProfilePage({
     }
   })();
 
-  const fetchStats = useCallback(async () => {
-    if (!userId || !role) return;
-    setLoadingStats(true);
-    try {
-      let reqs: any[] = [];
-      if (role === "STUDENT") {
-        const res = await getStudentGatePassRequests(userId);
-        if (res.success) reqs = res.requests;
-      } else if (role === "STAFF") {
-        const res = await getStaffOwnRequests(userId);
-        if (res.success) reqs = res.requests;
-      } else if (role === "HOD") {
-        const res = await getHODMyRequests(userId);
-        if (res.success) reqs = res.requests;
-      } else if (role === "HR") {
-        const res = await getHRAllRequests(userId);
-        if (res.success) reqs = res.requests;
-      } else if (role === "NON_CLASS_INCHARGE") {
-        const res = await getNCIOwnRequests(userId);
-        if (res.success) reqs = res.requests;
-      } else if (role === "NON_TEACHING" || role === "ADMIN_OFFICER") {
-        const res = await getNTFOwnRequests(userId);
-        if (res.success) reqs = res.requests;
-      }
-
-      const today = reqs.filter((r) =>
-        isToday(r.requestDate || r.createdAt || r.exitDateTime),
-      );
-      setStats({
-        approved: today.filter((r) => r.status === "APPROVED").length,
-        rejected: today.filter((r) => r.status === "REJECTED").length,
-        pending: today.filter(
-          (r) => r.status !== "APPROVED" && r.status !== "REJECTED",
-        ).length,
-      });
-    } catch {
-      // silent fail
-    } finally {
-      setLoadingStats(false);
-      setRefreshing(false);
-    }
-  }, [userId, role]);
-
-  useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
-
   const handleRefresh = async () => {
     setRefreshing(true);
-    await fetchStats();
+    setRefreshing(false);
   };
 
   const menuItems = [
@@ -178,7 +120,7 @@ export default function ProfilePage({
       )}
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-5 pt-6 pb-32 min-h-[calc(100vh-100px)] lg:mx-auto lg:grid lg:h-[calc(100vh-130px)] lg:min-h-0 lg:w-full lg:max-w-none lg:grid-cols-[330px_minmax(0,1fr)] lg:grid-rows-[82px_auto_auto] lg:items-start lg:gap-x-8 lg:gap-y-5 lg:overflow-hidden lg:px-0 lg:pt-0 lg:pb-0 xl:grid-cols-[360px_minmax(0,1fr)] xl:gap-x-8">
+        <div className="px-5 pt-6 pb-32 min-h-[calc(100vh-100px)] lg:mx-auto lg:grid lg:h-[calc(100vh-130px)] lg:min-h-0 lg:w-full lg:max-w-none lg:grid-cols-[330px_minmax(0,1fr)] lg:grid-rows-[auto_auto_1fr] lg:items-start lg:gap-x-8 lg:gap-y-6 lg:overflow-hidden lg:px-0 lg:pt-0 lg:pb-0 xl:grid-cols-[360px_minmax(0,1fr)] xl:gap-x-8">
           <div className="flex flex-col items-center mb-8 lg:mb-0 lg:row-span-3 lg:h-full lg:self-start lg:bg-white/78 lg:dark:bg-slate-900/80 lg:border lg:border-white/60 lg:dark:border-slate-800/80 lg:rounded-[24px] lg:px-8 lg:py-7 lg:shadow-[0_24px_60px_-38px_rgba(15,23,42,0.62)] lg:backdrop-blur-2xl lg:w-full lg:overflow-hidden">
             <div className="relative mb-4">
               <div className="w-[110px] h-[110px] rounded-full border-2 border-blue-700 p-1 flex items-center justify-center bg-white dark:bg-slate-900 shadow-xl shadow-blue-100 lg:h-[112px] lg:w-[112px] lg:border-[3px]">
@@ -226,43 +168,7 @@ export default function ProfilePage({
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 rounded-[24px] lg:rounded-[24px] p-6 lg:h-[82px] lg:px-12 lg:py-3 flex justify-between border border-slate-100 dark:border-slate-800 shadow-[0_18px_42px_-30px_rgba(15,23,42,0.5)] mb-8 lg:mb-0 lg:col-start-2 lg:row-start-1 lg:bg-white/78 lg:border-white/60 lg:backdrop-blur-2xl">
-            {[
-              {
-                label: "APPROVED",
-                value: stats.approved,
-                color: "text-emerald-500",
-              },
-              {
-                label: "REJECTED",
-                value: stats.rejected,
-                color: "text-rose-500",
-              },
-              {
-                label: "PENDING",
-                value: stats.pending,
-                color: "text-amber-500",
-              },
-            ].map((stat, i) => (
-              <React.Fragment key={stat.label}>
-                <div className="flex flex-col items-center justify-center flex-1">
-                  <span
-                    className={cn("text-[22px] font-black mb-0.5 lg:text-[26px]", stat.color)}
-                  >
-                    {stat.value}
-                  </span>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] leading-none mt-1">
-                    {stat.label}
-                  </span>
-                </div>
-                {i < 2 && (
-                  <div className="w-[1px] h-10 bg-slate-100 dark:bg-slate-800 self-center lg:h-12" />
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-
-          <div className="mb-8 lg:mb-0 lg:col-start-2 lg:row-start-2">
+          <div className="mb-8 lg:mb-0 lg:col-start-2 lg:row-start-1">
             <div className="flex items-center justify-between mb-3 px-1">
               <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest lg:text-[15px] lg:tracking-[0.14em]">
                 Interface Theme
@@ -280,7 +186,7 @@ export default function ProfilePage({
             </div>
           </div>
 
-          <div className="mb-10 lg:mb-0 lg:col-start-2 lg:row-start-3 lg:min-h-0">
+          <div className="mb-10 lg:mb-0 lg:col-start-2 lg:row-start-2 lg:min-h-0">
             <div className="mb-3 px-2 lg:px-1">
               <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest lg:text-[15px] lg:tracking-[0.14em]">
                 Personal Information

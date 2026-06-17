@@ -180,6 +180,12 @@
     background: transparent !important;
   }
 
+  .profile-page-content {
+    min-height: calc(100vh - 82px);
+    padding-block: 24px !important;
+    overflow: hidden;
+  }
+
   .page-content .desktop-page {
     max-width: none;
     margin-inline: 0;

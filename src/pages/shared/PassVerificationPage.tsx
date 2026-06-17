@@ -220,7 +220,7 @@ export default function PassVerificationPage() {
           </span>
         </header>
 
-        <div className="bg-[#F8FAFC]/70 px-5 py-6 dark:bg-slate-950/70">
+        <div className="bg-transparent px-5 py-6">
           <div className="space-y-5">
             <div className="rounded-[28px] border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
               <div className="flex items-center gap-5">

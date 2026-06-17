@@ -153,7 +153,8 @@
   .main-area {
     flex: 1;
     min-width: 0;
-    background: transparent;
+    min-height: 100vh;
+    background: var(--gradient-shell);
   }
 
   .page-content {
@@ -161,12 +162,22 @@
     max-width: var(--container-max);
     margin-inline: auto;
     padding: 32px 40px 48px;
+    background: transparent;
   }
 
   .page-content .desktop-page {
     max-width: none;
     margin-inline: 0;
     padding: 0 !important;
+  }
+
+  .page-content > .native-page-enter > :is(div, main, section):not(.desktop-card):not(.native-card):first-child {
+    background: transparent !important;
+    box-shadow: none;
+  }
+
+  .page-content > .native-page-enter > :is(div, main, section).min-h-screen:not(.desktop-card):not(.native-card):first-child {
+    min-height: 0 !important;
   }
 
   .desktop-header-title {

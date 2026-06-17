@@ -1,11 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Users, 
   Search, 
-  Filter, 
-  Activity, 
-  ShieldCheck, 
+  Activity,
   AlertCircle,
   Clock,
   CheckCircle,
@@ -22,13 +19,14 @@ import EmptyState from '../../components/ui/EmptyState';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { getVisitorRequestsForStaff } from '../../services/api.service';
-import { formatDateTime, relativeTime } from '../../utils/dateUtils';
+import { relativeTime } from '../../utils/dateUtils';
 import { cn } from '../../utils/cn';
 import { transitions } from '../../design-system/animations';
 import { EMPTY_COPY } from '../../config/nativeCopy';
 import { useAdaptive } from '../../utils/useAdaptive';
 import DesktopStatCard from '../../components/desktop/DesktopStatCard';
 import DesktopToolbar from '../../components/desktop/DesktopToolbar';
+import TopMenuBar from '../../components/common/TopMenuBar';
 
 type TabType = 'PENDING' | 'APPROVED' | 'REJECTED';
 
@@ -40,7 +38,7 @@ interface AdminDashboardProps {
 export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardProps = {}) {
   usePageTitle('Dashboard');
   const { getUserId, user } = useAuth();
-  const { isDesktop } = useAdaptive();
+  const { isDesktop, isMobile } = useAdaptive();
   const { error: showError } = useToast();
   const adminId = getUserId();
 
@@ -128,20 +126,16 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
   }
 
   return (
-    <div className="space-y-8 pb-10">
+    <div className="space-y-4 pb-10 lg:space-y-8">
+      {isMobile && (
+        <TopMenuBar
+          greeting={greeting.toUpperCase()}
+          title={adminName.toUpperCase()}
+        />
+      )}
+
       {/* 1. Greeting & User Info */}
-      <div className="text-left px-1 lg:hidden">
-        <p className="text-[14px] font-semibold text-slate-400 leading-none">{greeting}</p>
-        <h2 className="text-[28px] font-bold text-slate-900 dark:text-white mt-1 leading-tight tracking-tight uppercase">
-          {adminName}
-        </h2>
-        <div className="flex items-center gap-3 mt-2">
-          <div className="flex items-center gap-1.5 text-[10px] font-bold text-[var(--color-primary)] bg-blue-50 dark:bg-indigo-950/30 px-3 py-1 rounded-full uppercase tracking-widest border border-blue-100 dark:border-indigo-900/30">
-            <ShieldCheck className="w-3 h-3" />
-            ADMINISTRATIVE OFFICER
-          </div>
-        </div>
-      </div>
+      <div className="hidden lg:block" />
 
       {/* 2. Stats Cards */}
       {isDesktop ? (
@@ -151,42 +145,31 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
           <DesktopStatCard label="Rejected" value={stats.rejected} icon={XCircle} tone="rose" active={activeTab === 'REJECTED'} onClick={() => setActiveTab('REJECTED')} />
         </div>
       ) : (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-amber-50 dark:bg-amber-950/20 border-amber-100 dark:border-amber-900/30 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-2">PENDING</p>
-              <p className="text-3xl font-black text-amber-700 dark:text-amber-500 tabular-nums">{stats.pending}</p>
-            </div>
-            <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <Clock className="w-6 h-6 text-amber-600" />
-            </div>
-          </div>
-        </Card>
+      <div className="flex bg-white dark:bg-slate-900 rounded-[24px] p-2 shadow-sm border border-slate-50 dark:border-slate-800 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all lg:hidden">
+        {(['PENDING', 'APPROVED', 'REJECTED'] as TabType[]).map((tab) => {
+          const isActive = activeTab === tab;
+          const colors = { PENDING: 'text-amber-500', APPROVED: 'text-emerald-500', REJECTED: 'text-rose-500' };
+          const borders = { PENDING: 'border-amber-500', APPROVED: 'border-emerald-500', REJECTED: 'border-rose-500' };
+          const values = { PENDING: stats.pending, APPROVED: stats.approved, REJECTED: stats.rejected };
 
-        <Card className="bg-emerald-50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/30 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-2">APPROVED</p>
-              <p className="text-3xl font-black text-emerald-700 dark:text-emerald-500 tabular-nums">{stats.approved}</p>
-            </div>
-            <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-emerald-600" />
-            </div>
-          </div>
-        </Card>
-
-        <Card className="bg-rose-50 dark:bg-rose-950/20 border-rose-100 dark:border-rose-900/30 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[10px] font-bold text-rose-600 uppercase tracking-widest mb-2">REJECTED</p>
-              <p className="text-3xl font-black text-rose-700 dark:text-rose-500 tabular-nums">{stats.rejected}</p>
-            </div>
-            <div className="w-12 h-12 rounded-xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center">
-              <XCircle className="w-6 h-6 text-rose-600" />
-            </div>
-          </div>
-        </Card>
+          return (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={cn(
+                'flex-1 flex flex-col items-center py-2 transition-all border-b-2',
+                isActive ? borders[tab] : 'border-transparent',
+              )}
+            >
+              <span className={cn('text-[10px] font-black uppercase tracking-widest mb-1', isActive ? colors[tab] : 'text-slate-400')}>
+                {tab}
+              </span>
+              <span className={cn('text-[18px] font-black', isActive ? 'text-slate-900 dark:text-white' : 'text-slate-300')}>
+                {values[tab]}
+              </span>
+            </button>
+          );
+        })}
       </div>
       )}
 
@@ -201,36 +184,15 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
       <div className="space-y-4">
         <div className="relative">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10">
-            <Search className="w-4 h-4" />
+            <Search className="w-5 h-5" />
           </div>
           <input 
             type="text" 
-            placeholder="SEARCH VISITOR REQUESTS..."
+            placeholder="Search requests..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value.toUpperCase())}
-            className="w-full pl-11 pr-4 h-12 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-[10px] font-bold focus:ring-2 focus:ring-blue-500/10 placeholder:text-slate-300 uppercase tracking-widest transition-all outline-none"
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full h-12 pl-12 pr-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 shadow-sm outline-none"
           />
-        </div>
-
-        <div className="flex gap-2 w-full">
-          {(['PENDING', 'APPROVED', 'REJECTED'] as TabType[]).map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={cn(
-                "flex-1 px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
-                activeTab === tab
-                  ? tab === 'PENDING'
-                    ? "bg-amber-500 text-white shadow-lg shadow-amber-500/20"
-                    : tab === 'APPROVED'
-                      ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/20"
-                      : "bg-rose-600 text-white shadow-lg shadow-rose-500/20"
-                  : "bg-slate-100 text-slate-500 hover:text-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:text-white"
-              )}
-            >
-              {tab}
-            </button>
-          ))}
         </div>
       </div>
       )}

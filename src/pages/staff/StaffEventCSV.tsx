@@ -181,7 +181,7 @@ export default function StaffEventCSV() {
       <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
         <PageHeader title="Upload Complete" onBack={() => { setView('events'); setSelectedEvent(null); setUploadResult(null); }} />
         {isDesktop && <DesktopPageHeader title="Upload Complete" subtitle="Review event visitor pass creation results" />}
-        <div className="px-5 py-5 pb-28 space-y-5 lg:px-0 lg:py-0 lg:max-w-[920px]">
+        <div className="px-5 py-5 pb-28 space-y-5 lg:px-0 lg:py-0 lg:max-w-none">
           <div className="flex flex-col items-center pt-6 pb-2 gap-4">
             <div className={cn(
               'w-24 h-24 rounded-full flex items-center justify-center shadow-lg',
@@ -267,7 +267,7 @@ export default function StaffEventCSV() {
       <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
         <PageHeader title="Review Participants" onBack={() => setView('upload')} />
         {isDesktop && <DesktopPageHeader title="Review Participants" subtitle="Validate participant rows before issuing passes" />}
-        <div className="px-5 py-5 pb-28 space-y-5 lg:px-0 lg:py-0 lg:max-w-[1040px]">
+        <div className="px-5 py-5 pb-28 space-y-5 lg:px-0 lg:py-0 lg:max-w-none">
           <div className="bg-[var(--color-primary)] rounded-[24px] px-5 py-4 flex items-center gap-3">
             <CalendarDays className="w-6 h-6 text-white/70 shrink-0" />
             <div className="min-w-0">
@@ -338,7 +338,7 @@ export default function StaffEventCSV() {
       <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
         <PageHeader title="Upload Participants" onBack={() => { setView('events'); setSelectedEvent(null); }} />
         {isDesktop && <DesktopPageHeader title="Upload Participants" subtitle="Upload and manage event visitor/pass data" />}
-        <div className="px-5 py-5 pb-28 space-y-5 lg:px-0 lg:py-0 lg:max-w-[920px]">
+        <div className="px-5 py-5 pb-28 space-y-5 lg:px-0 lg:py-0 lg:max-w-none">
           <div className="bg-[var(--color-primary)] rounded-[24px] px-5 py-4 flex items-center gap-3">
             <CalendarDays className="w-6 h-6 text-white/70 shrink-0" />
             <div className="min-w-0">
@@ -409,7 +409,7 @@ export default function StaffEventCSV() {
       <PageHeader title="Event CSV Upload" />
       {isDesktop && <DesktopPageHeader title="Event CSV" subtitle="Upload and manage event visitor/pass data" />}
       <TopRefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); loadEvents(); }}>
-        <div className="px-5 pt-5 pb-28 space-y-5 lg:px-0 lg:pt-0 lg:pb-8 lg:max-w-[1040px]">
+        <div className="px-5 pt-5 pb-28 space-y-5 lg:px-0 lg:pt-0 lg:pb-8 lg:max-w-none">
           <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-[24px] p-4 flex gap-3 lg:desktop-card lg:p-5">
             <Info className="w-5 h-5 text-[var(--color-primary)] shrink-0 mt-0.5" />
             <p className="text-[12px] font-bold text-blue-700 dark:text-blue-400 leading-relaxed">

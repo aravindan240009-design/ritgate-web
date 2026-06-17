@@ -136,8 +136,8 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
         </header>
       )}
 
-      <main className={embedded ? "w-full" : "flex-1 overflow-y-auto px-5 py-6"}>
-        <div className={cn("space-y-6 pb-32 lg:pb-12", embedded ? "w-full lg:max-w-5xl lg:mx-auto" : "max-w-lg mx-auto lg:max-w-5xl")}>
+      <main className={embedded ? "w-full" : "flex-1 overflow-y-auto px-5 py-6 lg:px-0 lg:py-0"}>
+        <div className={cn("space-y-6 pb-32 lg:pb-12", embedded ? "w-full lg:max-w-none lg:mx-0" : "max-w-lg mx-auto lg:max-w-none")}>
            {/* Banner */}
            <div className="bg-emerald-600 rounded-[32px] p-6 text-white shadow-xl shadow-emerald-100 dark:shadow-none lg:p-8">
               <div className="flex items-center gap-4 mb-4">

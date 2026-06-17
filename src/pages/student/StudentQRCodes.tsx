@@ -43,7 +43,7 @@ export default function StudentQRCodes() {
           subtitle="Use your student ID QR for campus entry and scanner verification."
           eyebrow="Student Identity"
         />
-        <div className="max-w-md mx-auto space-y-6 lg:max-w-5xl lg:grid lg:grid-cols-[minmax(360px,460px)_1fr] lg:items-start lg:gap-6 lg:space-y-0">
+        <div className="max-w-md mx-auto space-y-6 lg:max-w-none lg:grid lg:grid-cols-[minmax(360px,460px)_1fr] lg:items-start lg:gap-6 lg:space-y-0">
           {/* Main QR Card */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}

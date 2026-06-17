@@ -166,6 +166,7 @@
   .page-content .desktop-page {
     max-width: none;
     margin-inline: 0;
+    padding: 0 !important;
   }
 
   .desktop-header-title {

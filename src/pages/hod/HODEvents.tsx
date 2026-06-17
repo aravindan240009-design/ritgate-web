@@ -353,17 +353,7 @@ export default function HODEvents() {
   // ─── List View ───────────────────────────────────────────────────────────────
   return (
     <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
-      <PageHeader
-        title="Events"
-        right={
-          <button
-            onClick={() => setView('create')}
-            className="w-10 h-10 bg-[var(--color-primary)] rounded-full flex items-center justify-center text-white shadow-lg active:scale-90 transition-transform"
-          >
-            <Plus className="w-5 h-5" />
-          </button>
-        }
-      />
+      <PageHeader title="Events" />
 
       <TopRefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); loadEvents(); }}>
         <div className="px-5 pt-6 pb-28">

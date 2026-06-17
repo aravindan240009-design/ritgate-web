@@ -29,7 +29,7 @@ export default function NotificationBell() {
       <button
         ref={bellRef}
         onClick={() => setOpen(v => !v)}
-        className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
+        className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-white/60 bg-white/72 shadow-[0_14px_34px_-28px_rgba(15,23,42,0.75)] backdrop-blur-xl transition-all hover:border-blue-200 hover:bg-blue-50/70 dark:border-slate-700 dark:bg-slate-900/72 dark:hover:bg-slate-800"
         aria-label="Notifications"
       >
         <Bell className="w-5 h-5 text-slate-900 dark:text-white" />
@@ -76,10 +76,10 @@ export default function NotificationBell() {
                   width: 320,
                   maxWidth: 'calc(100vw - 16px)',
                 }}
-                className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[480px]"
+                className="bg-white/88 dark:bg-slate-900/92 rounded-2xl border border-white/60 dark:border-slate-800 shadow-[0_28px_90px_-34px_rgba(15,23,42,0.72)] backdrop-blur-2xl overflow-hidden flex flex-col max-h-[480px]"
               >
                 {/* Header */}
-                <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 shrink-0">
+                <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-100/80 dark:border-slate-800 shrink-0">
                   <div className="flex items-center gap-2">
                     <h3 className="text-[15px] font-bold text-slate-900 dark:text-white">Notifications</h3>
                     {unreadCount > 0 && (
@@ -122,7 +122,7 @@ export default function NotificationBell() {
                         key={n.id}
                         onClick={() => { markAsRead(n.id); setOpen(false); }}
                         className={cn(
-                          'w-full text-left px-4 py-3 border-b border-slate-50 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors',
+                          'w-full text-left px-4 py-3 border-b border-slate-50/80 dark:border-slate-800/60 hover:bg-blue-50/55 dark:hover:bg-slate-800/40 transition-colors',
                           !n.isRead && 'bg-blue-50/50 dark:bg-blue-950/20',
                         )}
                       >

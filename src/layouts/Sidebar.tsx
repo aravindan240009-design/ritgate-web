@@ -87,7 +87,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 collapsed ? 'justify-center px-0 py-2' : 'px-3 py-2',
                 isActive
                   ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-[0_18px_34px_-22px_rgba(37,99,235,0.95)]'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-blue-50/70 dark:hover:bg-white/10 hover:text-slate-950 dark:hover:text-white hover:shadow-[0_12px_30px_-28px_rgba(37,99,235,0.7)]',
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-blue-50/70 dark:hover:bg-white/10 hover:text-blue-700 dark:hover:text-blue-300 hover:shadow-[0_12px_30px_-28px_rgba(37,99,235,0.7)]',
               )}
             >
               {/* Active left bar */}
@@ -98,7 +98,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
               <item.icon className={cn(
                 'shrink-0 transition-transform duration-150',
                 collapsed ? 'w-5 h-5' : 'w-[18px] h-[18px]',
-                isActive ? 'text-white' : '',
+                isActive ? 'text-white' : 'group-hover:text-blue-700 dark:group-hover:text-blue-300',
                 !isActive && 'group-hover:scale-110',
               )} />
 

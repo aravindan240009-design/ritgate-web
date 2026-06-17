@@ -312,6 +312,18 @@
     box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1), 0 14px 34px -28px rgba(37, 99, 235, 0.48);
   }
 
+  .desktop-page :where(input[placeholder*="Search"], input[placeholder*="search"]) {
+    background: rgba(255, 255, 255, 0.68) !important;
+    border-color: rgba(148, 163, 184, 0.25) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), 0 16px 34px -30px rgba(15, 23, 42, 0.55) !important;
+  }
+
+  .desktop-page :where(input[placeholder*="Search"], input[placeholder*="search"]):hover {
+    border-color: rgba(96, 165, 250, 0.42) !important;
+  }
+
   .dark .desktop-page :where(input:not([type="checkbox"]):not([type="radio"]), textarea, select):not(.desktop-input) {
     border-color: rgba(71, 85, 105, 0.82);
     background-color: rgba(17, 25, 40, 0.9);

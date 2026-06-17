@@ -20,13 +20,13 @@ export default function DesktopToolbar({
   return (
     <div className={cn('desktop-toolbar animate-fade-up', className)}>
       {onSearchChange && (
-        <div className="relative flex-1 min-w-[260px] max-w-[460px]">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <div className="relative flex-1 min-w-[260px] max-w-[560px]">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500/70" />
           <input
             value={searchValue}
             onChange={(event) => onSearchChange(event.target.value)}
             placeholder={searchPlaceholder}
-            className="desktop-input pl-11"
+            className="desktop-input pl-11 hover:border-blue-200"
           />
         </div>
       )}

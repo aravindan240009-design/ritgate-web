@@ -121,7 +121,7 @@ export default function ProfilePage({
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
         <div className="px-5 pt-6 pb-32 min-h-[calc(100vh-100px)] lg:grid lg:h-full lg:min-h-0 lg:w-full lg:grid-cols-[340px_minmax(0,1fr)] lg:items-start lg:gap-6 lg:overflow-hidden lg:px-0 lg:pt-0 lg:pb-0">
-          <div className="flex flex-col items-center mb-8 lg:mb-0 lg:self-start lg:bg-white/78 lg:dark:bg-slate-900/80 lg:border lg:border-white/60 lg:dark:border-slate-800/80 lg:rounded-[24px] lg:px-10 lg:py-8 lg:shadow-[0_18px_45px_rgba(15,23,42,0.08)] lg:backdrop-blur-2xl lg:w-full lg:overflow-hidden">
+          <div className="flex flex-col items-center mb-8 lg:row-span-2 lg:mb-0 lg:self-start lg:bg-white/78 lg:dark:bg-slate-900/80 lg:border lg:border-white/60 lg:dark:border-slate-800/80 lg:rounded-[24px] lg:px-10 lg:py-8 lg:shadow-[0_18px_45px_rgba(15,23,42,0.08)] lg:backdrop-blur-2xl lg:w-full lg:overflow-hidden">
             <div className="relative mb-4">
               <div className="w-[110px] h-[110px] rounded-full border-2 border-blue-700 p-1 flex items-center justify-center bg-white dark:bg-slate-900 shadow-xl shadow-blue-100 lg:h-[138px] lg:w-[138px] lg:border-[3px]">
                 {profileImage ? (
@@ -168,7 +168,7 @@ export default function ProfilePage({
             </div>
           </div>
 
-          <div className="mb-8 lg:mb-0 lg:min-h-0">
+          <div className="mb-8 lg:col-start-2 lg:mb-0 lg:min-h-0">
             <div className="flex items-center justify-between mb-3 px-1">
               <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest lg:text-[15px] lg:tracking-[0.14em]">
                 Interface Theme
@@ -186,7 +186,7 @@ export default function ProfilePage({
             </div>
           </div>
 
-          <div className="mb-10 lg:mb-0 lg:min-h-0 lg:self-start">
+          <div className="mb-10 lg:col-start-2 lg:mb-0 lg:min-h-0 lg:self-start">
             <div className="mb-3 px-2 lg:px-1">
               <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest lg:text-[15px] lg:tracking-[0.14em]">
                 Personal Information

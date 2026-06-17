@@ -181,8 +181,9 @@
   }
 
   .profile-page-content {
+    height: calc(100vh - 82px);
     min-height: calc(100vh - 82px);
-    padding-block: 24px !important;
+    padding-block: 18px !important;
     overflow: hidden;
   }
 

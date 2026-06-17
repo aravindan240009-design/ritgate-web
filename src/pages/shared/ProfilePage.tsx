@@ -120,10 +120,10 @@ export default function ProfilePage({
       )}
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-5 pt-6 pb-32 min-h-[calc(100vh-100px)] lg:mx-auto lg:grid lg:h-[calc(100vh-130px)] lg:min-h-0 lg:w-full lg:max-w-none lg:grid-cols-[330px_minmax(0,1fr)] lg:grid-rows-[auto_auto_1fr] lg:items-start lg:gap-x-8 lg:gap-y-6 lg:overflow-hidden lg:px-0 lg:pt-0 lg:pb-0 xl:grid-cols-[360px_minmax(0,1fr)] xl:gap-x-8">
-          <div className="flex flex-col items-center mb-8 lg:mb-0 lg:row-span-3 lg:h-full lg:self-start lg:bg-white/78 lg:dark:bg-slate-900/80 lg:border lg:border-white/60 lg:dark:border-slate-800/80 lg:rounded-[24px] lg:px-8 lg:py-7 lg:shadow-[0_24px_60px_-38px_rgba(15,23,42,0.62)] lg:backdrop-blur-2xl lg:w-full lg:overflow-hidden">
-            <div className="relative mb-4">
-              <div className="w-[110px] h-[110px] rounded-full border-2 border-blue-700 p-1 flex items-center justify-center bg-white dark:bg-slate-900 shadow-xl shadow-blue-100 lg:h-[112px] lg:w-[112px] lg:border-[3px]">
+        <div className="px-5 pt-6 pb-32 min-h-[calc(100vh-100px)] lg:mx-auto lg:grid lg:h-[calc(100vh-170px)] lg:min-h-0 lg:w-full lg:max-w-none lg:grid-cols-[300px_minmax(0,1fr)] lg:grid-rows-[auto_auto] lg:items-start lg:gap-x-8 lg:gap-y-5 lg:overflow-hidden lg:px-0 lg:pt-0 lg:pb-0 xl:grid-cols-[320px_minmax(0,1fr)] xl:gap-x-8">
+          <div className="flex flex-col items-center mb-8 lg:mb-0 lg:row-span-2 lg:self-stretch lg:bg-white/78 lg:dark:bg-slate-900/80 lg:border lg:border-white/60 lg:dark:border-slate-800/80 lg:rounded-[24px] lg:px-8 lg:py-6 lg:shadow-[0_24px_60px_-38px_rgba(15,23,42,0.62)] lg:backdrop-blur-2xl lg:w-full lg:overflow-hidden">
+            <div className="relative mb-4 lg:mb-3">
+              <div className="w-[110px] h-[110px] rounded-full border-2 border-blue-700 p-1 flex items-center justify-center bg-white dark:bg-slate-900 shadow-xl shadow-blue-100 lg:h-[102px] lg:w-[102px] lg:border-[3px]">
                 {profileImage ? (
                   <img
                     src={profileImage}
@@ -131,28 +131,28 @@ export default function ProfilePage({
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-[38px] font-black text-blue-700 lg:text-[42px]">
+                  <div className="w-full h-full rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-[38px] font-black text-blue-700 lg:text-[38px]">
                     {initials}
                   </div>
                 )}
               </div>
             </div>
-            <h2 className="text-[21px] font-black text-slate-900 dark:text-white uppercase tracking-tight mb-1.5 text-center lg:text-[23px]">
+            <h2 className="text-[21px] font-black text-slate-900 dark:text-white uppercase tracking-tight mb-1.5 text-center lg:text-[20px] lg:leading-none">
               {userName}
             </h2>
-            <p className="text-[12px] font-bold text-slate-400 opacity-80 text-center lg:text-[12px] lg:tracking-[0.14em]">
+            <p className="text-[12px] font-bold text-slate-400 opacity-80 text-center lg:text-[11px] lg:tracking-[0.13em] lg:leading-5">
               {roleLabel} | DEPT: {department}
             </p>
-            <div className="hidden lg:block w-full mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
-              <p className="text-[13px] font-black text-slate-400 uppercase tracking-[0.18em] mb-5">
+            <div className="hidden lg:block w-full mt-5 pt-5 border-t border-slate-100 dark:border-slate-800">
+              <p className="text-[13px] font-black text-slate-400 uppercase tracking-[0.18em] mb-4">
                 Account
               </p>
-              <div className="space-y-5 text-left">
+              <div className="space-y-4 text-left">
                 <div>
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.18em] mb-2">
                     ID
                   </p>
-                  <p className="text-[16px] font-black text-slate-900 dark:text-white truncate">
+                  <p className="text-[15px] font-black text-slate-900 dark:text-white truncate">
                     {userId || "N/A"}
                   </p>
                 </div>
@@ -160,7 +160,7 @@ export default function ProfilePage({
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.18em] mb-2">
                     Department
                   </p>
-                  <p className="text-[16px] font-black text-slate-900 dark:text-white truncate">
+                  <p className="text-[15px] font-black text-slate-900 dark:text-white truncate">
                     {department}
                   </p>
                 </div>
@@ -186,7 +186,7 @@ export default function ProfilePage({
             </div>
           </div>
 
-          <div className="mb-10 lg:mb-0 lg:col-start-2 lg:row-start-2 lg:min-h-0">
+          <div className="mb-10 lg:mb-0 lg:col-start-2 lg:row-start-2 lg:min-h-0 lg:self-start">
             <div className="mb-3 px-2 lg:px-1">
               <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest lg:text-[15px] lg:tracking-[0.14em]">
                 Personal Information
@@ -196,7 +196,7 @@ export default function ProfilePage({
               {menuItems.map((item) => (
                 <div
                   key={item.label}
-                  className="p-5 lg:min-h-[72px] lg:px-7 lg:py-3.5 flex items-center gap-5"
+                  className="p-5 lg:min-h-[66px] lg:px-7 lg:py-3 flex items-center gap-5"
                 >
                   <div
                     className={cn(

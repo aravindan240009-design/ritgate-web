@@ -121,7 +121,7 @@
     z-index: -1;
     border-radius: 9999px;
     filter: blur(42px);
-    opacity: 0.58;
+    opacity: 0.42;
   }
 
   .desktop-shell-bg::before {
@@ -129,7 +129,7 @@
     height: 360px;
     left: 290px;
     top: 110px;
-    background: rgba(96, 165, 250, 0.22);
+    background: rgba(96, 165, 250, 0.16);
   }
 
   .desktop-shell-bg::after {
@@ -137,7 +137,7 @@
     height: 300px;
     right: 4vw;
     top: 34vh;
-    background: rgba(56, 189, 248, 0.16);
+    background: rgba(56, 189, 248, 0.12);
   }
 
   .dark .desktop-shell-bg {
@@ -392,24 +392,24 @@
     transform: scale(0.98);
   }
 
-  .desktop-page :where(button[class*="bg-blue-"], button[class*="bg-[var(--color-primary)]"], a[class*="bg-blue-"]) {
+  .desktop-page :where(button[class*="h-10"][class*="bg-blue-"], button[class*="h-11"][class*="bg-blue-"], button[class*="h-12"][class*="bg-blue-"], button[class*="h-14"][class*="bg-blue-"], button[class*="bg-[var(--color-primary)]"], a[class*="h-10"][class*="bg-blue-"], a[class*="h-11"][class*="bg-blue-"], a[class*="h-12"][class*="bg-blue-"]) {
     background: var(--gradient-primary) !important;
     color: #fff !important;
-    box-shadow: 0 16px 34px -18px rgba(37, 99, 235, 0.85) !important;
+    box-shadow: 0 14px 30px -18px rgba(37, 99, 235, 0.72) !important;
     border-color: rgba(96, 165, 250, 0.35) !important;
   }
 
-  .desktop-page :where(button[class*="bg-emerald-"], a[class*="bg-emerald-"]) {
+  .desktop-page :where(button[class*="h-10"][class*="bg-emerald-"], button[class*="h-11"][class*="bg-emerald-"], button[class*="h-12"][class*="bg-emerald-"], button[class*="h-14"][class*="bg-emerald-"], a[class*="h-10"][class*="bg-emerald-"], a[class*="h-11"][class*="bg-emerald-"], a[class*="h-12"][class*="bg-emerald-"]) {
     background: var(--gradient-success) !important;
     color: #fff !important;
-    box-shadow: 0 16px 34px -18px rgba(16, 185, 129, 0.85) !important;
+    box-shadow: 0 14px 30px -18px rgba(16, 185, 129, 0.72) !important;
     border-color: rgba(16, 185, 129, 0.35) !important;
   }
 
-  .desktop-page :where(button[class*="bg-rose-"], a[class*="bg-rose-"]) {
+  .desktop-page :where(button[class*="h-10"][class*="bg-rose-"], button[class*="h-11"][class*="bg-rose-"], button[class*="h-12"][class*="bg-rose-"], button[class*="h-14"][class*="bg-rose-"], a[class*="h-10"][class*="bg-rose-"], a[class*="h-11"][class*="bg-rose-"], a[class*="h-12"][class*="bg-rose-"]) {
     background: var(--gradient-danger) !important;
     color: #fff !important;
-    box-shadow: 0 16px 34px -18px rgba(244, 63, 94, 0.9) !important;
+    box-shadow: 0 14px 30px -18px rgba(244, 63, 94, 0.76) !important;
     border-color: rgba(244, 63, 94, 0.35) !important;
   }
 
@@ -740,8 +740,8 @@ html, body {
 .animate-pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
 
 @keyframes premium-glow {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.42; }
-  50% { transform: translate3d(18px, -12px, 0) scale(1.04); opacity: 0.58; }
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.28; }
+  50% { transform: translate3d(12px, -8px, 0) scale(1.02); opacity: 0.4; }
 }
 
 @media (prefers-reduced-motion: no-preference) {

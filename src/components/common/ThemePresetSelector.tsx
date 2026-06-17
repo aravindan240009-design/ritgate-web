@@ -17,9 +17,9 @@ export default function ThemePresetSelector() {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-[20px] shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-slate-100 dark:border-slate-800 overflow-hidden mb-4">
+    <div className="bg-white dark:bg-slate-900 rounded-[20px] shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-slate-100 dark:border-slate-800 overflow-hidden mb-4 lg:mb-0">
       {/* Header row: icon + title + dark toggle */}
-      <div className="px-4 pt-3.5 pb-2.5 flex items-center justify-between">
+      <div className="px-4 pt-3.5 pb-2.5 flex items-center justify-between lg:pt-3 lg:pb-2">
         <div className="flex items-center gap-2">
           <Palette className="w-[18px] h-[18px]" style={{ color: activePrimary }} />
           <span className="text-[15px] font-bold text-slate-900 dark:text-white tracking-tight">App Theme</span>
@@ -51,7 +51,7 @@ export default function ThemePresetSelector() {
       {/* Dropdown trigger */}
       <button
         onClick={() => setIsOpen(true)}
-        className="mx-3 mb-3 px-3.5 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700 rounded-xl flex items-center justify-between w-[calc(100%-24px)] active:scale-[0.98] transition-all"
+        className="mx-3 mb-3 px-3.5 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700 rounded-xl flex items-center justify-between w-[calc(100%-24px)] active:scale-[0.98] transition-all lg:mb-2 lg:py-2.5"
       >
         <div className="flex items-center gap-2.5">
           <div className="flex gap-1">
@@ -65,7 +65,7 @@ export default function ThemePresetSelector() {
       </button>
 
       {/* Active label row */}
-      <div className="px-4 py-2.5 border-t border-slate-50 dark:border-slate-800 flex items-center gap-2">
+      <div className="px-4 py-2.5 border-t border-slate-50 dark:border-slate-800 flex items-center gap-2 lg:py-2">
         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: activePrimary }} />
         <span className="text-[12px] font-bold text-slate-500 dark:text-slate-400">
           {active.name} - {isDark ? 'Dark' : 'Light'}

@@ -19,6 +19,7 @@ import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
 import DesktopStatCard from '../../components/desktop/DesktopStatCard';
 import DesktopToolbar from '../../components/desktop/DesktopToolbar';
 import EmptyState from '../../components/ui/EmptyState';
+import TopMenuBar from '../../components/common/TopMenuBar';
 
 type Tab = 'PENDING' | 'APPROVED' | 'REJECTED';
 
@@ -33,7 +34,6 @@ export default function NCIDashboard() {
   const { success: showSuccess, error: showError } = useToast();
   const staffCode = getUserId();
   const staffName = (user as any)?.staffName || (user as any)?.name || 'Staff';
-  const initials = getInitials(staffName);
 
   const [visitorRequests, setVisitorRequests] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -122,7 +122,15 @@ export default function NCIDashboard() {
   }
 
   return (
-    <div className="space-y-4 lg:space-y-6">
+    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
+      {!isDesktop && (
+        <TopMenuBar
+          greeting={new Date().getHours() < 12 ? 'GOOD MORNING,' : new Date().getHours() < 17 ? 'GOOD AFTERNOON,' : 'GOOD EVENING,'}
+          title={staffName.toUpperCase()}
+        />
+      )}
+
+      <div className="px-5 pt-4 space-y-4 lg:px-0 lg:pt-0 lg:space-y-6">
       {isDesktop && (
         <DesktopPageHeader
           eyebrow={new Date().getHours() < 12 ? 'GOOD MORNING' : new Date().getHours() < 17 ? 'GOOD AFTERNOON' : 'GOOD EVENING'}
@@ -130,22 +138,6 @@ export default function NCIDashboard() {
           subtitle="Monitor visitor pre-registration and campus entry requests"
         />
       )}
-
-      {/* Header */}
-      <div className="flex items-center justify-between lg:hidden">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-white font-bold text-base shrink-0">{initials}</div>
-          <div>
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide leading-none">
-              {new Date().getHours() < 12 ? 'GOOD MORNING,' : new Date().getHours() < 17 ? 'GOOD AFTERNOON,' : 'GOOD EVENING,'}
-            </p>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white leading-tight uppercase">{staffName}</h2>
-          </div>
-        </div>
-        <button onClick={fetchData} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center">
-          <RefreshCw className={cn('w-4 h-4 text-slate-500', isLoading && 'animate-spin')} />
-        </button>
-      </div>
 
       {/* Search */}
       {isDesktop && (
@@ -171,13 +163,13 @@ export default function NCIDashboard() {
       )}
 
       {/* Stats Tabs */}
-      <div className="flex border-b border-slate-100 dark:border-slate-800 lg:hidden">
+      <div className="flex bg-white dark:bg-slate-900 rounded-[24px] p-2 shadow-sm border border-slate-50 dark:border-slate-800 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all lg:hidden">
         {(['PENDING', 'APPROVED', 'REJECTED'] as Tab[]).map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={cn('flex-1 py-3 text-[11px] font-bold uppercase tracking-wider border-b-2 transition-colors',
-              activeTab === t ? t === 'PENDING' ? 'border-amber-500 text-amber-600' : t === 'APPROVED' ? 'border-emerald-500 text-emerald-600' : 'border-rose-500 text-rose-600' : 'border-transparent text-slate-400')}>
+            className={cn('flex-1 py-2 text-[10px] font-black uppercase tracking-widest border-b-2 transition-colors',
+              activeTab === t ? t === 'PENDING' ? 'border-amber-500 text-amber-500' : t === 'APPROVED' ? 'border-emerald-500 text-emerald-500' : 'border-rose-500 text-rose-500' : 'border-transparent text-slate-400')}>
             <div>{t}</div>
-            <div className={cn('text-xl font-bold mt-0.5', activeTab === t ? '' : 'text-slate-600 dark:text-white')}>
+            <div className={cn('text-[18px] font-black mt-1', activeTab === t ? 'text-slate-900 dark:text-white' : 'text-slate-300')}>
               {t === 'PENDING' ? stats.pending : t === 'APPROVED' ? stats.approved : stats.rejected}
             </div>
           </button>
@@ -254,11 +246,11 @@ export default function NCIDashboard() {
           )}
         </section>
       ) : (
-      <div className="space-y-3">
+      <div className="space-y-3 pb-28">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center py-16 gap-3">
+          <div className="flex min-h-[42vh] flex-col items-center justify-center gap-3">
             <Users className="w-12 h-12 text-slate-200" />
-            <p className="text-sm font-semibold text-slate-400">No {activeTab.toLowerCase()} visitor requests</p>
+            <p className="text-sm font-bold text-slate-400">No {activeTab.toLowerCase()} visitor requests</p>
           </div>
         ) : (
           <AnimatePresence mode="popLayout">
@@ -325,6 +317,7 @@ export default function NCIDashboard() {
         )}
       </div>
       )}
+      </div>
 
       {/* Detail Modal */}
       <Modal isOpen={showDetail} onClose={() => setShowDetail(false)} title="Visitor Request Details" size="md">

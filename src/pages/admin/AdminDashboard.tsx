@@ -126,7 +126,7 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
   }
 
   return (
-    <div className="space-y-4 pb-10 lg:space-y-8">
+    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
       {isMobile && (
         <TopMenuBar
           greeting={greeting.toUpperCase()}
@@ -134,60 +134,19 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
         />
       )}
 
+      <div className="px-5 pt-4 space-y-4 pb-28 lg:px-0 lg:pt-0 lg:pb-0 lg:space-y-8">
       {/* 1. Greeting & User Info */}
       <div className="hidden lg:block" />
 
-      {/* 2. Stats Cards */}
-      {isDesktop ? (
-        <div className="grid grid-cols-3 gap-4">
-          <DesktopStatCard label="Pending" value={stats.pending} icon={Clock} tone="amber" active={activeTab === 'PENDING'} onClick={() => setActiveTab('PENDING')} />
-          <DesktopStatCard label="Approved" value={stats.approved} icon={CheckCircle} tone="emerald" active={activeTab === 'APPROVED'} onClick={() => setActiveTab('APPROVED')} />
-          <DesktopStatCard label="Rejected" value={stats.rejected} icon={XCircle} tone="rose" active={activeTab === 'REJECTED'} onClick={() => setActiveTab('REJECTED')} />
-        </div>
-      ) : (
-      <div className="flex bg-white dark:bg-slate-900 rounded-[24px] p-2 shadow-sm border border-slate-50 dark:border-slate-800 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all lg:hidden">
-        {(['PENDING', 'APPROVED', 'REJECTED'] as TabType[]).map((tab) => {
-          const isActive = activeTab === tab;
-          const colors = { PENDING: 'text-amber-500', APPROVED: 'text-emerald-500', REJECTED: 'text-rose-500' };
-          const borders = { PENDING: 'border-amber-500', APPROVED: 'border-emerald-500', REJECTED: 'border-rose-500' };
-          const values = { PENDING: stats.pending, APPROVED: stats.approved, REJECTED: stats.rejected };
-
-          return (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={cn(
-                'flex-1 flex flex-col items-center py-2 transition-all border-b-2',
-                isActive ? borders[tab] : 'border-transparent',
-              )}
-            >
-              <span className={cn('text-[10px] font-black uppercase tracking-widest mb-1', isActive ? colors[tab] : 'text-slate-400')}>
-                {tab}
-              </span>
-              <span className={cn('text-[18px] font-black', isActive ? 'text-slate-900 dark:text-white' : 'text-slate-300')}>
-                {values[tab]}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-      )}
-
-      {/* 3. Search & Filter */}
-      {isDesktop ? (
-        <DesktopToolbar
-          searchValue={searchQuery}
-          onSearchChange={setSearchQuery}
-          searchPlaceholder="Search visitor requests..."
-        />
-      ) : (
+      {/* 2. Search & Filter */}
+      {!isDesktop && (
       <div className="space-y-4">
         <div className="relative">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10">
             <Search className="w-5 h-5" />
           </div>
-          <input 
-            type="text" 
+          <input
+            type="text"
             placeholder="Search requests..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -195,6 +154,50 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
           />
         </div>
       </div>
+      )}
+
+      {/* 3. Stats Cards */}
+      {isDesktop ? (
+        <div className="grid grid-cols-3 gap-4">
+          <DesktopStatCard label="Pending" value={stats.pending} icon={Clock} tone="amber" active={activeTab === 'PENDING'} onClick={() => setActiveTab('PENDING')} />
+          <DesktopStatCard label="Approved" value={stats.approved} icon={CheckCircle} tone="emerald" active={activeTab === 'APPROVED'} onClick={() => setActiveTab('APPROVED')} />
+          <DesktopStatCard label="Rejected" value={stats.rejected} icon={XCircle} tone="rose" active={activeTab === 'REJECTED'} onClick={() => setActiveTab('REJECTED')} />
+        </div>
+      ) : (
+        <div className="flex bg-white dark:bg-slate-900 rounded-[24px] p-2 shadow-sm border border-slate-50 dark:border-slate-800 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all lg:hidden">
+          {(['PENDING', 'APPROVED', 'REJECTED'] as TabType[]).map((tab) => {
+            const isActive = activeTab === tab;
+            const colors = { PENDING: 'text-amber-500', APPROVED: 'text-emerald-500', REJECTED: 'text-rose-500' };
+            const borders = { PENDING: 'border-amber-500', APPROVED: 'border-emerald-500', REJECTED: 'border-rose-500' };
+            const values = { PENDING: stats.pending, APPROVED: stats.approved, REJECTED: stats.rejected };
+
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={cn(
+                  'flex-1 flex flex-col items-center py-2 transition-all border-b-2',
+                  isActive ? borders[tab] : 'border-transparent',
+                )}
+              >
+                <span className={cn('text-[10px] font-black uppercase tracking-widest mb-1', isActive ? colors[tab] : 'text-slate-400')}>
+                  {tab}
+                </span>
+                <span className={cn('text-[18px] font-black', isActive ? 'text-slate-900 dark:text-white' : 'text-slate-300')}>
+                  {values[tab]}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {isDesktop && (
+        <DesktopToolbar
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder="Search visitor requests..."
+        />
       )}
 
       {/* 4. Requests List */}
@@ -258,11 +261,13 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
         </div>
 
         {filtered.length === 0 ? (
-          <EmptyState 
-            title={EMPTY_COPY.noRequestsFound} 
-            description={searchQuery ? "No requests matching your search." : `No ${activeTab.toLowerCase()} visitor requests.`}
-            icon={<FileText className="w-12 h-12 text-slate-200" />} 
-          />
+          <div className="flex min-h-[42vh] items-center justify-center">
+            <EmptyState
+              title={EMPTY_COPY.noRequestsFound}
+              description={searchQuery ? "No requests matching your search." : `No ${activeTab.toLowerCase()} visitor requests.`}
+              icon={<FileText className="w-12 h-12 text-slate-200" />}
+            />
+          </div>
         ) : (
           <div className="space-y-3">
             <AnimatePresence mode="popLayout">
@@ -299,6 +304,7 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
         )}
       </div>
       )}
+      </div>
     </div>
   );
 }

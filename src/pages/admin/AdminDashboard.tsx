@@ -10,8 +10,7 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  FileText,
-  Plus
+  FileText
 } from 'lucide-react';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import Card from '../../components/ui/Card';
@@ -28,7 +27,6 @@ import { cn } from '../../utils/cn';
 import { transitions } from '../../design-system/animations';
 import { EMPTY_COPY } from '../../config/nativeCopy';
 import { useAdaptive } from '../../utils/useAdaptive';
-import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
 import DesktopStatCard from '../../components/desktop/DesktopStatCard';
 import DesktopToolbar from '../../components/desktop/DesktopToolbar';
 
@@ -131,15 +129,6 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
 
   return (
     <div className="space-y-8 pb-10">
-      {isDesktop && (
-        <DesktopPageHeader
-          eyebrow={greeting.replace(',', '')}
-          title="Dashboard"
-          subtitle="Monitor website visitor requests and administrative clearances"
-          action={<Button icon={<Plus className="w-4 h-4" />} onClick={() => onNavigate?.('new-pass')}>New Pass</Button>}
-        />
-      )}
-
       {/* 1. Greeting & User Info */}
       <div className="text-left px-1 lg:hidden">
         <p className="text-[14px] font-semibold text-slate-400 leading-none">{greeting}</p>

@@ -109,7 +109,7 @@ export default function StudentRequests() {
   const initials = studentName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
 
   return (
-    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
+    <div className="min-h-screen lg:bg-transparent lg:min-h-0 bg-[#F8FAFC] dark:bg-slate-950">
       <PageHeader title="My Requests" />
 
       {isDesktop && (

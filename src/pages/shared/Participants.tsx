@@ -52,7 +52,7 @@ const Participants: React.FC<ParticipantsProps> = ({
   }, [participants, activeTab, search, showTabs]);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen lg:min-h-0 lg:bg-transparent bg-slate-50 dark:bg-slate-950">
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-6 py-4">
         <div className="flex items-center gap-4">

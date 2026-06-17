@@ -122,7 +122,7 @@ export default function NCIDashboard() {
   }
 
   return (
-    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
+    <div className="min-h-screen lg:bg-transparent lg:min-h-0 bg-[#F8FAFC] dark:bg-slate-950">
       {!isDesktop && (
         <TopMenuBar
           greeting={new Date().getHours() < 12 ? 'GOOD MORNING,' : new Date().getHours() < 17 ? 'GOOD AFTERNOON,' : 'GOOD EVENING,'}

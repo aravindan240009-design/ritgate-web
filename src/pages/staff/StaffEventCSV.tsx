@@ -178,7 +178,7 @@ export default function StaffEventCSV() {
   if (view === 'result' && selectedEvent && uploadResult) {
     const allIssued = uploadResult.failed === 0;
     return (
-      <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
+      <div className="min-h-screen lg:bg-transparent lg:min-h-0 bg-[#F8FAFC] dark:bg-slate-950">
         <PageHeader title="Upload Complete" onBack={() => { setView('events'); setSelectedEvent(null); setUploadResult(null); }} />
         {isDesktop && <DesktopPageHeader title="Upload Complete" subtitle="Review event visitor pass creation results" />}
         <div className="px-5 py-5 pb-28 space-y-5 lg:px-0 lg:py-0 lg:max-w-none">
@@ -264,7 +264,7 @@ export default function StaffEventCSV() {
   // ─── Preview ──────────────────────────────────────────────────────────────────
   if (view === 'preview' && selectedEvent) {
     return (
-      <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
+      <div className="min-h-screen lg:bg-transparent lg:min-h-0 bg-[#F8FAFC] dark:bg-slate-950">
         <PageHeader title="Review Participants" onBack={() => setView('upload')} />
         {isDesktop && <DesktopPageHeader title="Review Participants" subtitle="Validate participant rows before issuing passes" />}
         <div className="px-5 py-5 pb-28 space-y-5 lg:px-0 lg:py-0 lg:max-w-none">
@@ -335,7 +335,7 @@ export default function StaffEventCSV() {
   // ─── Upload ───────────────────────────────────────────────────────────────────
   if (view === 'upload' && selectedEvent) {
     return (
-      <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
+      <div className="min-h-screen lg:bg-transparent lg:min-h-0 bg-[#F8FAFC] dark:bg-slate-950">
         <PageHeader title="Upload Participants" onBack={() => { setView('events'); setSelectedEvent(null); }} />
         {isDesktop && <DesktopPageHeader title="Upload Participants" subtitle="Upload and manage event visitor/pass data" />}
         <div className="px-5 py-5 pb-28 space-y-5 lg:px-0 lg:py-0 lg:max-w-none">
@@ -405,7 +405,7 @@ export default function StaffEventCSV() {
 
   // ─── Event List ───────────────────────────────────────────────────────────────
   return (
-    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
+    <div className="min-h-screen lg:bg-transparent lg:min-h-0 bg-[#F8FAFC] dark:bg-slate-950">
       <PageHeader title="Event CSV Upload" />
       {isDesktop && <DesktopPageHeader title="Event CSV" subtitle="Upload and manage event visitor/pass data" />}
       <TopRefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); loadEvents(); }}>

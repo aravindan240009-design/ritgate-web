@@ -116,7 +116,7 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
   };
 
   return (
-    <div className={embedded ? "contents" : "flex flex-col min-h-screen bg-[#F8FAFC] dark:bg-slate-950"}>
+    <div className={embedded ? "contents" : "flex flex-col min-h-screen lg:min-h-0 lg:bg-transparent bg-[#F8FAFC] dark:bg-slate-950"}>
       {/* Header — mobile only (dashboard uses the AppLayout header) */}
       {!embedded && (
         <header

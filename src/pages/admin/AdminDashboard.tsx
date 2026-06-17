@@ -126,7 +126,7 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
   }
 
   return (
-    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
+    <div className="min-h-screen lg:bg-transparent lg:min-h-0 bg-[#F8FAFC] dark:bg-slate-950">
       {isMobile && (
         <TopMenuBar
           greeting={greeting.toUpperCase()}

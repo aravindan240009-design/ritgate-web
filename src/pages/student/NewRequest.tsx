@@ -98,7 +98,7 @@ export default function NewRequest() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 flex flex-col lg:min-h-0 lg:bg-transparent">
+    <div className="min-h-screen flex flex-col lg:min-h-0 lg:bg-transparent bg-[#F8FAFC] dark:bg-slate-950">
       {/* Header — mobile only (dashboard uses the AppLayout header) */}
       <header
         className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 lg:hidden"

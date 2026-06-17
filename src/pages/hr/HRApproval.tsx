@@ -87,7 +87,7 @@ export default function HRApproval({ request, onBack, onSuccess }: HRApprovalPro
 
   return (
     <div
-      className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col px-4 pb-12 overflow-y-auto"
+      className="min-h-screen flex flex-col px-4 pb-12 overflow-y-auto lg:min-h-0 lg:bg-transparent bg-slate-50 dark:bg-slate-950"
       style={{ paddingTop: 'env(safe-area-inset-top)' }}
     >
       {/* Header */}

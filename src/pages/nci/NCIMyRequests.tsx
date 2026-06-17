@@ -87,7 +87,7 @@ export default function NCIMyRequests() {
   }
 
   return (
-    <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen lg:bg-transparent lg:min-h-0">
+    <div className="min-h-screen lg:bg-transparent lg:min-h-0 bg-[#F8FAFC] dark:bg-slate-950">
       <div className="px-5 pt-4 space-y-4 lg:px-0 lg:pt-0">
         {isDesktop ? (
           <DesktopPageHeader

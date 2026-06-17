@@ -42,7 +42,7 @@ export default function AdminDashboardContainer() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950">
+    <div className="min-h-screen lg:min-h-0 lg:bg-transparent bg-[#F8FAFC] dark:bg-slate-950">
       {renderContent()}
     </div>
   );

@@ -56,6 +56,15 @@ export default function SplashPage() {
     }
   }, [isBackendReady, isAuthenticated, navigate]);
 
+  // Fallback: never strand the user on the splash if the wake-up ping
+  // fails or times out (backend asleep / offline).
+  useEffect(() => {
+    const fallback = setTimeout(() => {
+      navigate(isAuthenticated ? '/dashboard' : '/login', { replace: true });
+    }, 12000);
+    return () => clearTimeout(fallback);
+  }, [isAuthenticated, navigate]);
+
   return (
     <div className="fixed inset-0 bg-[#F7F9FF] overflow-hidden flex flex-col items-center justify-center">
       {/* Cinematic Particles */}

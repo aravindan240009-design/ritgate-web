@@ -45,14 +45,21 @@ api.interceptors.response.use(
       logoutHandler?.();
     }
 
-    // Retry on 5xx
-    const config = error.config as InternalAxiosRequestConfig & { _retryCount?: number };
+    // Retry on 5xx / network errors (timeouts, cold-start 502/503). 4xx are
+    // client errors (auth, not-found) and fail fast — no point retrying them.
+    const config = error.config as (InternalAxiosRequestConfig & { _retryCount?: number }) | undefined;
     const status = error.response?.status ?? 0;
     const isRetryable = status >= 500 || !error.response;
 
-    if (isRetryable && (config._retryCount ?? 0) < API_CONFIG.RETRY_ATTEMPTS) {
+    if (config && isRetryable && (config._retryCount ?? 0) < API_CONFIG.RETRY_ATTEMPTS) {
       config._retryCount = (config._retryCount ?? 0) + 1;
-      await new Promise((r) => setTimeout(r, API_CONFIG.RETRY_DELAY));
+      // Exponential backoff (capped) so retries span a cold-start window
+      // instead of giving up after one quick attempt.
+      const backoff = Math.min(
+        API_CONFIG.RETRY_DELAY * 2 ** (config._retryCount - 1),
+        API_CONFIG.RETRY_MAX_DELAY,
+      );
+      await new Promise((r) => setTimeout(r, backoff));
       return api(config);
     }
 

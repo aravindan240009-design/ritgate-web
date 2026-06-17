@@ -178,10 +178,10 @@ export default function ProfilePage({
       )}
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-5 pt-6 pb-32 min-h-[calc(100vh-100px)] lg:mx-auto lg:grid lg:h-full lg:min-h-0 lg:w-full lg:max-w-[1180px] lg:grid-cols-[330px_minmax(0,1fr)] lg:grid-rows-[74px_auto_auto] lg:items-start lg:gap-x-6 lg:gap-y-3 lg:overflow-hidden lg:px-0 lg:pt-0 lg:pb-0 xl:max-w-[1280px] xl:grid-cols-[350px_minmax(0,1fr)] xl:gap-x-7">
-          <div className="flex flex-col items-center mb-8 lg:mb-0 lg:row-span-3 lg:h-[500px] xl:h-[520px] lg:self-start lg:bg-white/78 lg:dark:bg-slate-900/80 lg:border lg:border-white/60 lg:dark:border-slate-800/80 lg:rounded-[18px] lg:px-7 lg:py-6 lg:shadow-[0_24px_60px_-38px_rgba(15,23,42,0.62)] lg:backdrop-blur-2xl lg:w-full lg:overflow-hidden">
-            <div className="relative mb-4">
-              <div className="w-[110px] h-[110px] rounded-full border-2 border-blue-700 p-1 flex items-center justify-center bg-white dark:bg-slate-900 shadow-xl shadow-blue-100 lg:h-[104px] lg:w-[104px] lg:border-[3px]">
+        <div className="px-5 pt-6 pb-32 min-h-[calc(100vh-100px)] lg:mx-auto lg:grid lg:h-full lg:min-h-0 lg:w-full lg:max-w-[1120px] lg:grid-cols-[280px_minmax(0,1fr)] lg:grid-rows-[74px_auto_auto] lg:items-start lg:gap-x-6 lg:gap-y-3 lg:overflow-hidden lg:px-0 lg:pt-0 lg:pb-0 xl:max-w-[1200px] xl:grid-cols-[300px_minmax(0,1fr)] xl:gap-x-7">
+          <div className="flex flex-col items-center mb-8 lg:mb-0 lg:row-span-3 lg:h-[440px] xl:h-[460px] lg:self-start lg:bg-white/78 lg:dark:bg-slate-900/80 lg:border lg:border-white/60 lg:dark:border-slate-800/80 lg:rounded-[18px] lg:px-6 lg:py-5 lg:shadow-[0_24px_60px_-38px_rgba(15,23,42,0.62)] lg:backdrop-blur-2xl lg:w-full lg:overflow-hidden">
+            <div className="relative mb-3">
+              <div className="w-[110px] h-[110px] rounded-full border-2 border-blue-700 p-1 flex items-center justify-center bg-white dark:bg-slate-900 shadow-xl shadow-blue-100 lg:h-[92px] lg:w-[92px] lg:border-[3px]">
                 {profileImage ? (
                   <img
                     src={profileImage}
@@ -189,20 +189,20 @@ export default function ProfilePage({
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-[38px] font-black text-blue-700 lg:text-[36px]">
+                  <div className="w-full h-full rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-[38px] font-black text-blue-700 lg:text-[32px]">
                     {initials}
                   </div>
                 )}
               </div>
             </div>
-            <h2 className="text-[21px] font-black text-slate-900 dark:text-white uppercase tracking-tight mb-1 text-center lg:text-[23px]">
+            <h2 className="text-[21px] font-black text-slate-900 dark:text-white uppercase tracking-tight mb-1 text-center lg:text-[20px]">
               {userName}
             </h2>
-            <p className="text-[12px] font-bold text-slate-400 opacity-80 text-center lg:text-[13px] lg:tracking-[0.08em]">
+            <p className="text-[12px] font-bold text-slate-400 opacity-80 text-center lg:text-[11px] lg:tracking-[0.08em]">
               {roleLabel} | DEPT: {department}
             </p>
-            <div className="hidden lg:block w-full mt-5 pt-5 border-t border-slate-100 dark:border-slate-800">
-              <p className="text-[12px] font-black text-slate-400 uppercase tracking-[0.18em] mb-4">
+            <div className="hidden lg:block w-full mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+              <p className="text-[12px] font-black text-slate-400 uppercase tracking-[0.18em] mb-3">
                 Account
               </p>
               <div className="space-y-3 text-left">

@@ -138,6 +138,8 @@ export interface GroupPassRequest {
   status: GatePassStatus;
   qrCode?: string;
   manualCode?: string;
+  attachmentUri?: string;
+  fileUrl?: string;
   createdAt?: string;
   participants?: BulkPassParticipant[];
 }

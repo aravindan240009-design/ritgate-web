@@ -30,6 +30,15 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const originalTitle = useRef(document.title);
 
+  const getNotificationScope = useCallback(() => {
+    const userId = getUserId();
+    return userId && role ? `${role}:${userId}` : 'anonymous';
+  }, [getUserId, role]);
+
+  const resetDocumentTitle = useCallback(() => {
+    document.title = originalTitle.current;
+  }, []);
+
   // Check initial permission
   useEffect(() => {
     if ('Notification' in window) {
@@ -45,6 +54,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     try {
       const data = await getNotifications(userId, role);
+      const dismissedIds = storage.getDismissedNotifIds(getNotificationScope());
       const notifs = (data || []).map((n: any) => ({
         id: n.id,
         userId: n.userId || userId,
@@ -55,7 +65,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         isRead: n.isRead || n.is_read || false,
         createdAt: n.createdAt || n.created_at || new Date().toISOString(),
         actionRoute: n.actionRoute,
-      })) as AppNotification[];
+      })).filter((n: AppNotification) => !dismissedIds.has(Number(n.id))) as AppNotification[];
 
       setNotifications(notifs);
 
@@ -83,7 +93,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [isAuthenticated, getUserId, role]);
+  }, [isAuthenticated, getUserId, role, getNotificationScope]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -99,9 +109,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   const markAsRead = useCallback(async (id: number) => {
     // Dismiss on view — remove from list immediately
+    storage.addDismissedNotifIds(getNotificationScope(), [id]);
     setNotifications((prev) => prev.filter((n) => n.id !== id));
     try { await markNotificationRead(id); } catch { /* silent */ }
-  }, []);
+  }, [getNotificationScope]);
 
   const markAllAsRead = useCallback(() => {
     notifications.filter((n) => !n.isRead).forEach((n) => markNotificationRead(n.id).catch(() => {}));
@@ -110,9 +121,11 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   const clearAllNotifications = useCallback(() => {
     // Mark all as read on the server, then clear locally
+    storage.addDismissedNotifIds(getNotificationScope(), notifications.map((n) => n.id));
     notifications.forEach((n) => markNotificationRead(n.id).catch(() => {}));
     setNotifications([]);
-  }, [notifications]);
+    resetDocumentTitle();
+  }, [notifications, getNotificationScope, resetDocumentTitle]);
 
   const requestPushPermission = async () => {
     if (!('Notification' in window)) {

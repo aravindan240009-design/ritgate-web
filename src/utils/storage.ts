@@ -53,6 +53,30 @@ export const storage = {
     localStorage.setItem(STORAGE_KEYS.SHOWN_NOTIF_IDS, JSON.stringify(arr));
   },
 
+  getDismissedNotifIds(scope: string): Set<number> {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.DISMISSED_NOTIF_IDS);
+      const all = raw ? JSON.parse(raw) : {};
+      return new Set(all[scope] || []);
+    } catch {
+      return new Set();
+    }
+  },
+
+  addDismissedNotifIds(scope: string, ids: number[]): void {
+    if (ids.length === 0) return;
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.DISMISSED_NOTIF_IDS);
+      const all = raw ? JSON.parse(raw) : {};
+      const existing = new Set<number>(all[scope] || []);
+      ids.forEach((id) => existing.add(id));
+      all[scope] = [...existing].slice(-500);
+      localStorage.setItem(STORAGE_KEYS.DISMISSED_NOTIF_IDS, JSON.stringify(all));
+    } catch {
+      // Ignore storage failures; server read state still handles the fallback.
+    }
+  },
+
   clearAll(): void {
     localStorage.removeItem(STORAGE_KEYS.SESSION);
     localStorage.removeItem(STORAGE_KEYS.SHOWN_NOTIF_IDS);

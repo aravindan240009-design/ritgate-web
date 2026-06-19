@@ -65,4 +65,5 @@ export const STORAGE_KEYS = {
   DEVICE_ID: 'ritgate_device_id',
   THEME: 'ritgate_theme',
   SHOWN_NOTIF_IDS: 'ritgate_shown_notif_ids',
+  DISMISSED_NOTIF_IDS: 'ritgate_dismissed_notif_ids',
 };

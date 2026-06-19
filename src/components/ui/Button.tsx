@@ -15,10 +15,10 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants = {
   primary: 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-[0_16px_32px_-18px_rgba(37,99,235,0.9)] hover:from-blue-500 hover:to-blue-700 hover:shadow-[0_20px_42px_-18px_rgba(37,99,235,0.95)]',
-  secondary: 'bg-white/78 text-slate-900 border border-slate-200/80 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.6)] backdrop-blur-xl hover:border-blue-200 hover:bg-blue-50/70 dark:bg-slate-900/72 dark:text-slate-100 dark:border-slate-700/80 dark:hover:bg-blue-950/30',
+  secondary: 'bg-white/78 !text-slate-900 border border-slate-200/80 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.6)] backdrop-blur-xl hover:border-blue-200 hover:bg-blue-50/70 dark:bg-slate-900/72 dark:!text-slate-100 dark:border-slate-700/80 dark:hover:bg-blue-950/30',
   danger: 'bg-gradient-to-br from-rose-500 to-rose-700 text-white shadow-[0_16px_34px_-18px_rgba(244,63,94,0.95)] hover:from-rose-400 hover:to-rose-700',
   ghost: 'bg-transparent text-[var(--color-primary)] hover:bg-blue-50/80 dark:text-blue-400 dark:hover:bg-blue-950/30',
-  outline: 'border border-blue-300/80 bg-white/45 text-[var(--color-primary)] shadow-sm backdrop-blur-xl hover:bg-blue-50 dark:border-blue-800 dark:text-blue-300 dark:bg-slate-950/40',
+  outline: 'border border-blue-300/80 bg-white/65 !text-blue-700 shadow-sm backdrop-blur-xl hover:bg-blue-50 dark:border-blue-800 dark:!text-blue-300 dark:bg-slate-950/40',
   success: 'bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-[0_16px_34px_-18px_rgba(16,185,129,0.9)] hover:from-emerald-400 hover:to-emerald-700',
 };
 

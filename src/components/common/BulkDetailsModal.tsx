@@ -19,6 +19,7 @@ import { formatDateShort } from '../../utils/date';
 import Button from '../ui/Button';
 import ConfirmationModal from './ConfirmationModal';
 import Badge from '../ui/Badge';
+import { useAdaptive } from '../../utils/useAdaptive';
 
 interface BulkDetailsModalProps {
   isOpen: boolean;
@@ -37,6 +38,7 @@ export default function BulkDetailsModal({
   onReject,
   showActions = false,
 }: BulkDetailsModalProps) {
+  const { isDesktop } = useAdaptive();
   const [loading, setLoading] = useState(true);
   const [details, setDetails] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -86,14 +88,21 @@ export default function BulkDetailsModal({
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="fixed inset-0 z-[100] bg-slate-50 dark:bg-slate-950 flex flex-col pt-safe"
+        initial={isDesktop ? { opacity: 0 } : { y: '100%' }}
+        animate={isDesktop ? { opacity: 1 } : { y: 0 }}
+        exit={isDesktop ? { opacity: 0 } : { y: '100%' }}
+        transition={isDesktop ? { duration: 0.18, ease: 'easeOut' } : { type: 'spring', damping: 25, stiffness: 200 }}
+        className="fixed inset-0 z-[100] bg-slate-50 dark:bg-slate-950 flex flex-col pt-safe lg:bg-slate-950/25 lg:dark:bg-slate-950/55 lg:backdrop-blur-md lg:p-8 lg:items-center lg:justify-center"
       >
+        <motion.div
+          initial={isDesktop ? { opacity: 0, y: 16, scale: 0.98 } : undefined}
+          animate={isDesktop ? { opacity: 1, y: 0, scale: 1 } : undefined}
+          exit={isDesktop ? { opacity: 0, y: 10, scale: 0.98 } : undefined}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+          className="flex min-h-0 w-full flex-1 flex-col bg-slate-50 dark:bg-slate-950 lg:max-h-[82vh] lg:max-w-[1120px] lg:flex-none lg:overflow-hidden lg:rounded-[28px] lg:border lg:border-white/60 lg:shadow-[0_28px_80px_-34px_rgba(15,23,42,0.55)] lg:dark:border-slate-700/70"
+        >
         {/* Header */}
-        <header className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 h-16 flex items-center gap-3 z-10">
+        <header className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 h-16 flex items-center gap-3 z-10 lg:px-6">
           <button 
             onClick={onClose}
             className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-900 dark:text-white active:scale-95 transition-transform"
@@ -127,9 +136,9 @@ export default function BulkDetailsModal({
               <Button variant="outline" onClick={loadDetails}>Retry</Button>
             </div>
           ) : (
-            <div className="p-4 space-y-4">
+            <div className="p-4 space-y-4 lg:p-6 lg:space-y-5">
               {/* Profile Row */}
-              <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex items-center gap-4">
+              <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex items-center gap-4 lg:rounded-[22px] lg:p-5">
                 <div className="w-14 h-14 bg-[var(--color-primary)] rounded-2xl flex items-center justify-center text-white text-xl font-black shadow-lg shadow-blue-200 dark:shadow-none">
                   {(details?.requestedByStaffName || 'U').charAt(0).toUpperCase()}
                 </div>
@@ -150,7 +159,7 @@ export default function BulkDetailsModal({
               </div>
 
               {/* Info Grid */}
-              <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 grid grid-cols-2 shadow-sm">
+              <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 grid grid-cols-2 shadow-sm lg:rounded-[22px]">
                 <div className="p-4 border-r border-slate-50 dark:border-slate-800">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Purpose</p>
                   <p className="text-sm font-bold text-slate-900 dark:text-white line-clamp-2 leading-tight">
@@ -169,7 +178,7 @@ export default function BulkDetailsModal({
               </div>
 
               {/* Reason */}
-              <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+              <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm lg:rounded-[22px] lg:p-5">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Reason</p>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 leading-relaxed">
                   {details?.reason || 'No detailed reason provided.'}
@@ -220,14 +229,14 @@ export default function BulkDetailsModal({
                 </div>
               )}
 
-              <div className="h-20" /> {/* Spacer for footer */}
+              <div className="h-20 lg:h-4" /> {/* Spacer for footer */}
             </div>
           )}
         </div>
 
         {/* Footer Actions */}
         {!loading && !error && showActions && !isApproved && !isRejected && (
-          <div className="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 p-4 pb-safe space-y-3 shadow-[0_-8px_24px_rgba(0,0,0,0.05)]">
+          <div className="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 p-4 pb-safe space-y-3 shadow-[0_-8px_24px_rgba(0,0,0,0.05)] lg:p-5">
             <textarea
               value={remark}
               onChange={(e) => setRemark(e.target.value)}
@@ -305,6 +314,7 @@ export default function BulkDetailsModal({
           }}
           onCancel={() => setShowRejectConfirm(false)}
         />
+        </motion.div>
       </motion.div>
     </AnimatePresence>
   );

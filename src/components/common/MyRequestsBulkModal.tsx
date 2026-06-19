@@ -8,6 +8,7 @@ import { isPdfAttachment } from '../../utils/attachmentUtils';
 import Badge from '../ui/Badge';
 import GatePassQRModal from './GatePassQRModal';
 import Button from '../ui/Button';
+import { useAdaptive } from '../../utils/useAdaptive';
 
 interface MyRequestsBulkModalProps {
   isOpen: boolean;
@@ -34,6 +35,7 @@ export default function MyRequestsBulkModal({
   onReject,
   showActions,
 }: MyRequestsBulkModalProps) {
+  const { isDesktop } = useAdaptive();
   const [loading, setLoading] = useState(true);
   const [details, setDetails] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -102,14 +104,21 @@ export default function MyRequestsBulkModal({
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="fixed inset-0 z-[120] bg-white dark:bg-slate-950 flex flex-col pt-safe"
+        initial={isDesktop ? { opacity: 0 } : { y: '100%' }}
+        animate={isDesktop ? { opacity: 1 } : { y: 0 }}
+        exit={isDesktop ? { opacity: 0 } : { y: '100%' }}
+        transition={isDesktop ? { duration: 0.18, ease: 'easeOut' } : { type: 'spring', damping: 25, stiffness: 200 }}
+        className="fixed inset-0 z-[120] bg-white dark:bg-slate-950 flex flex-col pt-safe lg:bg-slate-950/25 lg:dark:bg-slate-950/55 lg:backdrop-blur-md lg:p-8 lg:items-center lg:justify-center"
       >
+        <motion.div
+          initial={isDesktop ? { opacity: 0, y: 16, scale: 0.98 } : undefined}
+          animate={isDesktop ? { opacity: 1, y: 0, scale: 1 } : undefined}
+          exit={isDesktop ? { opacity: 0, y: 10, scale: 0.98 } : undefined}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+          className="flex min-h-0 w-full flex-1 flex-col bg-white dark:bg-slate-950 lg:max-h-[82vh] lg:max-w-[1120px] lg:flex-none lg:overflow-hidden lg:rounded-[28px] lg:border lg:border-white/60 lg:shadow-[0_28px_80px_-34px_rgba(15,23,42,0.55)] lg:dark:border-slate-700/70"
+        >
         {/* Header */}
-        <header className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 h-16 flex items-center gap-3 z-20">
+        <header className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 h-16 flex items-center gap-3 z-20 lg:px-6">
           <button 
             onClick={onClose}
             className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-900 dark:text-white active:scale-95 transition-transform"
@@ -125,7 +134,7 @@ export default function MyRequestsBulkModal({
         </header>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto lg:bg-slate-50/70 lg:dark:bg-slate-950">
           {loading ? (
             <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
               <Loader2 className="w-10 h-10 text-[var(--color-primary)] animate-spin" />
@@ -140,9 +149,9 @@ export default function MyRequestsBulkModal({
               <Button variant="outline" onClick={loadDetails}>Retry</Button>
             </div>
           ) : (
-            <div className="p-4 pt-8 space-y-4">
+            <div className="p-4 pt-8 space-y-4 lg:p-6 lg:space-y-5">
               {/* Profile Row */}
-              <div className="bg-white dark:bg-slate-900 p-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex items-center gap-3">
+              <div className="bg-white dark:bg-slate-900 p-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex items-center gap-3 lg:rounded-[22px] lg:p-5">
                 <div className={cn(
                   "w-12 h-12 rounded-2xl flex items-center justify-center text-white text-lg font-black shadow-lg",
                   isApproved ? "bg-emerald-500" : isRejected ? "bg-rose-500" : "bg-amber-500"
@@ -183,7 +192,7 @@ export default function MyRequestsBulkModal({
               )}
 
               {/* Info Grid */}
-              <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 grid grid-cols-2 shadow-sm">
+              <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 grid grid-cols-2 shadow-sm lg:rounded-[22px]">
                 <div className="p-4 border-r border-slate-50 dark:border-slate-800">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Purpose</p>
                   <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
@@ -199,7 +208,7 @@ export default function MyRequestsBulkModal({
               </div>
 
               {/* Reason */}
-              <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+              <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm lg:rounded-[22px] lg:p-5">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Reason</p>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 leading-relaxed italic">
                   {details?.reason || 'No reason provided.'}
@@ -273,14 +282,14 @@ export default function MyRequestsBulkModal({
                 </div>
               </div>
 
-              <div className="h-24" />
+              <div className="h-24 lg:h-4" />
             </div>
           )}
         </div>
 
         {/* Footer */}
         {!loading && !error && (
-          <footer className="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 p-4 pb-safe space-y-3 shadow-[0_-8px_24px_rgba(0,0,0,0.05)]">
+          <footer className="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 p-4 pb-safe space-y-3 shadow-[0_-8px_24px_rgba(0,0,0,0.05)] lg:p-5">
             {isApproved && hasQR && isQROwner && (
               <Button
                 variant="success"
@@ -299,6 +308,7 @@ export default function MyRequestsBulkModal({
                 size="xl"
                 icon={<Users className="w-5 h-5" />}
                 onClick={() => setShowParticipants(true)}
+                className="text-white"
               >
                 View Participants ({participants.length})
               </Button>
@@ -308,12 +318,13 @@ export default function MyRequestsBulkModal({
               fullWidth
               size="xl"
               onClick={onClose}
-              className="border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-300"
+              className="border-slate-200 bg-white/85 text-slate-700 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-300"
             >
               Close
             </Button>
           </footer>
         )}
+        </motion.div>
 
         {/* Integrated QR Modal */}
         <GatePassQRModal

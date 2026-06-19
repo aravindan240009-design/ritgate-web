@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import PurposeSelect from '../../components/common/PurposeSelect';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -24,7 +23,7 @@ import HRNewPass from '../hr/HRNewPass';
 import AdminNewPass from '../admin/AdminNewPass';
 import GuestPreRequest from '../shared/GuestPreRequest';
 import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
-import AttachmentUpload from '../../components/common/AttachmentUpload';
+import SinglePassRequestForm from '../../components/common/SinglePassRequestForm';
 
 /** Returns current hour in IST (UTC+5:30) */
 const getISTHour = () => {
@@ -222,53 +221,28 @@ export default function StaffNewPass() {
                ) : role === 'ADMIN_OFFICER' ? (
                  <AdminNewPass />
                ) : (
-                <div className="space-y-5">
-                   {/* Staff banner */}
-                   <div className="bg-violet-600 rounded-[32px] p-6 text-white flex items-center gap-5 shadow-xl shadow-violet-100 dark:shadow-none">
-                     <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center font-black text-[24px]">
-                       {initials}
-                     </div>
-                     <div className="flex-1 min-w-0">
-                       <h3 className="text-[18px] font-black leading-none mb-1 truncate">{staffName}</h3>
-                       <p className="text-[13px] font-bold text-violet-100 opacity-90 uppercase tracking-widest leading-none truncate">
-                         Staff • {user?.department || 'RIT'}
-                       </p>
-                     </div>
-                   </div>
-
-                   <div className="space-y-2">
-                     <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Purpose of Exit</label>
-                     <PurposeSelect value={purpose} onChange={setPurpose} />
-                   </div>
-
-                   <div className="space-y-2">
-                     <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Detailed Reason</label>
-                     <textarea 
-                       value={reason}
-                       onChange={(e) => setReason(e.target.value)}
-                       placeholder="Please provide more context..."
-                       className="w-full h-28 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 text-[15px] font-bold text-slate-900 dark:text-white placeholder:text-slate-400 shadow-sm outline-none resize-none"
-                     />
-                   </div>
-
-                   <AttachmentUpload
-                     value={attachmentUri}
-                     fileName={attachmentName}
-                     onChange={(value, name) => {
-                       setAttachmentUri(value);
-                       setAttachmentName(name);
-                     }}
-                   />
-
-                   <div className="pt-2 pb-10">
-                     <button 
-                       onClick={submitSingle}
-                       className="w-full h-14 bg-violet-600 rounded-2xl text-white font-black text-[15px] uppercase tracking-widest shadow-xl shadow-violet-100 dark:shadow-none transition-all active:scale-[0.98]"
-                     >
-                       {PASS_COPY.sendRequest}
-                     </button>
-                   </div>
-                </div>
+                <SinglePassRequestForm
+                  eyebrow="Staff Single Pass"
+                  title={PASS_COPY.singleTitle}
+                  subtitle={PASS_COPY.singleSubtitle}
+                  profileName={staffName}
+                  profileMeta={`Staff - ${user?.department || 'RIT'}`}
+                  initials={initials}
+                  purpose={purpose}
+                  onPurposeChange={setPurpose}
+                  reason={reason}
+                  onReasonChange={setReason}
+                  reasonPlaceholder="Please provide more context..."
+                  attachmentUri={attachmentUri}
+                  attachmentName={attachmentName}
+                  onAttachmentChange={(value, name) => {
+                    setAttachmentUri(value);
+                    setAttachmentName(name);
+                  }}
+                  submitText={PASS_COPY.sendRequest}
+                  disabled={!purpose.trim() || !reason.trim()}
+                  onSubmit={submitSingle}
+                />
                )}
              </motion.div>
           )}

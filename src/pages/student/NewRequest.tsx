@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import PurposeSelect from '../../components/common/PurposeSelect';
 import {
   ArrowLeft,
-  ArrowRight,
-  ShieldCheck,
-  AlignLeft,
   Loader2
 } from 'lucide-react';
 import { usePageTitle } from '../../hooks/usePageTitle';
@@ -18,7 +14,7 @@ import { submitStudentGatePass } from '../../services/api.service';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import SuccessModal from '../../components/common/SuccessModal';
 import ErrorModal from '../../components/common/ErrorModal';
-import AttachmentUpload from '../../components/common/AttachmentUpload';
+import SinglePassRequestForm from '../../components/common/SinglePassRequestForm';
 import { cn } from '../../utils/cn';
 import { getRequestDate } from '../../utils/dateUtils';
 import { useAdaptive } from '../../utils/useAdaptive';
@@ -130,102 +126,33 @@ export default function NewRequest() {
               subtitle="Provide your purpose and details, then submit for staff authorization"
             />
           )}
-          {/* Profile Banner */}
-          <div className="bg-[var(--color-primary)] rounded-[28px] p-5 flex items-center gap-4 shadow-lg shadow-blue-200 dark:shadow-none">
-            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 text-white text-[22px] font-black">
-              {user?.firstName?.charAt(0) || 'S'}
-            </div>
-            <div className="flex-1 min-w-0">
-               <h2 className="text-white text-[17px] font-black tracking-tight leading-none mb-1.5 truncate">
-                 {user?.firstName} {user?.lastName}
-               </h2>
-               <div className="flex items-center gap-2">
-                 <span className="px-2 py-0.5 bg-white/10 rounded-lg text-white/80 text-[10px] font-bold uppercase tracking-wider">
-                   {user?.department}
-                 </span>
-                 <span className="text-white/60 text-[11px] font-bold tracking-widest">{user?.regNo}</span>
-               </div>
-            </div>
-            <ShieldCheck className="w-8 h-8 text-white/30" />
-          </div>
-
-          <div className="space-y-6">
-            {/* Purpose Input */}
-            <div className="space-y-2.5">
-              <label className="block text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] px-1">
-                PURPOSE OF VISIT
-              </label>
-              <PurposeSelect
-                value={purpose}
-                onChange={v => { setPurpose(v); fieldProps('purpose', v).onChange({ target: { value: v } } as any); }}
-                error={errors.purpose}
-                variant="outlined"
-              />
-            </div>
-
-            {/* Detailed Reason */}
-            <div className="space-y-2.5">
-              <label className="block text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] px-1">
-                DETAILED REASON
-              </label>
-              <div className="relative group">
-                <div className={cn("absolute left-4 top-5 transition-colors", errors.reason ? "text-rose-400" : "text-slate-300 group-focus-within:text-[var(--color-primary)]")}>
-                  <AlignLeft className="w-5 h-5" />
-                </div>
-                <textarea
-                  rows={4}
-                  placeholder="Please provide specific details for your outing..."
-                  value={reason}
-                  onChange={e => { setReason(e.target.value); fieldProps('reason', e.target.value).onChange(e); }}
-                  onBlur={fieldProps('reason', reason).onBlur}
-                  className={cn(
-                    "w-full pl-12 pr-4 py-4 bg-white dark:bg-slate-900 rounded-2xl text-[15px] font-bold text-slate-900 dark:text-white placeholder:text-slate-300 shadow-sm outline-none transition-all resize-none border",
-                    errors.reason ? "border-rose-400 focus:ring-2 focus:ring-rose-300/30" : "border-slate-100 dark:border-slate-800 focus:ring-2 focus:ring-blue-500/10"
-                  )}
-                />
-              </div>
-              {errors.reason && <p className="text-[11px] font-bold text-rose-500 px-1 mt-1">{errors.reason}</p>}
-            </div>
-
-            <AttachmentUpload
-              value={attachmentUri}
-              fileName={attachmentName}
-              onChange={(value, name) => {
-                setAttachmentUri(value);
-                setAttachmentName(name);
-              }}
-            />
-          </div>
-
-          {/* Desktop submit — inline (mobile uses the fixed bottom bar) */}
-          {isDesktop && (
-            <div className="pt-2">
-              <button
-                onClick={() => setShowConfirmSubmit(true)}
-                disabled={!isFormValid || isLocked}
-                className={cn(
-                  "group relative flex h-14 w-full items-center justify-center overflow-hidden rounded-lg border border-slate-950 bg-slate-950 px-5 text-white shadow-[0_14px_32px_-22px_rgba(15,23,42,0.9)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-900 hover:shadow-[0_18px_40px_-24px_rgba(15,23,42,0.95)] dark:border-blue-500 dark:bg-blue-600 dark:hover:bg-blue-500",
-                  (!isFormValid || isLocked) && "cursor-not-allowed border-slate-200 bg-slate-200 text-slate-400 shadow-none hover:translate-y-0 hover:bg-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-500 dark:hover:bg-slate-800"
-                )}
-              >
-                <span className={cn(
-                  "absolute inset-y-0 left-0 w-1 bg-blue-500 transition-opacity",
-                  (!isFormValid || isLocked) && "opacity-0"
-                )} />
-                {isLocked ? (
-                  <span className="flex items-center gap-3 text-sm font-bold">
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    Submitting request
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-3 text-sm font-bold tracking-wide">
-                    Review & Submit Request
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </span>
-                )}
-              </button>
-            </div>
-          )}
+          <SinglePassRequestForm
+            eyebrow="Student Single Pass"
+            title="Gate Pass Request"
+            subtitle="Create a new student gate pass request and submit it for staff authorization."
+            profileName={`${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Student'}
+            profileMeta={`${user?.department || 'Department'} - ${user?.regNo || ''}`}
+            initials={user?.firstName?.charAt(0) || 'S'}
+            purpose={purpose}
+            onPurposeChange={v => { setPurpose(v); fieldProps('purpose', v).onChange({ target: { value: v } } as any); }}
+            purposeError={errors.purpose}
+            reason={reason}
+            onReasonChange={v => { setReason(v); fieldProps('reason', v).onChange({ target: { value: v } } as any); }}
+            onReasonBlur={fieldProps('reason', reason).onBlur}
+            reasonError={errors.reason}
+            reasonPlaceholder="Please provide specific details for your outing..."
+            attachmentUri={attachmentUri}
+            attachmentName={attachmentName}
+            onAttachmentChange={(value, name) => {
+              setAttachmentUri(value);
+              setAttachmentName(name);
+            }}
+            submitText="Review & Submit Request"
+            submitting={isLocked}
+            disabled={!isFormValid || isLocked}
+            onSubmit={() => setShowConfirmSubmit(true)}
+            submitDesktopOnly
+          />
         </div>
       </main>
 

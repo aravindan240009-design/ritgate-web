@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import PurposeSelect from '../../components/common/PurposeSelect';
 import { motion } from 'framer-motion';
-import { QrCode, ShieldCheck, FileText, Info, Loader2, Ban } from 'lucide-react';
-import Card from '../../components/ui/Card';
+import { QrCode, ShieldCheck, Info, Ban } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 import QRCodeModal from '../../components/common/QRCodeModal';
@@ -10,12 +8,11 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { submitNTFGatePass, approveGatePassByHR, getGatePassQRCode } from '../../services/api.service';
 import { useActionLock } from '../../context/ActionLockContext';
-import { cn } from '../../utils/cn';
 import { transitions } from '../../design-system/animations';
 import { nowIST } from '../../utils/dateUtils';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { PASS_COPY } from '../../config/nativeCopy';
-import AttachmentUpload from '../../components/common/AttachmentUpload';
+import SinglePassRequestForm from '../../components/common/SinglePassRequestForm';
 
 /** Returns current hour in IST (UTC+5:30) */
 const getISTHour = () => {
@@ -145,67 +142,32 @@ export default function HRNewPass() {
         </motion.div>
       )}
 
-      {/* User Card */}
       <motion.div initial={transitions.page.initial} animate={transitions.page.animate}>
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-[var(--color-primary)] flex items-center justify-center text-white font-bold text-base shrink-0">
-              {initials}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-slate-900 dark:text-white">{hrName}</p>
-              <p className="text-xs text-slate-400">{hrCode} - {department}</p>
-            </div>
-            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-lg uppercase">Active</span>
-          </div>
-        </Card>
-      </motion.div>
-
-      {/* Form */}
-      <motion.div initial={transitions.page.initial} animate={transitions.page.animate} className="space-y-4 lg:desktop-card lg:p-6">
-        <div>
-          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2 px-1">Purpose *</label>
-          <PurposeSelect value={purpose} onChange={setPurpose} variant="compact" />
-        </div>
-
-        <div>
-          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2 px-1">Reason *</label>
-          <textarea
-            value={reason}
-            onChange={e => setReason(e.target.value)}
-            placeholder="Enter reason for gate pass..."
-            rows={4}
-            className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white resize-none outline-none focus:ring-2 focus:ring-blue-500/10 placeholder:text-slate-300"
-          />
-        </div>
-
-        <AttachmentUpload
-          value={attachmentUri}
-          fileName={attachmentName}
-          onChange={(value, name) => {
+        <SinglePassRequestForm
+          eyebrow="HR Single Pass"
+          title={PASS_COPY.newRequest}
+          subtitle="Instantly approved - QR code generated immediately"
+          profileName={hrName}
+          profileMeta={`${hrCode} - ${department}`}
+          initials={initials}
+          purpose={purpose}
+          onPurposeChange={setPurpose}
+          reason={reason}
+          onReasonChange={setReason}
+          reasonPlaceholder="Enter reason for gate pass..."
+          attachmentUri={attachmentUri}
+          attachmentName={attachmentName}
+          onAttachmentChange={(value, name) => {
             setAttachmentUri(value);
             setAttachmentName(name);
           }}
+          submitText="Generate Gate Pass"
+          submitting={submitting}
+          disabled={submitting || !purpose.trim() || !reason.trim() || passDisabled}
+          onSubmit={handleSubmit}
+          buttonIcon={<QrCode className="h-5 w-5" />}
         />
       </motion.div>
-
-      {/* Submit */}
-      <Button
-        fullWidth
-        size="lg"
-        onClick={handleSubmit}
-        disabled={submitting || !purpose.trim() || !reason.trim() || passDisabled}
-        className="h-14 rounded-2xl font-bold gap-2"
-      >
-        {submitting ? (
-          <Loader2 className="w-5 h-5 animate-spin" />
-        ) : (
-          <>
-            <QrCode className="w-5 h-5" />
-            Generate Gate Pass
-          </>
-        )}
-      </Button>
 
       {/* Confirmation Modal */}
       <Modal isOpen={showConfirm} onClose={() => setShowConfirm(false)} title="Generate Gate Pass" size="sm">

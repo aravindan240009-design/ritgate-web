@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import PurposeSelect from '../../components/common/PurposeSelect';
 import { motion } from 'framer-motion';
-import { ShieldCheck, FileText, Send, Loader2, QrCode, Ban } from 'lucide-react';
-import Card from '../../components/ui/Card';
+import { ShieldCheck, QrCode, Ban } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 import QRCodeModal from '../../components/common/QRCodeModal';
@@ -14,7 +12,7 @@ import { transitions } from '../../design-system/animations';
 import { nowIST } from '../../utils/dateUtils';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { PASS_COPY } from '../../config/nativeCopy';
-import AttachmentUpload from '../../components/common/AttachmentUpload';
+import SinglePassRequestForm from '../../components/common/SinglePassRequestForm';
 
 /** Returns current hour in IST (UTC+5:30) */
 const getISTHour = () => {
@@ -146,66 +144,32 @@ export default function AdminNewPass({ onBack }: AdminNewPassProps = {}) {
         </motion.div>
       )}
 
-      {/* User Info */}
       <motion.div initial={transitions.page.initial} animate={transitions.page.animate}>
-        <Card className="bg-slate-50 dark:bg-slate-900">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center text-white font-black text-sm">
-              {adminName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
-            </div>
-            <div>
-              <p className="text-sm font-bold text-slate-900 dark:text-white">{adminName}</p>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{adminCode} - ADMIN OFFICER</p>
-            </div>
-          </div>
-        </Card>
-      </motion.div>
-
-      {/* Form */}
-      <motion.div initial={transitions.page.initial} animate={transitions.page.animate} className="space-y-4 lg:desktop-card lg:p-6">
-        <div>
-          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2 px-1">Purpose *</label>
-          <PurposeSelect value={purpose} onChange={setPurpose} variant="compact" />
-        </div>
-
-        <div>
-          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2 px-1">Reason *</label>
-          <textarea
-            value={reason}
-            onChange={e => setReason(e.target.value)}
-            placeholder="Describe the reason..."
-            rows={4}
-            className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white transition-all focus:ring-2 focus:ring-blue-500/10 placeholder:text-slate-300 outline-none resize-none"
-          />
-        </div>
-
-        <AttachmentUpload
-          value={attachmentUri}
-          fileName={attachmentName}
-          onChange={(value, name) => {
+        <SinglePassRequestForm
+          eyebrow="Admin Single Pass"
+          title={PASS_COPY.newRequest}
+          subtitle="Generated passes are auto-approved for Administrative Officers"
+          profileName={adminName}
+          profileMeta={`${adminCode} - ADMIN OFFICER`}
+          initials={adminName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
+          purpose={purpose}
+          onPurposeChange={setPurpose}
+          reason={reason}
+          onReasonChange={setReason}
+          reasonPlaceholder="Describe the reason..."
+          attachmentUri={attachmentUri}
+          attachmentName={attachmentName}
+          onAttachmentChange={(value, name) => {
             setAttachmentUri(value);
             setAttachmentName(name);
           }}
+          submitText="Generate Pass"
+          submitting={submitting}
+          disabled={submitting || !purpose.trim() || !reason.trim() || passDisabled}
+          onSubmit={handleSubmit}
+          buttonIcon={<QrCode className="h-5 w-5" />}
         />
       </motion.div>
-
-      {/* Submit */}
-      <Button
-        fullWidth
-        size="lg"
-        onClick={handleSubmit}
-        disabled={submitting || !purpose.trim() || !reason.trim() || passDisabled}
-        className="h-14 rounded-2xl font-black uppercase tracking-widest gap-2 bg-[var(--color-primary)] hover:bg-blue-900"
-      >
-        {submitting ? (
-          <Loader2 className="w-5 h-5 animate-spin" />
-        ) : (
-          <>
-            <QrCode className="w-5 h-5" />
-            Generate Pass
-          </>
-        )}
-      </Button>
 
       {/* Confirmation */}
       <Modal isOpen={showConfirm} onClose={() => setShowConfirm(false)} title="Generate Gate Pass" size="sm">

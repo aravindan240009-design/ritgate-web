@@ -293,10 +293,10 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 lg:mx-auto lg:max-w-6xl">
 
       {/* Header Banner */}
-      <div className="bg-[var(--color-primary)] rounded-[32px] p-6 text-white shadow-xl shadow-blue-100 dark:shadow-none">
+      <div className="bg-[var(--color-primary)] rounded-[32px] p-6 text-white shadow-xl shadow-blue-100 dark:shadow-none lg:rounded-[30px] lg:bg-gradient-to-br lg:from-blue-600 lg:via-blue-700 lg:to-slate-950 lg:p-7 lg:shadow-[0_24px_70px_rgba(37,99,235,0.18)]">
         <div className="flex items-center gap-4 mb-4">
           <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
             <Users className="w-7 h-7 text-white" />
@@ -311,13 +311,14 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
         </p>
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-5 lg:grid lg:grid-cols-[minmax(0,1.45fr)_minmax(380px,0.85fr)] lg:items-start lg:gap-6 lg:space-y-0">
+        <div className="space-y-5 lg:rounded-[30px] lg:border lg:border-white/60 lg:bg-white/80 lg:p-5 lg:shadow-[0_22px_60px_rgba(15,23,42,0.08)] lg:backdrop-blur-xl">
 
         {/* Include Staff Toggle */}
         <button
           onClick={() => { setIncludeStaff(v => !v); if (!includeStaff) setReceiverId(null); }}
           className={cn(
-            'w-full flex items-center justify-between p-5 rounded-[24px] border transition-all',
+            'w-full flex items-center justify-between p-5 rounded-[24px] border transition-all lg:rounded-2xl lg:p-4',
             includeStaff
               ? 'bg-blue-50 dark:bg-indigo-900/10 border-blue-200 dark:border-[var(--color-primary)]'
               : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 shadow-sm',
@@ -338,7 +339,7 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
         </button>
 
         {/* ── TABS ─────────────────────────────────────────────────────────── */}
-        <div className="bg-white dark:bg-slate-900 rounded-[24px] p-1.5 flex gap-1.5 border border-slate-100 dark:border-slate-800 shadow-sm">
+        <div className="bg-white dark:bg-slate-900 rounded-[24px] p-1.5 flex gap-1.5 border border-slate-100 dark:border-slate-800 shadow-sm lg:bg-white/85 lg:border-slate-200/70">
           {(['STUDENTS', 'STAFF'] as ActiveTab[]).map(tab => {
             const isActive = activeTab === tab;
             const count = tab === 'STUDENTS' ? selectedStudentIds.size : selectedStaffIds.size;
@@ -377,7 +378,7 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
             <motion.div key="students" initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }} className="space-y-3">
 
               {/* Student Filters */}
-              <div className="bg-slate-50 dark:bg-slate-800/30 rounded-2xl p-4 space-y-3">
+              <div className="bg-slate-50 dark:bg-slate-800/30 rounded-2xl p-4 space-y-3 lg:bg-slate-50/70 lg:border lg:border-slate-200/60">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Department</label>
@@ -409,7 +410,7 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input value={studentSearch} onChange={e => setStudentSearch(e.target.value)}
                     placeholder="Search name or reg no..."
-                    className="w-full h-11 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl pl-11 pr-4 text-[13px] font-bold text-slate-900 dark:text-white placeholder:text-slate-400 shadow-sm outline-none" />
+                    className="w-full h-11 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl pl-11 pr-4 text-[13px] font-bold text-slate-900 dark:text-white placeholder:text-slate-400 shadow-sm outline-none lg:h-12 lg:border-slate-200/80 lg:bg-white/85 lg:focus:border-blue-400 lg:focus:ring-4 lg:focus:ring-blue-500/10" />
                 </div>
                 <button onClick={selectAllStudents}
                   className="shrink-0 text-[11px] font-black text-[var(--color-primary)] uppercase tracking-widest hover:bg-blue-50 dark:hover:bg-indigo-900/20 px-3 py-2 rounded-xl transition-colors">
@@ -418,7 +419,7 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
               </div>
 
               {/* Student List */}
-              <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden min-h-[260px] max-h-[420px] overflow-y-auto">
+              <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden min-h-[260px] max-h-[420px] overflow-y-auto lg:max-h-[560px] lg:min-h-[420px] lg:border-slate-200/70 lg:bg-white/85">
                 {loading ? <SkeletonList count={5} /> : studentGroups.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-16 text-center px-6">
                     <GraduationCap className="w-10 h-10 text-slate-200 mb-3" />
@@ -491,7 +492,7 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
             <motion.div key="staff" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 12 }} className="space-y-3">
 
               {/* Staff Filters */}
-              <div className="bg-slate-50 dark:bg-slate-800/30 rounded-2xl p-4">
+              <div className="bg-slate-50 dark:bg-slate-800/30 rounded-2xl p-4 lg:bg-slate-50/70 lg:border lg:border-slate-200/60">
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Department</label>
                   <select value={filterStaffDept} onChange={e => setFilterStaffDept(e.target.value)}
@@ -507,7 +508,7 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input value={staffSearch} onChange={e => setStaffSearch(e.target.value)}
                     placeholder="Search name or staff code..."
-                    className="w-full h-11 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl pl-11 pr-4 text-[13px] font-bold text-slate-900 dark:text-white placeholder:text-slate-400 shadow-sm outline-none" />
+                    className="w-full h-11 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl pl-11 pr-4 text-[13px] font-bold text-slate-900 dark:text-white placeholder:text-slate-400 shadow-sm outline-none lg:h-12 lg:border-slate-200/80 lg:bg-white/85 lg:focus:border-violet-400 lg:focus:ring-4 lg:focus:ring-violet-500/10" />
                 </div>
                 <button onClick={selectAllStaff}
                   className="shrink-0 text-[11px] font-black text-violet-600 uppercase tracking-widest hover:bg-violet-50 dark:hover:bg-violet-900/20 px-3 py-2 rounded-xl transition-colors">
@@ -516,7 +517,7 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
               </div>
 
               {/* Staff List */}
-              <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden min-h-[260px] max-h-[420px] overflow-y-auto">
+              <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden min-h-[260px] max-h-[420px] overflow-y-auto lg:max-h-[560px] lg:min-h-[420px] lg:border-slate-200/70 lg:bg-white/85">
                 {loading ? <SkeletonList count={5} /> : staffGroups.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-16 text-center px-6">
                     <UserCircle2 className="w-10 h-10 text-slate-200 mb-3" />
@@ -626,7 +627,7 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
                 This person will carry the group QR code for scanning at the gate.
               </p>
             </div>
-            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] overflow-hidden shadow-sm divide-y divide-slate-50 dark:divide-slate-800/30 max-h-[240px] overflow-y-auto">
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] overflow-hidden shadow-sm divide-y divide-slate-50 dark:divide-slate-800/30 max-h-[240px] overflow-y-auto lg:max-h-[320px] lg:border-slate-200/70 lg:bg-white/85">
               {allSelectedPeople.map(person => {
                 const isRcv = receiverId === person.id;
                 return (
@@ -656,17 +657,28 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
           </div>
         )}
 
+        </div>
+
+        <div className="space-y-5 lg:sticky lg:top-28 lg:rounded-[30px] lg:border lg:border-white/60 lg:bg-white/80 lg:p-5 lg:shadow-[0_22px_60px_rgba(15,23,42,0.08)] lg:backdrop-blur-xl">
+        <div className="hidden lg:block">
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Request Details</p>
+          <h3 className="mt-1 text-[22px] font-black tracking-tight text-slate-950">Bulk Student Pass</h3>
+          <p className="mt-1 text-[13px] font-semibold leading-relaxed text-slate-500">
+            {totalSelected} member{totalSelected === 1 ? '' : 's'} selected for this batch.
+          </p>
+        </div>
+
         {/* ── FORM FIELDS ───────────────────────────────────────────────────── */}
         <div className="space-y-4">
           <div className="space-y-2">
             <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Batch Purpose</label>
-            <PurposeSelect value={purpose} onChange={setPurpose} />
+            <PurposeSelect value={purpose} onChange={setPurpose} variant="outlined" />
           </div>
           <div className="space-y-2">
             <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Detailed Reason</label>
             <textarea value={reason} onChange={e => setReason(e.target.value)}
               placeholder="Provide context for the group's exit authorization..."
-              className="w-full min-h-[100px] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 text-[15px] font-bold text-slate-900 dark:text-white shadow-sm outline-none focus:ring-2 focus:ring-blue-500/10 resize-none" />
+              className="w-full min-h-[100px] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 text-[15px] font-bold text-slate-900 dark:text-white shadow-sm outline-none focus:ring-2 focus:ring-blue-500/10 resize-none lg:min-h-[132px] lg:border-slate-200/80 lg:bg-white/85 lg:focus:border-blue-400 lg:focus:ring-4" />
           </div>
 
           <AttachmentUpload
@@ -684,12 +696,13 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
         {/* ── SUBMIT ────────────────────────────────────────────────────────── */}
         <div className="pt-2">
           <button onClick={submitBulk} disabled={totalSelected === 0}
-            className="w-full h-14 bg-emerald-600 rounded-2xl text-white font-black text-[15px] uppercase tracking-widest shadow-xl shadow-emerald-100 dark:shadow-none hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale flex items-center justify-center gap-3">
+            className="w-full h-14 bg-emerald-600 rounded-2xl text-white font-black text-[15px] uppercase tracking-widest shadow-xl shadow-emerald-100 dark:shadow-none hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale flex items-center justify-center gap-3 lg:bg-gradient-to-r lg:from-blue-600 lg:to-blue-700 lg:shadow-[0_18px_35px_rgba(37,99,235,0.28)] lg:hover:-translate-y-0.5">
             <Send className="w-5 h-5" />
             Submit for {totalSelected} {totalSelected === 1 ? 'member' : 'members'}
           </button>
         </div>
 
+        </div>
       </div>
     </div>
   );

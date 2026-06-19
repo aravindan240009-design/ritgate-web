@@ -161,8 +161,8 @@ export default function StaffBulkPass({ onBack }: StaffBulkPassProps) {
   const groups = getGroupedStudents();
 
   return (
-    <div className="space-y-6">
-      <div className="bg-amber-600 rounded-[32px] p-6 text-white shadow-xl shadow-amber-100 dark:shadow-none">
+    <div className="space-y-6 lg:mx-auto lg:max-w-6xl">
+      <div className="bg-amber-600 rounded-[32px] p-6 text-white shadow-xl shadow-amber-100 dark:shadow-none lg:rounded-[30px] lg:bg-gradient-to-br lg:from-blue-600 lg:via-blue-700 lg:to-slate-950 lg:p-7 lg:shadow-[0_24px_70px_rgba(37,99,235,0.18)]">
          <div className="flex items-center gap-4 mb-4">
             <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
                <Users className="w-7 h-7 text-white" />
@@ -177,16 +177,17 @@ export default function StaffBulkPass({ onBack }: StaffBulkPassProps) {
          </p>
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-5 lg:grid lg:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.85fr)] lg:items-start lg:gap-6 lg:space-y-0">
+        <div className="space-y-5 lg:rounded-[30px] lg:border lg:border-white/60 lg:bg-white/80 lg:p-5 lg:shadow-[0_22px_60px_rgba(15,23,42,0.08)] lg:backdrop-blur-xl">
          <button
             onClick={() => { setIncludeStaff(!includeStaff); if (!includeStaff) setReceiverId(null); }}
             className={cn(
-              "w-full flex items-center justify-between p-5 rounded-[24px] border transition-all",
-              includeStaff ? "bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800" : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 shadow-sm"
+              "w-full flex items-center justify-between p-5 rounded-[24px] border transition-all lg:rounded-2xl lg:p-4",
+              includeStaff ? "bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800 lg:bg-blue-50/80 lg:border-blue-200/80" : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 shadow-sm lg:bg-white/70"
             )}
           >
             <div className="flex items-center gap-4">
-               <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", includeStaff ? "bg-amber-600" : "bg-slate-100 dark:bg-slate-800")}>
+               <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", includeStaff ? "bg-amber-600 lg:bg-blue-600" : "bg-slate-100 dark:bg-slate-800")}>
                   <ShieldCheck className={cn("w-5 h-5", includeStaff ? "text-white" : "text-slate-400")} />
                </div>
                <div className="text-left">
@@ -194,7 +195,7 @@ export default function StaffBulkPass({ onBack }: StaffBulkPassProps) {
                   <p className="text-[11px] font-bold text-slate-400">You will hold the primary QR code</p>
                </div>
             </div>
-            <div className={cn("w-12 h-6 rounded-full relative transition-colors", includeStaff ? "bg-amber-600" : "bg-slate-200 dark:bg-slate-700")}>
+            <div className={cn("w-12 h-6 rounded-full relative transition-colors", includeStaff ? "bg-amber-600 lg:bg-blue-600" : "bg-slate-200 dark:bg-slate-700")}>
                <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all shadow-sm", includeStaff ? "left-7" : "left-1")} />
             </div>
          </button>
@@ -202,7 +203,7 @@ export default function StaffBulkPass({ onBack }: StaffBulkPassProps) {
          <div className="space-y-3">
             <div className="flex items-center justify-between px-1">
                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Select Students</label>
-               <button onClick={selectAllFiltered} className="text-[11px] font-black text-amber-600 uppercase tracking-widest px-2 py-1">
+               <button onClick={selectAllFiltered} className="text-[11px] font-black text-amber-600 uppercase tracking-widest px-2 py-1 lg:text-blue-600">
                   {selectedStudents.size === getFilteredStudents().length && getFilteredStudents().length > 0 ? 'Deselect All' : 'Select All'}
                </button>
             </div>
@@ -215,11 +216,11 @@ export default function StaffBulkPass({ onBack }: StaffBulkPassProps) {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search students..."
-                  className="w-full h-12 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl pl-12 pr-4 text-[14px] font-bold text-slate-900 dark:text-white shadow-sm outline-none"
+                  className="w-full h-12 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl pl-12 pr-4 text-[14px] font-bold text-slate-900 dark:text-white shadow-sm outline-none lg:h-13 lg:border-slate-200/80 lg:bg-white/85 lg:focus:border-blue-400 lg:focus:ring-4 lg:focus:ring-blue-500/10"
                />
             </div>
 
-            <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden min-h-[200px] max-h-[350px] overflow-y-auto custom-scrollbar">
+            <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden min-h-[200px] max-h-[350px] overflow-y-auto custom-scrollbar lg:max-h-[560px] lg:min-h-[420px] lg:border-slate-200/70 lg:bg-white/85">
                {loading ? (
                   <SkeletonList count={4} />
                ) : groups.length === 0 ? (
@@ -238,7 +239,7 @@ export default function StaffBulkPass({ onBack }: StaffBulkPassProps) {
                            <div key={key}>
                               <div className="flex items-center gap-3 px-5 py-3.5 bg-slate-50/50 dark:bg-slate-800/30">
                                  <button onClick={() => toggleSectionAll(sectionStudents)}>
-                                    {allSectionSelected ? <CheckCircle2 className="w-5.5 h-5.5 text-amber-600" /> : <Circle className="w-5.5 h-5.5 text-slate-200" />}
+                                    {allSectionSelected ? <CheckCircle2 className="w-5.5 h-5.5 text-amber-600 lg:text-blue-600" /> : <Circle className="w-5.5 h-5.5 text-slate-200" />}
                                  </button>
                                  <button onClick={() => toggleSection(key)} className="flex-1 flex items-center justify-between">
                                     <span className="text-[13px] font-black text-slate-900 dark:text-white uppercase">Section {key}</span>
@@ -253,9 +254,9 @@ export default function StaffBulkPass({ onBack }: StaffBulkPassProps) {
                                           <button
                                              key={student.regNo}
                                              onClick={() => toggleStudent(student.regNo)}
-                                             className={cn("w-full flex items-center gap-4 px-6 py-3.5", isSelected ? "bg-amber-50/20" : "")}
+                                             className={cn("w-full flex items-center gap-4 px-6 py-3.5 transition-all lg:hover:bg-blue-50/40", isSelected ? "bg-amber-50/20 lg:bg-blue-50/50" : "")}
                                           >
-                                             {isSelected ? <CheckCircle2 className="w-5.5 h-5.5 text-amber-600 shrink-0" /> : <Circle className="w-5.5 h-5.5 text-slate-100 shrink-0" />}
+                                             {isSelected ? <CheckCircle2 className="w-5.5 h-5.5 text-amber-600 shrink-0 lg:text-blue-600" /> : <Circle className="w-5.5 h-5.5 text-slate-100 shrink-0" />}
                                              <div className="min-w-0 flex-1 text-left">
                                                 <p className="text-[14px] font-black truncate text-slate-900 dark:text-white">{student.fullName}</p>
                                                 <p className="text-[11px] font-bold text-slate-400 uppercase">{student.regNo}</p>
@@ -285,9 +286,9 @@ export default function StaffBulkPass({ onBack }: StaffBulkPassProps) {
                       <button
                         key={regNo}
                         onClick={() => setReceiverId(regNo)}
-                        className={cn("w-full flex items-center gap-4 px-6 py-3.5", isRcv ? "bg-amber-50/50" : "")}
+                        className={cn("w-full flex items-center gap-4 px-6 py-3.5 lg:hover:bg-blue-50/40", isRcv ? "bg-amber-50/50 lg:bg-blue-50/60" : "")}
                       >
-                         <div className={cn("w-5.5 h-5.5 rounded-full border-2 flex items-center justify-center shrink-0", isRcv ? "border-amber-500 bg-amber-500" : "border-slate-100")}>
+                         <div className={cn("w-5.5 h-5.5 rounded-full border-2 flex items-center justify-center shrink-0", isRcv ? "border-amber-500 bg-amber-500 lg:border-blue-600 lg:bg-blue-600" : "border-slate-100")}>
                            {isRcv && <Check className="w-3.5 h-3.5 text-white" />}
                          </div>
                          <div className="flex-1 min-w-0 text-left">
@@ -301,10 +302,21 @@ export default function StaffBulkPass({ onBack }: StaffBulkPassProps) {
             </div>
          )}
 
+        </div>
+
+        <div className="space-y-5 lg:sticky lg:top-28 lg:rounded-[30px] lg:border lg:border-white/60 lg:bg-white/80 lg:p-5 lg:shadow-[0_22px_60px_rgba(15,23,42,0.08)] lg:backdrop-blur-xl">
+         <div className="hidden lg:block">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Request Details</p>
+            <h3 className="mt-1 text-[22px] font-black tracking-tight text-slate-950">Bulk Student Pass</h3>
+            <p className="mt-1 text-[13px] font-semibold leading-relaxed text-slate-500">
+              {selectedStudents.size} student{selectedStudents.size === 1 ? '' : 's'} selected for this batch.
+            </p>
+         </div>
+
          <div className="space-y-4">
             <div className="space-y-2">
                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Purpose</label>
-               <PurposeSelect value={purpose} onChange={setPurpose} />
+               <PurposeSelect value={purpose} onChange={setPurpose} variant="outlined" />
             </div>
             <div className="space-y-2">
                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Reason</label>
@@ -312,7 +324,7 @@ export default function StaffBulkPass({ onBack }: StaffBulkPassProps) {
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="Provide more context..."
-                  className="w-full h-24 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 text-[14px] font-bold text-slate-900 dark:text-white outline-none resize-none"
+                  className="w-full h-24 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 text-[14px] font-bold text-slate-900 dark:text-white outline-none resize-none lg:min-h-[132px] lg:border-slate-200/80 lg:bg-white/85 lg:focus:border-blue-400 lg:focus:ring-4 lg:focus:ring-blue-500/10"
                />
             </div>
 
@@ -332,11 +344,12 @@ export default function StaffBulkPass({ onBack }: StaffBulkPassProps) {
             <button 
                onClick={submitBulk}
                disabled={selectedStudents.size === 0}
-               className="w-full h-15 bg-amber-600 rounded-2xl text-white font-black text-[15px] uppercase tracking-widest shadow-xl shadow-amber-100 dark:shadow-none transition-all active:scale-[0.98]"
+               className="w-full h-15 bg-amber-600 rounded-2xl text-white font-black text-[15px] uppercase tracking-widest shadow-xl shadow-amber-100 dark:shadow-none transition-all active:scale-[0.98] lg:bg-gradient-to-r lg:from-blue-600 lg:to-blue-700 lg:shadow-[0_18px_35px_rgba(37,99,235,0.28)] lg:hover:-translate-y-0.5 disabled:opacity-50"
             >
                Dispatch {selectedStudents.size} Passes
             </button>
          </div>
+        </div>
       </div>
     </div>
   );

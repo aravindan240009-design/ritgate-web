@@ -84,6 +84,29 @@ function normalizeUser(user: Record<string, unknown>): Record<string, unknown> {
   return n;
 }
 
+function extractAuthToken(data: Record<string, any>): string | undefined {
+  const candidates = [
+    data.token,
+    data.jwt,
+    data.accessToken,
+    data.authToken,
+    data.bearerToken,
+    data.jwtToken,
+    data.data?.token,
+    data.data?.jwt,
+    data.data?.accessToken,
+    data.session?.token,
+    data.auth?.token,
+    data.student?.token,
+    data.staff?.token,
+    data.hod?.token,
+    data.hr?.token,
+    data.security?.token,
+  ];
+
+  return candidates.find((token) => typeof token === 'string' && token.trim().length > 0);
+}
+
 function extractError(error: unknown): string {
   if (axios.isAxiosError(error)) {
     const data = error.response?.data as Record<string, string> | undefined;
@@ -134,22 +157,22 @@ export async function verifyOTP(userId: string, otp: string, role: UserRole): Pr
     switch (role) {
       case 'STUDENT':
         data = (await api.post('/auth/student/verify-otp', { regNo: userId, otp })).data;
-        return { success: data.success, message: data.message, user: normalizeUser(data.student) as any, role: 'STUDENT' };
+        return { success: data.success, message: data.message, user: normalizeUser(data.student) as any, role: 'STUDENT', token: extractAuthToken(data) };
       case 'STAFF':
       case 'NON_TEACHING':
       case 'NON_CLASS_INCHARGE':
       case 'ADMIN_OFFICER':
         data = (await api.post('/auth/staff/verify-otp', { staffCode: userId, otp })).data;
-        return { success: data.success, message: data.message, user: normalizeUser(data.staff) as any, role };
+        return { success: data.success, message: data.message, user: normalizeUser(data.staff) as any, role, token: extractAuthToken(data) };
       case 'HOD':
         data = (await api.post('/auth/hod/verify-otp', { hodCode: userId, otp })).data;
-        return { success: data.success, message: data.message, user: normalizeUser(data.hod) as any, role: 'HOD' };
+        return { success: data.success, message: data.message, user: normalizeUser(data.hod) as any, role: 'HOD', token: extractAuthToken(data) };
       case 'HR':
         data = (await api.post('/auth/hr/verify-otp', { hrCode: userId, otp })).data;
-        return { success: data.success, message: data.message, user: normalizeUser(data.hr) as any, role: 'HR' };
+        return { success: data.success, message: data.message, user: normalizeUser(data.hr) as any, role: 'HR', token: extractAuthToken(data) };
       case 'SECURITY':
         data = (await api.post('/auth/verify-otp', { securityId: userId, otp })).data;
-        return { success: data.success, message: data.message, user: normalizeUser(data.security) as any, role: 'SECURITY' };
+        return { success: data.success, message: data.message, user: normalizeUser(data.security) as any, role: 'SECURITY', token: extractAuthToken(data) };
       default:
         return { success: false, message: 'Unknown role' };
     }

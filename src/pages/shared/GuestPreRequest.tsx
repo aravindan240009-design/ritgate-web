@@ -137,44 +137,60 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
       )}
 
       <main className={embedded ? "w-full" : "flex-1 overflow-y-auto px-5 py-6 lg:px-0 lg:py-0"}>
-        <div className={cn("space-y-6 pb-32 lg:pb-12", embedded ? "w-full lg:max-w-none lg:mx-0" : "max-w-lg mx-auto lg:max-w-none")}>
+        <div className={cn(
+          "space-y-6 pb-32 lg:mx-auto lg:grid lg:max-w-6xl lg:grid-cols-[minmax(320px,0.85fr)_minmax(0,1.15fr)] lg:items-start lg:gap-6 lg:space-y-0 lg:pb-12",
+          embedded ? "w-full lg:max-w-6xl" : "max-w-lg mx-auto"
+        )}>
+          <div className="space-y-6 lg:sticky lg:top-28">
            {/* Banner */}
-           <div className="bg-emerald-600 rounded-[32px] p-6 text-white shadow-xl shadow-emerald-100 dark:shadow-none lg:p-8">
+           <div className="relative overflow-hidden bg-emerald-600 rounded-[32px] p-6 text-white shadow-xl shadow-emerald-100 dark:shadow-none lg:rounded-[30px] lg:bg-gradient-to-br lg:from-blue-600 lg:via-emerald-600 lg:to-slate-950 lg:p-7 lg:shadow-[0_24px_70px_rgba(16,185,129,0.18)]">
+              <div className="absolute -right-14 -top-20 h-44 w-44 rounded-full bg-cyan-300/20 blur-3xl" />
+              <div className="absolute -bottom-24 left-10 h-52 w-52 rounded-full bg-emerald-300/20 blur-3xl" />
+              <div className="relative">
               <div className="flex items-center gap-4 mb-4">
-                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center border border-white/25 backdrop-blur-md lg:h-14 lg:w-14">
                     <UserPlus className="w-7 h-7 text-white" />
                  </div>
                  <div>
-                    <h3 className="text-[18px] font-black leading-none mb-1">Instant Clearance</h3>
+                    <h3 className="text-[18px] font-black leading-none mb-1 lg:text-[24px]">Instant Clearance</h3>
                     <p className="text-[13px] font-bold text-emerald-100 opacity-90 uppercase tracking-widest leading-none">Security Perimeter</p>
                  </div>
               </div>
-              <p className="text-[12px] font-medium leading-relaxed opacity-80 italic">
+              <p className="text-[12px] font-medium leading-relaxed opacity-80 italic lg:text-[13px] lg:leading-6">
                 Authorized visitors will receive immediate digital clearance for campus entry on your behalf.
               </p>
+              </div>
            </div>
 
            {/* Creator Info Card */}
-           <div className="bg-white dark:bg-slate-900 rounded-[24px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 lg:desktop-card">
-              <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-emerald-600 font-black text-[20px]">
+           <div className="bg-white dark:bg-slate-900 rounded-[24px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 lg:rounded-[28px] lg:border-white/60 lg:bg-white/80 lg:p-6 lg:shadow-[0_22px_60px_rgba(15,23,42,0.08)] lg:backdrop-blur-xl">
+              <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-emerald-600 font-black text-[20px] lg:h-16 lg:w-16 lg:bg-gradient-to-br lg:from-blue-50 lg:to-emerald-50 lg:text-[24px] lg:ring-1 lg:ring-emerald-100">
                  {creatorName.charAt(0)}
               </div>
-              <div>
+              <div className="min-w-0">
                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Registering on behalf of</p>
                  <h4 className="text-[16px] font-black text-slate-900 dark:text-white truncate uppercase tracking-tight leading-none mt-1">{creatorName}</h4>
                  <p className="text-[11px] font-bold text-slate-400 uppercase mt-1 opacity-80">{creatorDepartment || 'General Unit'}</p>
               </div>
            </div>
+          </div>
 
            {/* Form Section */}
-           <div className="space-y-5 lg:desktop-card lg:p-6">
+           <div className="space-y-5 lg:rounded-[30px] lg:border lg:border-white/60 lg:bg-white/80 lg:p-6 lg:shadow-[0_22px_60px_rgba(15,23,42,0.08)] lg:backdrop-blur-xl">
+              <div className="hidden lg:block">
+                 <p className="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Guest Pre-Request</p>
+                 <h3 className="mt-1 text-[24px] font-black tracking-tight text-slate-950 dark:text-white">Visitor Details</h3>
+                 <p className="mt-1 text-[13px] font-semibold leading-relaxed text-slate-500">
+                    Enter the guest details and authorize clearance in one clean request.
+                 </p>
+              </div>
               <div className="space-y-2">
                  <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Guest Full Name</label>
                  <input 
                     value={visitorName}
                     onChange={(e) => setVisitorName(e.target.value.toUpperCase())}
                     placeholder="FULL NAME"
-                    className="w-full h-14 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 text-[15px] font-bold outline-none uppercase shadow-sm"
+                    className="w-full h-14 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 text-[15px] font-bold outline-none uppercase shadow-sm transition-all lg:border-slate-200/80 lg:bg-white/85 lg:focus:border-emerald-400 lg:focus:ring-4 lg:focus:ring-emerald-500/10"
                  />
               </div>
 
@@ -187,7 +203,7 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder="9876543210"
-                          className="w-full h-14 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl pl-12 pr-4 text-[15px] font-bold outline-none shadow-sm"
+                          className="w-full h-14 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl pl-12 pr-4 text-[15px] font-bold outline-none shadow-sm transition-all lg:border-slate-200/80 lg:bg-white/85 lg:focus:border-emerald-400 lg:focus:ring-4 lg:focus:ring-emerald-500/10"
                        />
                     </div>
                  </div>
@@ -200,7 +216,7 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
                           value={numberOfPeople}
                           onChange={(e) => setNumberOfPeople(e.target.value)}
                           placeholder="1"
-                          className="w-full h-14 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl pl-12 pr-4 text-[15px] font-bold outline-none shadow-sm"
+                          className="w-full h-14 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl pl-12 pr-4 text-[15px] font-bold outline-none shadow-sm transition-all lg:border-slate-200/80 lg:bg-white/85 lg:focus:border-emerald-400 lg:focus:ring-4 lg:focus:ring-emerald-500/10"
                        />
                     </div>
                  </div>
@@ -214,7 +230,7 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
                         value={purpose}
                         onChange={(e) => setPurpose(e.target.value.toUpperCase())}
                         placeholder="PURPOSE OF VISIT..."
-                        className="w-full h-28 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl pl-12 pr-4 py-4 text-[14px] font-bold outline-none shadow-sm resize-none uppercase"
+                        className="w-full h-28 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl pl-12 pr-4 py-4 text-[14px] font-bold outline-none shadow-sm resize-none uppercase transition-all lg:min-h-[150px] lg:border-slate-200/80 lg:bg-white/85 lg:focus:border-emerald-400 lg:focus:ring-4 lg:focus:ring-emerald-500/10"
                     />
                  </div>
               </div>
@@ -223,7 +239,7 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
                  <button 
                     onClick={handleSubmit}
                     disabled={isSubmitting || loadingCreator}
-                    className="w-full h-15 bg-emerald-600 rounded-2xl text-white font-black text-[15px] uppercase tracking-widest shadow-xl shadow-emerald-100 dark:shadow-none active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                    className="w-full h-15 bg-emerald-600 rounded-2xl text-white font-black text-[15px] uppercase tracking-widest shadow-xl shadow-emerald-100 dark:shadow-none active:scale-[0.98] transition-all flex items-center justify-center gap-2 lg:bg-gradient-to-r lg:from-emerald-500 lg:to-blue-600 lg:shadow-[0_18px_35px_rgba(16,185,129,0.28)] lg:hover:-translate-y-0.5 disabled:opacity-60 disabled:saturate-50"
                  >
                     {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin text-white" /> : (
                        <>

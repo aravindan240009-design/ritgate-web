@@ -1289,3 +1289,93 @@ html, body {
     border-color: rgba(59, 130, 246, 0.22) !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════
+   GLOBAL DESKTOP POLISH — applied to every page (tablet+desktop)
+   Consistent card depth, smooth theme transitions, refined
+   tables, scrollbar, focus & content rhythm. Light + dark.
+   ══════════════════════════════════════════════════════════ */
+@media (min-width: 769px) {
+  /* Slightly more generous page rhythm */
+  .page-content,
+  .profile-page-content {
+    padding: 28px 36px 44px !important;
+  }
+
+  /* Premium layered card depth (light) + inset top highlight */
+  .desktop-card,
+  .desktop-stat-card,
+  .desktop-toolbar,
+  .desktop-metric-card {
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 24px 50px -32px rgba(15, 23, 42, 0.3);
+  }
+
+  /* Smooth, flicker-free light↔dark transitions on all surfaces */
+  .desktop-card,
+  .desktop-stat-card,
+  .desktop-toolbar,
+  .desktop-metric-card,
+  .desktop-input,
+  .desktop-table th,
+  .desktop-table td,
+  .desktop-page :where(.bg-white, .dark\:bg-slate-900, .bg-slate-50, .dark\:bg-slate-800, .dark\:bg-slate-800\/50) {
+    transition: background-color 240ms var(--ease), border-color 240ms var(--ease),
+                color 200ms var(--ease), box-shadow 220ms var(--ease);
+  }
+
+  /* Consistent clickable-card hover (accent border + lift) */
+  .desktop-page :where(.space-y-3, .space-y-4, .space-y-5, .space-y-6) > :where(.bg-white, .dark\:bg-slate-900, .native-card):hover {
+    transform: translateY(-2px);
+    border-color: rgba(59, 130, 246, 0.32) !important;
+  }
+
+  /* Refined tables — airy header, clean last row */
+  .desktop-table {
+    border-spacing: 0;
+  }
+  .desktop-table th {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  }
+  .dark .desktop-table th {
+    border-bottom-color: rgba(148, 163, 184, 0.12);
+  }
+  .desktop-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .desktop-table tbody tr {
+    transition: background-color 160ms var(--ease);
+  }
+
+  /* Refined desktop scrollbar */
+  ::-webkit-scrollbar { width: 9px; height: 9px; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.4);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 116, 139, 0.6);
+    background-clip: padding-box;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.22);
+    background-clip: padding-box;
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.4);
+    background-clip: padding-box;
+  }
+
+  /* Crisper, on-brand focus ring */
+  .desktop-page :focus-visible {
+    outline: 2px solid rgba(59, 130, 246, 0.55);
+    outline-offset: 2px;
+    border-radius: var(--radius-md);
+  }
+}
+
+/* Smooth body transition on theme toggle (no white flash) */
+body {
+  transition: background-color 260ms var(--ease), color 220ms var(--ease);
+}

@@ -633,6 +633,14 @@
     border-color: rgba(37, 99, 235, 0.24) !important;
   }
 
+  .desktop-page :where([class*="shadow-blue-"], [class*="shadow-emerald-"], [class*="shadow-amber-"], [class*="shadow-rose-"], [class*="shadow-violet-"]):where(.rounded-full, .rounded-xl, .rounded-2xl, .rounded-3xl, .rounded-\[24px\], .rounded-\[28px\], .rounded-\[30px\], .rounded-\[32px\]) {
+    box-shadow: 0 8px 20px -18px rgba(15, 23, 42, 0.4) !important;
+  }
+
+  .desktop-page :where(.blur-2xl, .blur-3xl):where([class*="bg-blue-"], [class*="bg-cyan-"], [class*="bg-emerald-"], [class*="bg-amber-"], [class*="bg-rose-"], [class*="bg-violet-"]) {
+    opacity: 0.12 !important;
+  }
+
   .desktop-page :where(.desktop-table tbody tr, table tbody tr) {
     transition: background-color 180ms var(--ease), transform 180ms var(--ease), box-shadow 180ms var(--ease);
   }
@@ -1287,6 +1295,24 @@ html, body {
     background: rgba(59, 130, 246, 0.14) !important;
     color: #60a5fa !important;
     border-color: rgba(59, 130, 246, 0.22) !important;
+  }
+
+  .dark .desktop-page :where([class*="shadow-blue-"], [class*="shadow-emerald-"], [class*="shadow-amber-"], [class*="shadow-rose-"], [class*="shadow-violet-"]):where(.rounded-full, .rounded-xl, .rounded-2xl, .rounded-3xl, .rounded-\[24px\], .rounded-\[28px\], .rounded-\[30px\], .rounded-\[32px\]) {
+    box-shadow: 0 8px 18px -16px rgba(0, 0, 0, 0.65) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  :where(.native-page-enter, .mobile-shell, .page-content, main) :where([class*="shadow-blue-"], [class*="shadow-emerald-"], [class*="shadow-amber-"], [class*="shadow-rose-"], [class*="shadow-violet-"]):where(.rounded-full, .rounded-xl, .rounded-2xl, .rounded-3xl, .rounded-\[24px\], .rounded-\[28px\], .rounded-\[30px\], .rounded-\[32px\]) {
+    box-shadow: 0 6px 16px -14px rgba(15, 23, 42, 0.38) !important;
+  }
+
+  .dark :where(.native-page-enter, .mobile-shell, .page-content, main) :where([class*="shadow-blue-"], [class*="shadow-emerald-"], [class*="shadow-amber-"], [class*="shadow-rose-"], [class*="shadow-violet-"]):where(.rounded-full, .rounded-xl, .rounded-2xl, .rounded-3xl, .rounded-\[24px\], .rounded-\[28px\], .rounded-\[30px\], .rounded-\[32px\]) {
+    box-shadow: 0 6px 16px -14px rgba(0, 0, 0, 0.7) !important;
+  }
+
+  :where(.native-page-enter, .mobile-shell, .page-content, main) :where(.blur-2xl, .blur-3xl):where([class*="bg-blue-"], [class*="bg-cyan-"], [class*="bg-emerald-"], [class*="bg-amber-"], [class*="bg-rose-"], [class*="bg-violet-"]) {
+    opacity: 0.1 !important;
   }
 }
 

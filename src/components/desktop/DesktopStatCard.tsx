@@ -14,25 +14,25 @@ interface DesktopStatCardProps {
 
 const tones = {
   amber: {
-    chip: 'bg-amber-50/90 text-amber-600 border-amber-100 shadow-amber-100/70 dark:bg-amber-950/35 dark:text-amber-300 dark:border-amber-900/40',
+    chip: 'bg-amber-50/90 text-amber-600 border-amber-100 dark:bg-amber-950/35 dark:text-amber-300 dark:border-amber-900/40',
     glow: 'bg-amber-400/15 dark:bg-amber-400/10',
     bar: 'bg-amber-500',
     ring: 'ring-amber-500/25 border-amber-200 dark:border-amber-800',
   },
   emerald: {
-    chip: 'bg-emerald-50/90 text-emerald-600 border-emerald-100 shadow-emerald-100/70 dark:bg-emerald-950/35 dark:text-emerald-300 dark:border-emerald-900/40',
+    chip: 'bg-emerald-50/90 text-emerald-600 border-emerald-100 dark:bg-emerald-950/35 dark:text-emerald-300 dark:border-emerald-900/40',
     glow: 'bg-emerald-400/15 dark:bg-emerald-400/10',
     bar: 'bg-emerald-500',
     ring: 'ring-emerald-500/25 border-emerald-200 dark:border-emerald-800',
   },
   rose: {
-    chip: 'bg-rose-50/90 text-rose-600 border-rose-100 shadow-rose-100/70 dark:bg-rose-950/35 dark:text-rose-300 dark:border-rose-900/40',
+    chip: 'bg-rose-50/90 text-rose-600 border-rose-100 dark:bg-rose-950/35 dark:text-rose-300 dark:border-rose-900/40',
     glow: 'bg-rose-400/15 dark:bg-rose-400/10',
     bar: 'bg-rose-500',
     ring: 'ring-rose-500/25 border-rose-200 dark:border-rose-800',
   },
   blue: {
-    chip: 'bg-blue-50/90 text-blue-700 border-blue-100 shadow-blue-100/70 dark:bg-blue-950/35 dark:text-blue-300 dark:border-blue-900/40',
+    chip: 'bg-blue-50/90 text-blue-700 border-blue-100 dark:bg-blue-950/35 dark:text-blue-300 dark:border-blue-900/40',
     glow: 'bg-blue-400/15 dark:bg-blue-400/10',
     bar: 'bg-blue-600',
     ring: 'ring-blue-500/25 border-blue-200 dark:border-blue-800',
@@ -58,7 +58,7 @@ export default function DesktopStatCard({ label, value, icon: Icon, hint, tone =
       )}
     >
       {/* Soft tone glow */}
-      <div className={cn('pointer-events-none absolute -right-10 -top-10 w-32 h-32 rounded-full blur-2xl transition-opacity duration-300 opacity-70 group-hover:opacity-100', t.glow)} />
+      <div className={cn('pointer-events-none absolute -right-8 -top-8 w-24 h-24 rounded-full blur-xl transition-opacity duration-300 opacity-25 group-hover:opacity-35', t.glow)} />
 
       {/* Active accent bar */}
       {active && <span className={cn('absolute left-0 top-1/2 -translate-y-1/2 h-10 w-1 rounded-r-full', t.bar)} />}
@@ -69,7 +69,7 @@ export default function DesktopStatCard({ label, value, icon: Icon, hint, tone =
           <p className="text-[28px] font-extrabold leading-none mt-2 tabular-nums text-slate-950 dark:text-white">{value}</p>
           {hint && <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 mt-2 truncate">{hint}</p>}
         </div>
-        <div className={cn('w-12 h-12 rounded-full border flex items-center justify-center shrink-0 shadow-[0_14px_36px_-22px_currentColor] transition-transform duration-200 group-hover:scale-105', t.chip)}>
+        <div className={cn('w-12 h-12 rounded-full border flex items-center justify-center shrink-0 shadow-[0_6px_16px_-14px_rgba(15,23,42,0.35)] transition-transform duration-200 group-hover:scale-105', t.chip)}>
           <Icon className="w-[19px] h-[19px]" strokeWidth={2.4} />
         </div>
       </div>

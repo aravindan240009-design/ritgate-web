@@ -294,23 +294,6 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6 lg:mx-auto lg:max-w-6xl">
-
-      {/* Header Banner */}
-      <div className="bg-[var(--color-primary)] rounded-[32px] p-6 text-white shadow-xl shadow-blue-100 dark:shadow-none lg:rounded-[30px] lg:bg-gradient-to-br lg:from-blue-600 lg:via-blue-700 lg:to-slate-950 lg:p-7 lg:shadow-[0_24px_70px_rgba(37,99,235,0.18)]">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
-            <Users className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h3 className="text-[18px] font-black leading-none mb-1">Bulk Student Pass</h3>
-            <p className="text-[13px] font-bold text-blue-100 opacity-90 uppercase tracking-widest">HOD Control</p>
-          </div>
-        </div>
-        <p className="text-[12px] font-medium leading-relaxed opacity-80">
-          Create a unified gate pass for multiple department members. Assign a QR holder from the selected group.
-        </p>
-      </div>
-
       <div className="space-y-5 lg:grid lg:grid-cols-[minmax(0,1.45fr)_minmax(380px,0.85fr)] lg:items-start lg:gap-6 lg:space-y-0">
         <div className="space-y-5 lg:rounded-[30px] lg:border lg:border-white/60 lg:bg-white/80 lg:p-5 lg:shadow-[0_22px_60px_rgba(15,23,42,0.08)] lg:backdrop-blur-xl">
 
@@ -660,10 +643,10 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
         </div>
 
         <div className="space-y-5 lg:sticky lg:top-28 lg:rounded-[30px] lg:border lg:border-white/60 lg:bg-white/80 lg:p-5 lg:shadow-[0_22px_60px_rgba(15,23,42,0.08)] lg:backdrop-blur-xl">
-        <div className="hidden lg:block">
+        <div>
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Request Details</p>
-          <h3 className="mt-1 text-[22px] font-black tracking-tight text-slate-950">Bulk Student Pass</h3>
-          <p className="mt-1 text-[13px] font-semibold leading-relaxed text-slate-500">
+          <h3 className="mt-1 text-[22px] font-black tracking-tight text-slate-950 dark:text-white">Bulk Student Pass</h3>
+          <p className="mt-1 text-[13px] font-semibold leading-relaxed text-slate-500 dark:text-slate-400">
             {totalSelected} member{totalSelected === 1 ? '' : 's'} selected for this batch.
           </p>
         </div>
@@ -696,7 +679,7 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
         {/* ── SUBMIT ────────────────────────────────────────────────────────── */}
         <div className="pt-2">
           <button onClick={submitBulk} disabled={totalSelected === 0}
-            className="w-full h-14 bg-emerald-600 rounded-2xl text-white font-black text-[15px] uppercase tracking-widest shadow-xl shadow-emerald-100 dark:shadow-none hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale flex items-center justify-center gap-3 lg:bg-gradient-to-r lg:from-blue-600 lg:to-blue-700 lg:shadow-[0_18px_35px_rgba(37,99,235,0.28)] lg:hover:-translate-y-0.5">
+            className="w-full h-14 bg-emerald-600 rounded-2xl text-white font-black text-[15px] uppercase tracking-widest shadow-xl shadow-emerald-100 dark:shadow-none hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale flex items-center justify-center gap-3 sm:ml-auto sm:max-w-[20rem] lg:bg-gradient-to-r lg:from-blue-600 lg:to-blue-700 lg:shadow-[0_18px_35px_rgba(37,99,235,0.28)] lg:hover:-translate-y-0.5">
             <Send className="w-5 h-5" />
             Submit for {totalSelected} {totalSelected === 1 ? 'member' : 'members'}
           </button>

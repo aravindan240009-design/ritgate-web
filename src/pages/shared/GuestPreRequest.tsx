@@ -137,29 +137,15 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
 
       <main className={embedded ? "w-full" : "flex-1 overflow-y-auto px-5 py-6 lg:px-0 lg:py-0"}>
         <div className={cn(
-          "space-y-6 pb-32 lg:mx-auto lg:grid lg:max-w-6xl lg:grid-cols-[minmax(320px,0.85fr)_minmax(0,1.15fr)] lg:items-start lg:gap-6 lg:space-y-0 lg:pb-12",
-          embedded ? "w-full lg:max-w-6xl" : "max-w-lg mx-auto"
+          "space-y-5 pb-32 lg:mx-auto lg:max-w-3xl lg:pb-12",
+          embedded ? "w-full" : "max-w-lg mx-auto"
         )}>
-          <div className="space-y-6 lg:sticky lg:top-28">
-           {/* Creator Info Card */}
-           <div className="bg-white dark:bg-slate-900 rounded-[24px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 lg:rounded-[28px] lg:border-white/60 lg:bg-white/80 lg:p-6 lg:shadow-[0_22px_60px_rgba(15,23,42,0.08)] lg:backdrop-blur-xl">
-              <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-emerald-600 font-black text-[20px] lg:h-16 lg:w-16 lg:bg-gradient-to-br lg:from-blue-50 lg:to-emerald-50 lg:text-[24px] lg:ring-1 lg:ring-emerald-100">
-                 {creatorName.charAt(0)}
-              </div>
-              <div className="min-w-0">
-                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Registering on behalf of</p>
-                 <h4 className="text-[16px] font-black text-slate-900 dark:text-white truncate uppercase tracking-tight leading-none mt-1">{creatorName}</h4>
-                 <p className="text-[11px] font-bold text-slate-400 uppercase mt-1 opacity-80">{creatorDepartment || 'General Unit'}</p>
-              </div>
-           </div>
-          </div>
-
            {/* Form Section */}
-           <div className="space-y-5 lg:rounded-[30px] lg:border lg:border-white/60 lg:bg-white/80 lg:p-6 lg:shadow-[0_22px_60px_rgba(15,23,42,0.08)] lg:backdrop-blur-xl">
-              <div className="hidden lg:block">
+           <div className="space-y-5 lg:rounded-[30px] lg:border lg:border-white/60 lg:bg-white/80 lg:p-7 lg:shadow-[0_22px_60px_rgba(15,23,42,0.08)] lg:backdrop-blur-xl dark:lg:border-slate-800/70 dark:lg:bg-slate-900/80">
+              <div>
                  <p className="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Guest Pre-Request</p>
-                 <h3 className="mt-1 text-[24px] font-black tracking-tight text-slate-950 dark:text-white">Visitor Details</h3>
-                 <p className="mt-1 text-[13px] font-semibold leading-relaxed text-slate-500">
+                 <h3 className="mt-1 text-[22px] font-black tracking-tight text-slate-950 dark:text-white lg:text-[24px]">Visitor Details</h3>
+                 <p className="mt-1 text-[13px] font-semibold leading-relaxed text-slate-500 dark:text-slate-400">
                     Enter the guest details and authorize clearance in one clean request.
                  </p>
               </div>
@@ -218,7 +204,7 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
                  <button 
                     onClick={handleSubmit}
                     disabled={isSubmitting || loadingCreator}
-                    className="w-full h-15 bg-emerald-600 rounded-2xl text-white font-black text-[15px] uppercase tracking-widest shadow-xl shadow-emerald-100 dark:shadow-none active:scale-[0.98] transition-all flex items-center justify-center gap-2 lg:bg-gradient-to-r lg:from-emerald-500 lg:to-blue-600 lg:shadow-[0_18px_35px_rgba(16,185,129,0.28)] lg:hover:-translate-y-0.5 disabled:opacity-60 disabled:saturate-50"
+                    className="w-full h-15 bg-emerald-600 rounded-2xl text-white font-black text-[15px] uppercase tracking-widest shadow-xl shadow-emerald-100 dark:shadow-none active:scale-[0.98] transition-all flex items-center justify-center gap-2 sm:ml-auto sm:max-w-[18rem] lg:bg-gradient-to-r lg:from-emerald-500 lg:to-blue-600 lg:shadow-[0_18px_35px_rgba(16,185,129,0.28)] lg:hover:-translate-y-0.5 disabled:opacity-60 disabled:saturate-50"
                  >
                     {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin text-white" /> : (
                        <>

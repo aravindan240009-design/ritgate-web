@@ -59,39 +59,18 @@ export default function SinglePassRequestForm({
 }: SinglePassRequestFormProps) {
   return (
     <section className={cn('mx-auto w-full max-w-3xl space-y-5 lg:max-w-4xl', className)}>
-      <div className="overflow-hidden rounded-[30px] border border-white/55 bg-white/80 shadow-[0_24px_70px_rgba(15,23,42,0.10)] backdrop-blur-xl">
-        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-slate-950 px-5 py-5 text-white lg:px-7 lg:py-6">
-          <div className="absolute -right-12 -top-16 h-40 w-40 rounded-full bg-cyan-300/25 blur-3xl" />
-          <div className="absolute -bottom-20 left-12 h-44 w-44 rounded-full bg-blue-300/20 blur-3xl" />
-          <div className="relative flex items-center gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl border border-white/25 bg-white/15 text-2xl font-black shadow-inner backdrop-blur-md">
-              {initials}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="mb-1 text-[11px] font-black uppercase tracking-[0.24em] text-blue-100/80">
+      <div className="overflow-hidden rounded-[30px] border border-white/55 bg-white/80 shadow-[0_24px_70px_rgba(15,23,42,0.10)] backdrop-blur-xl dark:border-slate-800/70 dark:bg-slate-900/80">
+        <div className="space-y-5 px-5 py-6 lg:px-7 lg:py-7">
+          <div>
+            {eyebrow && (
+              <p className="mb-1.5 text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">
                 {eyebrow}
               </p>
-              <h2 className="truncate text-[22px] font-black leading-tight tracking-tight lg:text-[26px]">
-                {profileName}
-              </h2>
-              {profileMeta && (
-                <p className="mt-1 truncate text-[12px] font-bold uppercase tracking-[0.18em] text-blue-100/80">
-                  {profileMeta}
-                </p>
-              )}
-            </div>
-            <div className="hidden h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md sm:flex">
-              <ShieldCheck className="h-6 w-6 text-white/75" />
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-5 px-5 py-5 lg:px-7 lg:py-6">
-          <div>
-            <h3 className="text-[20px] font-black leading-tight tracking-tight text-slate-950 lg:text-[24px]">
+            )}
+            <h3 className="text-[20px] font-black leading-tight tracking-tight text-slate-950 dark:text-white lg:text-[24px]">
               {title}
             </h3>
-            <p className="mt-1 max-w-2xl text-[13px] font-semibold leading-relaxed text-slate-500 lg:text-[14px]">
+            <p className="mt-1 max-w-2xl text-[13px] font-semibold leading-relaxed text-slate-500 dark:text-slate-400 lg:text-[14px]">
               {subtitle}
             </p>
           </div>
@@ -151,7 +130,7 @@ export default function SinglePassRequestForm({
             onClick={onSubmit}
             disabled={disabled || submitting}
             className={cn(
-              'group flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 px-5 text-[14px] font-black uppercase tracking-[0.16em] text-white shadow-[0_18px_35px_rgba(37,99,235,0.30)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_22px_42px_rgba(37,99,235,0.38)] active:scale-[0.98]',
+              'group flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 px-5 text-[14px] font-black uppercase tracking-[0.16em] text-white shadow-[0_18px_35px_rgba(37,99,235,0.30)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_22px_42px_rgba(37,99,235,0.38)] active:scale-[0.98] sm:ml-auto sm:max-w-[18rem]',
               (disabled || submitting) && 'cursor-not-allowed opacity-55 shadow-none hover:translate-y-0',
               submitDesktopOnly && 'hidden lg:flex'
             )}

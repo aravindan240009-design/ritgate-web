@@ -24,8 +24,8 @@ export function getNavItems(role: string): NavItem[] {
     case 'STUDENT':
       return [
         { path: '/dashboard', label: 'Home', icon: Home },
-        { path: '/new-request', label: 'New Pass', icon: Plus },
-        { path: '/requests', label: 'My Requests', icon: Clock },
+        { path: '/requests', label: 'Requests', icon: Clock },
+        { path: '/history', label: 'History', icon: History },
         { path: '/profile', label: 'Profile', icon: User },
       ];
     case 'STAFF':

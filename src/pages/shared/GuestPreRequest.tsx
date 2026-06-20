@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  UserPlus, 
   QrCode, 
   CheckCircle, 
   Info, 
@@ -142,26 +141,6 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
           embedded ? "w-full lg:max-w-6xl" : "max-w-lg mx-auto"
         )}>
           <div className="space-y-6 lg:sticky lg:top-28">
-           {/* Banner */}
-           <div className="relative overflow-hidden bg-emerald-600 rounded-[32px] p-6 text-white shadow-xl shadow-emerald-100 dark:shadow-none lg:rounded-[30px] lg:bg-gradient-to-br lg:from-blue-600 lg:via-emerald-600 lg:to-slate-950 lg:p-7 lg:shadow-[0_24px_70px_rgba(16,185,129,0.18)]">
-              <div className="absolute -right-14 -top-20 h-44 w-44 rounded-full bg-cyan-300/20 blur-3xl" />
-              <div className="absolute -bottom-24 left-10 h-52 w-52 rounded-full bg-emerald-300/20 blur-3xl" />
-              <div className="relative">
-              <div className="flex items-center gap-4 mb-4">
-                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center border border-white/25 backdrop-blur-md lg:h-14 lg:w-14">
-                    <UserPlus className="w-7 h-7 text-white" />
-                 </div>
-                 <div>
-                    <h3 className="text-[18px] font-black leading-none mb-1 lg:text-[24px]">Instant Clearance</h3>
-                    <p className="text-[13px] font-bold text-emerald-100 opacity-90 uppercase tracking-widest leading-none">Security Perimeter</p>
-                 </div>
-              </div>
-              <p className="text-[12px] font-medium leading-relaxed opacity-80 italic lg:text-[13px] lg:leading-6">
-                Authorized visitors will receive immediate digital clearance for campus entry on your behalf.
-              </p>
-              </div>
-           </div>
-
            {/* Creator Info Card */}
            <div className="bg-white dark:bg-slate-900 rounded-[24px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 lg:rounded-[28px] lg:border-white/60 lg:bg-white/80 lg:p-6 lg:shadow-[0_22px_60px_rgba(15,23,42,0.08)] lg:backdrop-blur-xl">
               <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-emerald-600 font-black text-[20px] lg:h-16 lg:w-16 lg:bg-gradient-to-br lg:from-blue-50 lg:to-emerald-50 lg:text-[24px] lg:ring-1 lg:ring-emerald-100">

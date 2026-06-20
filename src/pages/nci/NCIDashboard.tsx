@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, AlertCircle, FileText, Users, RefreshCw, QrCode } from 'lucide-react';
+import { Search, AlertCircle, FileText, Users, QrCode, Clock, CheckCircle2, XCircle } from 'lucide-react';
 import { SkeletonList, Skeleton } from '../../components/ui/Skeleton';
 import Modal from '../../components/ui/Modal';
 import Button from '../../components/ui/Button';
@@ -142,9 +142,9 @@ export default function NCIDashboard() {
       {/* Search */}
       {isDesktop && (
         <div className="grid grid-cols-3 gap-4">
-          <DesktopStatCard label="Pending" value={stats.pending} icon={RefreshCw} tone="amber" active={activeTab === 'PENDING'} onClick={() => setActiveTab('PENDING')} />
-          <DesktopStatCard label="Approved" value={stats.approved} icon={Users} tone="emerald" active={activeTab === 'APPROVED'} onClick={() => setActiveTab('APPROVED')} />
-          <DesktopStatCard label="Rejected" value={stats.rejected} icon={AlertCircle} tone="rose" active={activeTab === 'REJECTED'} onClick={() => setActiveTab('REJECTED')} />
+          <DesktopStatCard label="Pending" value={stats.pending} icon={Clock} tone="amber" active={activeTab === 'PENDING'} onClick={() => setActiveTab('PENDING')} />
+          <DesktopStatCard label="Approved" value={stats.approved} icon={CheckCircle2} tone="emerald" active={activeTab === 'APPROVED'} onClick={() => setActiveTab('APPROVED')} />
+          <DesktopStatCard label="Rejected" value={stats.rejected} icon={XCircle} tone="rose" active={activeTab === 'REJECTED'} onClick={() => setActiveTab('REJECTED')} />
         </div>
       )}
 

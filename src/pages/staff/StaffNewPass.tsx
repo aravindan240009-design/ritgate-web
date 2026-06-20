@@ -222,9 +222,9 @@ export default function StaffNewPass() {
                  <AdminNewPass />
                ) : (
                 <SinglePassRequestForm
-                  eyebrow="Staff Single Pass"
+                  eyebrow="Single Pass Request"
                   title={PASS_COPY.singleTitle}
-                  subtitle={PASS_COPY.singleSubtitle}
+                  subtitle="Provide the purpose, reason, and optional attachment for this request."
                   profileName={staffName}
                   profileMeta={`Staff - ${user?.department || 'RIT'}`}
                   initials={initials}

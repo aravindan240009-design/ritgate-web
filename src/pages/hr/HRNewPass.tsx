@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { QrCode, ShieldCheck, Info, Ban } from 'lucide-react';
+import { QrCode, Ban } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 import QRCodeModal from '../../components/common/QRCodeModal';
@@ -107,25 +107,6 @@ export default function HRNewPass() {
 
   return (
     <div className="max-w-md mx-auto space-y-6 pb-10 lg:max-w-4xl">
-      {/* Header */}
-      <div className="text-left px-1">
-        <div className="flex items-center gap-2 text-[var(--color-primary)] dark:text-blue-400 mb-1">
-          <ShieldCheck className="w-3.5 h-3.5" />
-          <span className="text-[10px] font-bold tracking-widest uppercase">HR Authorization</span>
-        </div>
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{PASS_COPY.newRequest}</h2>
-        <p className="text-xs text-slate-400 mt-1">Instantly approved - QR code generated immediately</p>
-      </div>
-
-      {/* Info Banner */}
-      <motion.div initial={transitions.page.initial} animate={transitions.page.animate}>
-        <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-indigo-950/20 border border-blue-100 dark:border-indigo-900/30 rounded-2xl">
-          <Info className="w-5 h-5 text-[var(--color-primary)] dark:text-blue-400 shrink-0 mt-0.5" />
-          <p className="text-xs text-[var(--color-primary)] dark:text-indigo-300 font-medium leading-relaxed">
-            As HR, your gate pass is instantly approved and a QR code is generated immediately. No approval chain needed.
-          </p>
-        </div>
-      </motion.div>
 
       {/* Time restriction banner */}
       {passDisabled && (
@@ -144,9 +125,9 @@ export default function HRNewPass() {
 
       <motion.div initial={transitions.page.initial} animate={transitions.page.animate}>
         <SinglePassRequestForm
-          eyebrow="HR Single Pass"
+          eyebrow="Single Pass Request"
           title={PASS_COPY.newRequest}
-          subtitle="Instantly approved - QR code generated immediately"
+          subtitle="Provide the purpose, reason, and optional attachment for this request."
           profileName={hrName}
           profileMeta={`${hrCode} - ${department}`}
           initials={initials}

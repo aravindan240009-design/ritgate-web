@@ -65,12 +65,12 @@ export default function DesktopStatCard({ label, value, icon: Icon, hint, tone =
 
       <div className="relative flex items-center justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">{label}</p>
-          <p className="text-[30px] font-extrabold leading-none mt-2 tabular-nums text-slate-950 dark:text-white">{value}</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{label}</p>
+          <p className="text-[28px] font-extrabold leading-none mt-2 tabular-nums text-slate-950 dark:text-white">{value}</p>
           {hint && <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 mt-2 truncate">{hint}</p>}
         </div>
-        <div className={cn('w-12 h-12 rounded-full border flex items-center justify-center shrink-0 shadow-lg transition-transform duration-200 group-hover:scale-105', t.chip)}>
-          <Icon className="w-5 h-5" />
+        <div className={cn('w-12 h-12 rounded-full border flex items-center justify-center shrink-0 shadow-[0_14px_36px_-22px_currentColor] transition-transform duration-200 group-hover:scale-105', t.chip)}>
+          <Icon className="w-[19px] h-[19px]" strokeWidth={2.4} />
         </div>
       </div>
     </Comp>

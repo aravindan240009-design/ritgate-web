@@ -46,9 +46,9 @@ export default function HODNewPassRequest({ user, onBack }: HODNewPassRequestPro
 
   return (
     <SinglePassRequestForm
-      eyebrow="HOD Single Pass"
+      eyebrow="Single Pass Request"
       title="Gate Pass Request"
-      subtitle="Submit an authorization pass request for HR review."
+      subtitle="Provide the purpose, reason, and optional attachment for this request."
       profileName={hodName}
       profileMeta={`HOD - ${user?.department || 'Department'}`}
       initials={initials}

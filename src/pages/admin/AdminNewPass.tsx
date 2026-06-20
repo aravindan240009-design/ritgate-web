@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldCheck, QrCode, Ban } from 'lucide-react';
+import { QrCode, Ban } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 import QRCodeModal from '../../components/common/QRCodeModal';
@@ -108,27 +108,6 @@ export default function AdminNewPass({ onBack }: AdminNewPassProps = {}) {
 
   return (
     <div className="max-w-md mx-auto space-y-6 pb-10 text-left lg:max-w-4xl">
-      {/* Header */}
-      <div className="text-left px-1">
-        <div className="flex items-center gap-2 text-[var(--color-primary)] dark:text-blue-400 mb-1">
-          <ShieldCheck className="w-3.5 h-3.5" />
-          <span className="text-[10px] font-bold tracking-widest uppercase">Admin Authorization</span>
-        </div>
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight">{PASS_COPY.newRequest}</h2>
-        <p className="text-xs text-slate-400 mt-1">Generated passes are auto-approved for Administrative Officers</p>
-      </div>
-
-      {/* Info Card */}
-      <div className="p-4 bg-blue-50 dark:bg-indigo-950/20 border border-blue-100 dark:border-indigo-900/30 rounded-2xl flex items-start gap-3">
-        <div className="w-8 h-8 rounded-full bg-white dark:bg-indigo-900 flex items-center justify-center shrink-0 shadow-sm border border-blue-100 dark:border-[var(--color-primary)]">
-          <QrCode className="w-4 h-4 text-[var(--color-primary)]" />
-        </div>
-        <div>
-          <p className="text-xs font-bold text-[var(--color-primary)] dark:text-indigo-300">Instant Issuance</p>
-          <p className="text-[11px] text-[var(--color-primary)]/70 dark:text-blue-400/70 mt-0.5 leading-relaxed">Your gate pass will be approved automatically and a QR code will be generated immediately upon submission.</p>
-        </div>
-      </div>
-
       {/* Time restriction banner */}
       {passDisabled && (
         <motion.div initial={transitions.page.initial} animate={transitions.page.animate}>
@@ -146,9 +125,9 @@ export default function AdminNewPass({ onBack }: AdminNewPassProps = {}) {
 
       <motion.div initial={transitions.page.initial} animate={transitions.page.animate}>
         <SinglePassRequestForm
-          eyebrow="Admin Single Pass"
+          eyebrow="Single Pass Request"
           title={PASS_COPY.newRequest}
-          subtitle="Generated passes are auto-approved for Administrative Officers"
+          subtitle="Provide the purpose, reason, and optional attachment for this request."
           profileName={adminName}
           profileMeta={`${adminCode} - ADMIN OFFICER`}
           initials={adminName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}

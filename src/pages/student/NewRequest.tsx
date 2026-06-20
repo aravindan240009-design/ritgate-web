@@ -117,7 +117,7 @@ export default function NewRequest() {
         </div>
       </header>
 
-      <main className="desktop-page flex-1 px-5 pt-6 pb-32 lg:px-0 lg:pt-0 lg:pb-12">
+      <main className="desktop-page flex-1 px-5 pt-6 pb-52 lg:px-0 lg:pt-0 lg:pb-12">
         <div className="max-w-md mx-auto space-y-6 lg:max-w-2xl">
           {isDesktop && (
             <DesktopPageHeader
@@ -157,12 +157,15 @@ export default function NewRequest() {
       </main>
 
       {/* Submit Button — mobile fixed bar */}
-      <div className="fixed bottom-0 left-0 right-0 p-5 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-t border-slate-100 dark:border-slate-800 z-40 lg:hidden">
+      <div
+        className="fixed left-0 right-0 z-[60] border-t border-slate-100 bg-white/88 p-4 shadow-[0_-16px_36px_-30px_rgba(15,23,42,0.75)] backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/88 lg:hidden"
+        style={{ bottom: 'calc(68px + env(safe-area-inset-bottom))' }}
+      >
         <button 
           onClick={() => setShowConfirmSubmit(true)}
           disabled={!isFormValid || isLocked}
           className={cn(
-            "w-full h-15 bg-slate-950 dark:bg-[var(--color-primary)] rounded-2xl flex items-center justify-center gap-3 text-white active:scale-95 transition-all shadow-xl shadow-slate-200 dark:shadow-none",
+            "w-full h-13 bg-slate-950 dark:bg-[var(--color-primary)] rounded-2xl flex items-center justify-center gap-3 text-white active:scale-95 transition-all shadow-[0_12px_28px_-20px_rgba(15,23,42,0.85)]",
             (!isFormValid || isLocked) && "opacity-60 saturate-50 cursor-not-allowed"
           )}
         >

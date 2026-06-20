@@ -168,13 +168,18 @@ export async function exportToPdf(params: {
 export async function exportToCsv(data: any[], filename: string) {
   if (!data || data.length === 0) return;
 
+  // Guard against CSV/formula injection: a leading =, +, -, @, tab or CR can
+  // be interpreted as a formula by Excel/Sheets. Prefix such values with '.
+  const sanitizeCell = (raw: any): string => {
+    let val = raw === null || raw === undefined ? '' : String(raw);
+    if (/^[=+\-@\t\r]/.test(val)) val = `'${val}`;
+    return `"${val.replace(/"/g, '""')}"`;
+  };
+
   const headers = Object.keys(data[0]);
   const csvContent = [
-    headers.join(','),
-    ...data.map(row => headers.map(h => {
-      const val = row[h] === null || row[h] === undefined ? '' : String(row[h]);
-      return `"${val.replace(/"/g, '""')}"`;
-    }).join(','))
+    headers.map(sanitizeCell).join(','),
+    ...data.map(row => headers.map(h => sanitizeCell(row[h])).join(','))
   ].join('\n');
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

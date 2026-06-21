@@ -44,6 +44,7 @@ interface SinglePassDetailsModalProps {
   timelineSteps?: TimelineStep[];
   viewerRole?: string;
   processing?: boolean;
+  floatingDesktop?: boolean;
 }
 
 export default function SinglePassDetailsModal({
@@ -57,6 +58,7 @@ export default function SinglePassDetailsModal({
   timelineSteps,
   viewerRole,
   processing: externalProcessing,
+  floatingDesktop = false,
 }: SinglePassDetailsModalProps) {
   const { getUserId } = useAuth();
   const [remark, setRemark] = useState('');
@@ -131,12 +133,24 @@ export default function SinglePassDetailsModal({
 
   return createPortal(
     <AnimatePresence mode="wait">
+      {floatingDesktop && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="fixed inset-0 z-[129] hidden bg-slate-950/55 backdrop-blur-md lg:block"
+        />
+      )}
       <motion.div
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="fixed inset-0 z-[130] bg-[#F8FAFC] dark:bg-slate-950 flex flex-col pt-safe"
+        className={cn(
+          "fixed inset-0 z-[130] bg-[#F8FAFC] dark:bg-slate-950 flex flex-col pt-safe",
+          floatingDesktop && "lg:inset-x-0 lg:bottom-auto lg:top-[7vh] lg:mx-auto lg:h-[min(86vh,760px)] lg:w-[min(1120px,calc(100vw-72px))] lg:overflow-hidden lg:rounded-[32px] lg:border lg:border-white/80 lg:pt-0 lg:shadow-[0_34px_100px_-36px_rgba(15,23,42,0.65)] dark:lg:border-slate-800",
+        )}
       >
         {/* Header */}
         <header className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 h-16 flex items-center gap-3 z-20">

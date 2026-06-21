@@ -44,7 +44,7 @@ api.interceptors.response.use(
     const requestUrl = error.config?.url || '';
     const isAuthRequest = requestUrl.includes('/auth/');
 
-    if ((status === 401 || status === 403) && !isAuthRequest) {
+    if (status === 401 && !isAuthRequest) {
       storage.clearAll();
       logoutHandler?.();
     }

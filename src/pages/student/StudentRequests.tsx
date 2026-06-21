@@ -17,7 +17,7 @@ import PageHeader from '../../components/common/PageHeader';
 import TopRefreshControl from '../../components/common/TopRefreshControl';
 import { SkeletonList } from '../../components/ui/Skeleton';
 import GatePassQRModal from '../../components/common/GatePassQRModal';
-import SinglePassDetailsModal from '../../components/common/SinglePassDetailsModal';
+import RequestDetailsModal from '../../components/common/RequestDetailsModal';
 import MyRequestsBulkModal from '../../components/common/MyRequestsBulkModal';
 import { cn } from '../../utils/cn';
 import type { Student } from '../../types';
@@ -40,7 +40,7 @@ export default function StudentRequests() {
   const [loading, setLoading] = useState(true);
   
   const [showQRModal, setShowQRModal] = useState(false);
-  const [showSingleModal, setShowSingleModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showBulkModal, setShowBulkModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [qrData, setQrData] = useState<{ code: string; manual: string | undefined; expires: string | undefined } | null>(null);
@@ -139,7 +139,7 @@ export default function StudentRequests() {
                       <th>Type</th>
                       <th>Date</th>
                       <th>Status</th>
-                      <th className="text-right">Action</th>
+                      <th className="text-center">Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -147,7 +147,15 @@ export default function StudentRequests() {
                       const config = getStatusConfig(request.status);
                       const isBulk = request.passType === 'BULK';
                       return (
-                        <tr key={request.id}>
+                        <tr
+                          key={request.id}
+                          className="cursor-pointer hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35"
+                          onClick={() => {
+                            setSelectedRequest(request);
+                            if (isBulk) setShowBulkModal(true);
+                            else setShowDetailsModal(true);
+                          }}
+                        >
                           <td>
                             <p className="font-bold text-slate-950 dark:text-white">{request.purpose || request.reason || 'Gate Pass Request'}</p>
                             <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Request #{request.id}</p>
@@ -155,11 +163,11 @@ export default function StudentRequests() {
                           <td>{isBulk ? 'Bulk Pass' : 'Single Pass'}</td>
                           <td>{formatDateTime(request.requestDate || request.createdAt)}</td>
                           <td><span className={cn('inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase', config.bg, config.color)}>{config.text}</span></td>
-                          <td className="text-right">
+                          <td className="text-center">
                             {request.status === 'APPROVED' && !isBulk ? (
-                              <Button size="sm" onClick={(e) => { e.stopPropagation(); handleViewQR(request); }} icon={<QrCode className="w-4 h-4" />}>View QR</Button>
+                              <Button className="mx-auto" size="sm" onClick={(e) => { e.stopPropagation(); handleViewQR(request); }} icon={<QrCode className="w-4 h-4" />}>View QR</Button>
                             ) : (
-                              <Button size="sm" variant="secondary" onClick={(e) => { e.stopPropagation(); setSelectedRequest(request); if (isBulk) setShowBulkModal(true); else setShowSingleModal(true); }}>View</Button>
+                              <Button className="mx-auto" size="sm" variant="secondary" onClick={(e) => { e.stopPropagation(); setSelectedRequest(request); if (isBulk) setShowBulkModal(true); else setShowDetailsModal(true); }}>View</Button>
                             )}
                           </td>
                         </tr>
@@ -181,7 +189,7 @@ export default function StudentRequests() {
                     onClick={() => {
                       setSelectedRequest(request);
                       if (isBulk) setShowBulkModal(true);
-                      else setShowSingleModal(true);
+                      else setShowDetailsModal(true);
                     }}
                     className="bg-white dark:bg-slate-900 rounded-[28px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm active:bg-slate-50 transition-colors"
                   >
@@ -292,11 +300,12 @@ export default function StudentRequests() {
           />
         )}
 
-        {selectedRequest && showSingleModal && (
-          <SinglePassDetailsModal 
-            isOpen={showSingleModal}
-            onClose={() => setShowSingleModal(false)}
+        {selectedRequest && showDetailsModal && (
+          <RequestDetailsModal 
+            isOpen={showDetailsModal}
+            onClose={() => setShowDetailsModal(false)}
             request={selectedRequest}
+            student={user}
           />
         )}
 

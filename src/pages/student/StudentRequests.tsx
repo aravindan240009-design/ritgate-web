@@ -18,7 +18,7 @@ import PageHeader from '../../components/common/PageHeader';
 import TopRefreshControl from '../../components/common/TopRefreshControl';
 import { SkeletonList } from '../../components/ui/Skeleton';
 import GatePassQRModal from '../../components/common/GatePassQRModal';
-import SinglePassDetailsModal from '../../components/common/SinglePassDetailsModal';
+import RequestDetailsModal from '../../components/common/RequestDetailsModal';
 import MyRequestsBulkModal from '../../components/common/MyRequestsBulkModal';
 import { cn } from '../../utils/cn';
 import type { Student } from '../../types';
@@ -43,7 +43,7 @@ export default function StudentRequests() {
   const [loading, setLoading] = useState(true);
   
   const [showQRModal, setShowQRModal] = useState(false);
-  const [showSingleModal, setShowSingleModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showBulkModal, setShowBulkModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [qrData, setQrData] = useState<{ code: string; manual: string | undefined; expires: string | undefined } | null>(null);
@@ -54,14 +54,14 @@ export default function StudentRequests() {
 
   useEffect(() => {
     const requestId = new URLSearchParams(location.search).get('requestId');
-    if (!requestId || showSingleModal || requests.length === 0) return;
+    if (!requestId || showDetailsModal || requests.length === 0) return;
 
     const request = requests.find((item) => String(item.id) === requestId);
     if (request && request.passType !== 'BULK') {
       setSelectedRequest(request);
-      setShowSingleModal(true);
+      setShowDetailsModal(true);
     }
-  }, [location.search, requests, showSingleModal]);
+  }, [location.search, requests, showDetailsModal]);
 
   const loadData = async () => {
     if (!user?.regNo) return;
@@ -117,12 +117,12 @@ export default function StudentRequests() {
       return;
     }
 
-    setShowSingleModal(true);
+    setShowDetailsModal(true);
     navigate(`/requests?requestId=${request.id}`, { replace: false });
   };
 
   const closeRequestDetails = () => {
-    setShowSingleModal(false);
+    setShowDetailsModal(false);
     if (new URLSearchParams(location.search).has('requestId')) {
       navigate('/requests', { replace: true });
     }
@@ -324,11 +324,12 @@ export default function StudentRequests() {
           />
         )}
 
-        {selectedRequest && showSingleModal && (
-          <SinglePassDetailsModal 
-            isOpen={showSingleModal}
+        {selectedRequest && showDetailsModal && (
+          <RequestDetailsModal 
+            isOpen={showDetailsModal}
             onClose={closeRequestDetails}
             request={selectedRequest}
+            student={user}
           />
         )}
 

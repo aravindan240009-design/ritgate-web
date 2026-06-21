@@ -147,7 +147,7 @@ export default function StudentRequests() {
                       const config = getStatusConfig(request.status);
                       const isBulk = request.passType === 'BULK';
                       return (
-                        <tr key={request.id} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35" onClick={() => { setSelectedRequest(request); if (isBulk) setShowBulkModal(true); else setShowSingleModal(true); }}>
+                        <tr key={request.id}>
                           <td>
                             <p className="font-bold text-slate-950 dark:text-white">{request.purpose || request.reason || 'Gate Pass Request'}</p>
                             <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Request #{request.id}</p>

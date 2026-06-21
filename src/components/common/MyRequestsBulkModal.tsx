@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Users, UserCircle, QrCode, X, Search, Maximize2, Loader2, AlertCircle, CheckCircle2, XCircle, FileText } from 'lucide-react';
 import { apiService } from '../../services/api.service';
@@ -101,7 +102,7 @@ export default function MyRequestsBulkModal({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <AnimatePresence>
       <motion.div
         initial={isDesktop ? { opacity: 0 } : { y: '100%' }}
@@ -413,6 +414,7 @@ export default function MyRequestsBulkModal({
           )}
         </AnimatePresence>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

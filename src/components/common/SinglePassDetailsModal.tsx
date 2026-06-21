@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, 
@@ -128,7 +129,7 @@ export default function SinglePassDetailsModal({
   const getInitials = (name: string) =>
     (name || 'ST').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
 
-  return (
+  return createPortal(
     <AnimatePresence mode="wait">
       <motion.div
         initial={{ y: '100%' }}
@@ -481,6 +482,7 @@ export default function SinglePassDetailsModal({
           />
         )}
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

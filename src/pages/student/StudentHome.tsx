@@ -175,17 +175,7 @@ export default function StudentHome() {
         <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
           <div className="space-y-5">
             <section>
-              <motion.button
-                type="button"
-                whileHover={{ y: gatePassDisabled ? 0 : -2 }}
-                whileTap={{ scale: gatePassDisabled ? 1 : 0.99 }}
-                onClick={() => !gatePassDisabled && (window.location.href = '/new-request')}
-                className={cn(
-                  'desktop-card group overflow-hidden text-left transition-all',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30',
-                  gatePassDisabled ? 'cursor-default' : 'hover:border-blue-300/80 hover:shadow-[0_18px_45px_-26px_rgba(37,99,235,0.55)]',
-                )}
-              >
+              <div className="desktop-card overflow-hidden text-left">
                 <div className="flex min-h-[136px] flex-col justify-between gap-5 p-5 xl:flex-row xl:items-center xl:p-6">
                   <div className="flex min-w-0 items-start gap-5">
                     <div className={cn(
@@ -225,12 +215,17 @@ export default function StudentHome() {
                       <Clock3 className="h-4 w-4 text-slate-400" />
                       Closes at 3:00 PM
                     </span>
-                    <span className={cn(
-                      'inline-flex h-11 items-center justify-center gap-2 rounded-lg px-5 text-sm font-bold',
-                      gatePassDisabled
-                        ? 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500'
-                        : 'bg-blue-700 text-white shadow-sm shadow-blue-700/20 group-hover:bg-blue-800',
-                    )}>
+                    <button
+                      type="button"
+                      disabled={gatePassDisabled}
+                      onClick={() => !gatePassDisabled && (window.location.href = '/new-request')}
+                      className={cn(
+                        'group inline-flex h-11 items-center justify-center gap-2 rounded-lg px-5 text-sm font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30',
+                        gatePassDisabled
+                          ? 'cursor-not-allowed bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500'
+                          : 'bg-blue-700 text-white shadow-sm shadow-blue-700/20 hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-md active:scale-95',
+                      )}
+                    >
                       {gatePassDisabled ? (
                         <Ban className="h-5 w-5" />
                       ) : (
@@ -239,10 +234,10 @@ export default function StudentHome() {
                           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                         </>
                       )}
-                    </span>
+                    </button>
                   </div>
                 </div>
-              </motion.button>
+              </div>
             </section>
 
             <section>

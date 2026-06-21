@@ -11,6 +11,7 @@ export default function RequestTimeline({ request }: RequestTimelineProps) {
   if (!request) return null;
 
   const { status, staffApproval, hodApproval, staffRemark, hodRemark } = request;
+  const waitingForStaff = status === 'PENDING_STAFF' && staffApproval !== 'APPROVED' && staffApproval !== 'REJECTED';
 
   const getStepStatus = (step: number) => {
     if (status === 'REJECTED') {
@@ -28,7 +29,7 @@ export default function RequestTimeline({ request }: RequestTimelineProps) {
       return 'completed';
     }
 
-    if (step === 1) return 'completed';
+    if (step === 1) return waitingForStaff ? 'active' : 'completed';
     if (step === 2) {
       if (staffApproval === 'APPROVED' || ['PENDING_HOD', 'APPROVED_BY_STAFF', 'APPROVED'].includes(status) || !!hodApproval) return 'completed';
       if (staffApproval === 'REJECTED') return 'rejected';

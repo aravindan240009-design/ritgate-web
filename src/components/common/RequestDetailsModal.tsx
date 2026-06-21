@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Maximize2, User as UserIcon, QrCode as QrIcon, FileText } from 'lucide-react';
+import { X, Maximize2, User as UserIcon, FileText } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import RequestTimeline from './RequestTimeline';
 import { formatDate } from '../../utils/dateUtils';
@@ -51,7 +51,7 @@ export default function RequestDetailsModal({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={onClose}
-              className="fixed inset-0 bg-black/50 z-[110] backdrop-blur-sm"
+              className="fixed inset-0 z-[1000] bg-slate-950/55 backdrop-blur-md"
             />
 
             {/* Bottom Sheet Drawer */}
@@ -60,7 +60,7 @@ export default function RequestDetailsModal({
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 lg:bottom-auto lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:max-w-2xl lg:rounded-[32px] bg-white dark:bg-slate-900 rounded-t-[32px] z-[120] max-h-[92vh] lg:max-h-[85vh] overflow-y-auto shadow-2xl pb-safe"
+              className="fixed bottom-0 left-0 right-0 z-[1001] max-h-[92vh] overflow-y-auto rounded-t-[32px] bg-white shadow-2xl pb-safe dark:bg-slate-900 lg:bottom-auto lg:left-1/2 lg:right-auto lg:top-1/2 lg:w-[min(760px,calc(100vw-48px))] lg:max-w-none lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-[32px] lg:border lg:border-white/70 lg:shadow-[0_32px_90px_-36px_rgba(15,23,42,0.55)] dark:lg:border-slate-800"
             >
               {/* Handle */}
               <div className="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mt-3 mb-1 lg:hidden" />
@@ -77,10 +77,10 @@ export default function RequestDetailsModal({
               </div>
 
               {/* Content */}
-              <div className="p-6 pt-12 lg:pt-16 space-y-8">
+              <div className="p-6 pt-8 lg:p-8 lg:pt-8 space-y-8">
                 {/* Status Section */}
-                <div className="flex items-center justify-between">
-                  <span className="text-base font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest text-[13px]">Current Status</span>
+                <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-3 dark:border-slate-800 dark:bg-slate-950/40">
+                  <span className="text-[12px] font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">Request Status</span>
                   <Badge variant={getStatusVariant(request.status)} className="px-4 py-1.5 text-[11px] font-black uppercase tracking-widest">
                     {request.status || 'PENDING'}
                   </Badge>
@@ -150,7 +150,7 @@ export default function RequestDetailsModal({
                 )}
 
                 {/* Timeline */}
-                <div>
+                <div className="lg:rounded-3xl lg:border lg:border-slate-100 lg:bg-white/60 lg:p-5 dark:lg:border-slate-800 dark:lg:bg-slate-950/25">
                   <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight mb-6">Process Timeline</h3>
                   <div className="px-2">
                     <RequestTimeline request={request} />

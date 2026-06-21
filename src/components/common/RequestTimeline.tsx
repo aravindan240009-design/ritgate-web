@@ -11,34 +11,41 @@ export default function RequestTimeline({ request }: RequestTimelineProps) {
   if (!request) return null;
 
   const { status, staffApproval, hodApproval, staffRemark, hodRemark } = request;
-  const waitingForStaff = status === 'PENDING_STAFF' && staffApproval !== 'APPROVED' && staffApproval !== 'REJECTED';
+  const normalizedStatus = String(status || '').toUpperCase();
+  const normalizedStaffApproval = String(staffApproval || '').toUpperCase();
+  const normalizedHodApproval = String(hodApproval || '').toUpperCase();
+  const staffApproved =
+    normalizedStaffApproval === 'APPROVED' ||
+    ['PENDING_HOD', 'APPROVED_BY_STAFF', 'APPROVED', 'USED'].includes(normalizedStatus) ||
+    normalizedHodApproval === 'APPROVED';
+  const hodApproved = normalizedHodApproval === 'APPROVED' || ['APPROVED', 'USED'].includes(normalizedStatus);
 
   const getStepStatus = (step: number) => {
-    if (status === 'REJECTED') {
+    if (normalizedStatus === 'REJECTED') {
       if (step === 1) return 'completed';
       if (step === 2) {
-        if (staffApproval === 'REJECTED') return 'rejected';
-        if (staffApproval === 'APPROVED' || ['PENDING_HOD', 'APPROVED_BY_STAFF'].includes(status) || !!hodApproval) return 'completed';
+        if (normalizedStaffApproval === 'REJECTED') return 'rejected';
+        if (staffApproved) return 'completed';
         return 'pending';
       }
-      if (step === 3 && hodApproval === 'REJECTED') return 'rejected';
+      if (step === 3 && normalizedHodApproval === 'REJECTED') return 'rejected';
       return 'pending';
     }
 
-    if (status === 'APPROVED' || status === 'USED') {
+    if (normalizedStatus === 'APPROVED' || normalizedStatus === 'USED') {
       return 'completed';
     }
 
-    if (step === 1) return waitingForStaff ? 'active' : 'completed';
+    if (step === 1) return 'completed';
     if (step === 2) {
-      if (staffApproval === 'APPROVED' || ['PENDING_HOD', 'APPROVED_BY_STAFF', 'APPROVED'].includes(status) || !!hodApproval) return 'completed';
-      if (staffApproval === 'REJECTED') return 'rejected';
+      if (staffApproved) return 'completed';
+      if (normalizedStaffApproval === 'REJECTED') return 'rejected';
       return 'active';
     }
     if (step === 3) {
-      if (hodApproval === 'APPROVED' || status === 'APPROVED') return 'completed';
-      if (hodApproval === 'REJECTED') return 'rejected';
-      if (staffApproval === 'APPROVED' || ['PENDING_HOD', 'APPROVED_BY_STAFF'].includes(status)) return 'active';
+      if (hodApproved) return 'completed';
+      if (normalizedHodApproval === 'REJECTED') return 'rejected';
+      if (staffApproved) return 'active';
       return 'pending';
     }
     return 'pending';
@@ -61,13 +68,13 @@ export default function RequestTimeline({ request }: RequestTimelineProps) {
 
   const getCompletedStepsCount = () => {
     let count = 1;
-    if (staffApproval === 'APPROVED' || !!hodApproval || status === 'APPROVED') count++;
-    if (hodApproval === 'APPROVED' || status === 'APPROVED') count++;
+    if (staffApproved) count++;
+    if (hodApproved) count++;
     return count;
   };
 
   const progressPercentage = (getCompletedStepsCount() / 3) * 100;
-  const barColor = status === 'APPROVED' ? 'bg-emerald-500' : status === 'REJECTED' ? 'bg-rose-500' : 'bg-amber-500';
+  const barColor = normalizedStatus === 'APPROVED' ? 'bg-emerald-500' : normalizedStatus === 'REJECTED' ? 'bg-rose-500' : 'bg-amber-500';
 
   return (
     <div className="w-full">

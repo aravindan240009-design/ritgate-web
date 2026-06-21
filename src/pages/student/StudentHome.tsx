@@ -229,7 +229,7 @@ export default function StudentHome() {
               <div className="desktop-card overflow-hidden text-left">
                 <div className="flex min-h-[136px] flex-col justify-between gap-5 p-5 xl:flex-row xl:items-center xl:p-6">
                   <div className="flex min-w-0 items-start gap-5">
-                    <GatePassIllustration className={cn('h-14 w-14 shrink-0', gatePassDisabled && 'opacity-50 grayscale')} />
+                    <GatePassIllustration className={cn('mt-2 h-14 w-14 shrink-0', gatePassDisabled && 'opacity-50 grayscale')} />
                     <div className="min-w-0">
                       <div className={cn(
                         'mb-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold',

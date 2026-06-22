@@ -376,7 +376,7 @@ export default function StudentHome() {
       </div>
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-4 pt-4 pb-28 lg:px-0 lg:pt-6 lg:pb-8">
+        <div className="px-4 pt-4 pb-28 min-h-screen flex flex-col lg:px-0 lg:pt-6 lg:pb-8 lg:min-h-0">
           {/* Main Action Card */}
           <motion.div 
             whileTap={{ scale: gatePassDisabled ? 1 : 0.98 }}

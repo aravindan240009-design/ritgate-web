@@ -165,7 +165,7 @@ export default function StudentHistory() {
           )}
 
           {/* List Section */}
-          <div className="mt-8 space-y-4 lg:mt-6">
+          <div className="mt-8 space-y-4 min-h-[50vh] flex flex-col lg:mt-6 lg:min-h-0">
             {loading ? (
               <SkeletonList count={5} />
             ) : isDesktop && historyData.length > 0 ? (

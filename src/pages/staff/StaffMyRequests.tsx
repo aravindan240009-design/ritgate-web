@@ -177,7 +177,7 @@ export default function StaffMyRequests() {
       </div>
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-5 pt-4 pb-28 lg:px-0 lg:pt-0 lg:pb-8">
+        <div className="px-5 pt-4 pb-28 min-h-screen flex flex-col lg:px-0 lg:pt-6 lg:pb-8 lg:min-h-0">
           {loading ? (
             <SkeletonList count={4} />
           ) : isDesktop && filteredRequests.length > 0 ? (

@@ -88,11 +88,6 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                   : 'border-transparent text-slate-600 dark:text-slate-400 hover:bg-[var(--color-primary-subtle)] dark:hover:bg-white/[0.06] hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary)]',
               )}
             >
-              {/* Active left bar */}
-              {isActive && !collapsed && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-white/80 rounded-r-full" />
-              )}
-
               <item.icon className={cn(
                 'shrink-0 transition-transform duration-150',
                 collapsed ? 'w-5 h-5' : 'w-[18px] h-[18px]',

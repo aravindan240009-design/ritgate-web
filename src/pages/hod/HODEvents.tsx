@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   CalendarDays, Plus, Users, MapPin,
-  Calendar, Search, Trash2, UserCheck, CheckCircle2,
+  Calendar, Search, Trash2, UserCheck,
   Loader2, CheckCheck
 } from 'lucide-react';
 import { usePageTitle } from '../../hooks/usePageTitle';
@@ -16,7 +16,6 @@ import {
   assignCoordinators,
   removeCoordinator,
   getHODDepartmentStaff,
-  completeEvent,
 } from '../../services/api.service';
 import PageHeader from '../../components/common/PageHeader';
 import TopRefreshControl from '../../components/common/TopRefreshControl';
@@ -52,7 +51,6 @@ export default function HODEvents() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [staffSearch, setStaffSearch] = useState('');
   const [removeTarget, setRemoveTarget] = useState<string | null>(null);
-  const [completeTarget, setCompleteTarget] = useState<RITGateEvent | null>(null);
 
   const loadEvents = useCallback(async () => {
     try {
@@ -134,20 +132,6 @@ export default function HODEvents() {
     } else {
       toastError('Failed', res.message || 'Could not remove coordinator');
     }
-  };
-
-  const handleComplete = async () => {
-    if (!completeTarget) return;
-    setCompleteTarget(null);
-    await withLock(async () => {
-      const res = await completeEvent(completeTarget.id);
-      if (res.success) {
-        toast('Event Completed', `"${completeTarget.eventName}" marked as completed`);
-        loadEvents();
-      } else {
-        toastError('Failed', res.message || 'Could not complete event');
-      }
-    }, 'Completing event...');
   };
 
   const statusConfig = (status: string) => {
@@ -356,7 +340,7 @@ export default function HODEvents() {
       <PageHeader title="Events" />
 
       <TopRefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); loadEvents(); }}>
-        <div className="px-5 pt-6 pb-28">
+        <div className="px-5 pt-6 pb-28 lg:px-10 xl:px-14">
           {loadingEvents ? (
             <SkeletonList count={4} />
           ) : events.length === 0 ? (
@@ -376,7 +360,7 @@ export default function HODEvents() {
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-3">
               {events.map(event => {
                 const cfg = statusConfig(event.status);
                 return (
@@ -384,15 +368,15 @@ export default function HODEvents() {
                     key={event.id}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white dark:bg-slate-900 rounded-[28px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm"
+                    className="bg-white dark:bg-slate-900 rounded-[28px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm lg:p-6 lg:shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
                   >
-                    <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="flex items-start justify-between gap-3 mb-4 lg:mb-5">
                       <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                        <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center shrink-0">
+                        <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center shrink-0 lg:w-14 lg:h-14">
                           <CalendarDays className="w-6 h-6 text-[var(--color-primary)]" />
                         </div>
                         <div className="min-w-0">
-                          <h5 className="text-[16px] font-black text-slate-900 dark:text-white truncate">{event.eventName}</h5>
+                          <h5 className="text-[16px] font-black text-slate-900 dark:text-white truncate lg:text-[18px]">{event.eventName}</h5>
                           <p className="text-[12px] font-bold text-slate-400">ID: {event.id}</p>
                         </div>
                       </div>
@@ -402,7 +386,7 @@ export default function HODEvents() {
                       </div>
                     </div>
 
-                    <div className="bg-slate-50 dark:bg-slate-950/50 rounded-2xl p-3.5 space-y-2 border border-slate-100/50 dark:border-slate-800/30 mb-4">
+                    <div className="bg-slate-50 dark:bg-slate-950/50 rounded-2xl p-3.5 space-y-2 border border-slate-100/50 dark:border-slate-800/30 mb-4 lg:p-4 lg:mb-5">
                       <div className="flex items-center gap-3">
                         <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
                         <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">{event.eventDate}</span>
@@ -417,20 +401,12 @@ export default function HODEvents() {
 
                     <div className="flex items-center gap-2">
                       {event.status === 'ACTIVE' && (
-                        <>
-                          <button
-                            onClick={() => openCoordinators(event)}
-                            className="flex-1 h-10 bg-[var(--color-primary)]/10 rounded-xl text-[var(--color-primary)] text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform"
-                          >
-                            <Users className="w-4 h-4" /> Coordinators
-                          </button>
-                          <button
-                            onClick={() => setCompleteTarget(event)}
-                            className="flex-1 h-10 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl text-emerald-600 text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform"
-                          >
-                            <CheckCircle2 className="w-4 h-4" /> Complete
-                          </button>
-                        </>
+                        <button
+                          onClick={() => openCoordinators(event)}
+                          className="flex-1 h-11 bg-[var(--color-primary)] rounded-xl text-white text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-blue-100 dark:shadow-none active:scale-95 transition-transform lg:h-12"
+                        >
+                          <Users className="w-4 h-4" /> Coordinators
+                        </button>
                       )}
                       {event.status !== 'ACTIVE' && (
                         <div className="flex-1 h-10 bg-slate-50 dark:bg-slate-800/30 rounded-xl flex items-center justify-center">
@@ -446,14 +422,6 @@ export default function HODEvents() {
         </div>
       </TopRefreshControl>
 
-      <ConfirmationModal
-        visible={!!completeTarget}
-        title="Complete Event"
-        message={`Mark "${completeTarget?.eventName}" as completed? This cannot be undone.`}
-        confirmText="Complete"
-        onConfirm={handleComplete}
-        onCancel={() => setCompleteTarget(null)}
-      />
     </div>
   );
 }

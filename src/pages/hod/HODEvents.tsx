@@ -337,7 +337,18 @@ export default function HODEvents() {
   // ─── List View ───────────────────────────────────────────────────────────────
   return (
     <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
-      <PageHeader title="Events" />
+      <PageHeader
+        title="Events"
+        right={
+          <button
+            onClick={() => setView('create')}
+            className="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center shadow-lg shadow-blue-100 active:scale-90 transition-transform"
+            aria-label="New event"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        }
+      />
 
       <TopRefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); loadEvents(); }}>
         <div className="px-5 pt-6 pb-28 lg:px-10 xl:px-14">
@@ -360,63 +371,74 @@ export default function HODEvents() {
               </button>
             </div>
           ) : (
-            <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-3">
-              {events.map(event => {
-                const cfg = statusConfig(event.status);
-                return (
-                  <motion.div
-                    key={event.id}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-white dark:bg-slate-900 rounded-[28px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm lg:p-6 lg:shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
-                  >
-                    <div className="flex items-start justify-between gap-3 mb-4 lg:mb-5">
-                      <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                        <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center shrink-0 lg:w-14 lg:h-14">
-                          <CalendarDays className="w-6 h-6 text-[var(--color-primary)]" />
-                        </div>
-                        <div className="min-w-0">
-                          <h5 className="text-[16px] font-black text-slate-900 dark:text-white truncate lg:text-[18px]">{event.eventName}</h5>
-                          <p className="text-[12px] font-bold text-slate-400">ID: {event.id}</p>
-                        </div>
-                      </div>
-                      <div className={cn('flex items-center gap-1.5 px-3 py-1.5 rounded-full border shrink-0', cfg.bg, cfg.border)}>
-                        <div className={cn('w-1.5 h-1.5 rounded-full', cfg.dot)} />
-                        <span className={cn('text-[10px] font-black uppercase tracking-widest', cfg.color)}>{event.status}</span>
-                      </div>
-                    </div>
+            <div className="space-y-4">
+              <div className="hidden md:flex items-center justify-end">
+                <button
+                  onClick={() => setView('create')}
+                  className="flex items-center gap-2 h-11 px-5 bg-[var(--color-primary)] rounded-2xl text-white font-black text-[12px] uppercase tracking-widest shadow-lg shadow-blue-100 dark:shadow-none hover:brightness-105 active:scale-[0.98] transition-all"
+                >
+                  <Plus className="w-4 h-4" /> New Event
+                </button>
+              </div>
 
-                    <div className="bg-slate-50 dark:bg-slate-950/50 rounded-2xl p-3.5 space-y-2 border border-slate-100/50 dark:border-slate-800/30 mb-4 lg:p-4 lg:mb-5">
-                      <div className="flex items-center gap-3">
-                        <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
-                        <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">{event.eventDate}</span>
+              <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-3">
+                {events.map(event => {
+                  const cfg = statusConfig(event.status);
+                  return (
+                    <motion.div
+                      key={event.id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-white dark:bg-slate-900 rounded-[28px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm lg:p-6 lg:shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
+                    >
+                      <div className="flex items-start justify-between gap-3 mb-4 lg:mb-5">
+                        <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                          <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center shrink-0 lg:w-14 lg:h-14">
+                            <CalendarDays className="w-6 h-6 text-[var(--color-primary)]" />
+                          </div>
+                          <div className="min-w-0">
+                            <h5 className="text-[16px] font-black text-slate-900 dark:text-white truncate lg:text-[18px]">{event.eventName}</h5>
+                            <p className="text-[12px] font-bold text-slate-400">ID: {event.id}</p>
+                          </div>
+                        </div>
+                        <div className={cn('flex items-center gap-1.5 px-3 py-1.5 rounded-full border shrink-0', cfg.bg, cfg.border)}>
+                          <div className={cn('w-1.5 h-1.5 rounded-full', cfg.dot)} />
+                          <span className={cn('text-[10px] font-black uppercase tracking-widest', cfg.color)}>{event.status}</span>
+                        </div>
                       </div>
-                      {event.venue && (
+
+                      <div className="bg-slate-50 dark:bg-slate-950/50 rounded-2xl p-3.5 space-y-2 border border-slate-100/50 dark:border-slate-800/30 mb-4 lg:p-4 lg:mb-5">
                         <div className="flex items-center gap-3">
-                          <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
-                          <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300 truncate">{event.venue}</span>
+                          <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
+                          <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">{event.eventDate}</span>
                         </div>
-                      )}
-                    </div>
+                        {event.venue && (
+                          <div className="flex items-center gap-3">
+                            <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
+                            <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300 truncate">{event.venue}</span>
+                          </div>
+                        )}
+                      </div>
 
-                    <div className="flex items-center gap-2">
-                      {event.status === 'ACTIVE' && (
-                        <button
-                          onClick={() => openCoordinators(event)}
-                          className="flex-1 h-11 bg-[var(--color-primary)] rounded-xl text-white text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-blue-100 dark:shadow-none active:scale-95 transition-transform lg:h-12"
-                        >
-                          <Users className="w-4 h-4" /> Coordinators
-                        </button>
-                      )}
-                      {event.status !== 'ACTIVE' && (
-                        <div className="flex-1 h-10 bg-slate-50 dark:bg-slate-800/30 rounded-xl flex items-center justify-center">
-                          <span className="text-[12px] font-black text-slate-400 uppercase tracking-widest">Event {event.status}</span>
-                        </div>
-                      )}
-                    </div>
-                  </motion.div>
-                );
-              })}
+                      <div className="flex items-center gap-2">
+                        {event.status === 'ACTIVE' && (
+                          <button
+                            onClick={() => openCoordinators(event)}
+                            className="flex-1 h-11 bg-[var(--color-primary)] rounded-xl text-white text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-blue-100 dark:shadow-none active:scale-95 transition-transform lg:h-12"
+                          >
+                            <Users className="w-4 h-4" /> Coordinators
+                          </button>
+                        )}
+                        {event.status !== 'ACTIVE' && (
+                          <div className="flex-1 h-10 bg-slate-50 dark:bg-slate-800/30 rounded-xl flex items-center justify-center">
+                            <span className="text-[12px] font-black text-slate-400 uppercase tracking-widest">Event {event.status}</span>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

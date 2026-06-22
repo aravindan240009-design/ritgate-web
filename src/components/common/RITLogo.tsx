@@ -30,7 +30,7 @@ export default function RITLogo({ className, size = 100, variant = 'color', glow
           src={LogoImg}
           alt="RIT Logo"
           className={cn(
-            "h-full w-full scale-[1.18] object-contain object-center",
+            "h-full w-full scale-[1.35] object-cover object-center",
             variant === 'white' && "brightness-0 invert opacity-90"
           )}
         />

@@ -408,7 +408,7 @@ export default function HODEvents() {
       />
 
       <TopRefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); loadEvents(); }}>
-        <div className="px-4 pt-4 pb-24 min-h-screen flex flex-col lg:px-8 xl:px-12 lg:pt-5 lg:pb-8 lg:min-h-0">
+        <div className="px-4 pt-4 pb-24 min-h-screen flex flex-col lg:px-8 xl:px-12 lg:pt-0 lg:pb-8 lg:min-h-0">
           {loadingEvents ? (
             <SkeletonList count={4} />
           ) : events.length === 0 ? (

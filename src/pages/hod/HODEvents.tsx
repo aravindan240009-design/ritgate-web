@@ -118,22 +118,26 @@ export default function HODEvents() {
   const resetCreate = () => { setEventName(''); setVenue(''); setEventDate(''); };
 
   const handleCreate = async () => {
-    if (!eventName.trim()) return toastError('Required', 'Event name is required');
-    if (!venue.trim()) return toastError('Required', 'Venue is required');
-    if (!eventDate) return toastError('Required', 'Event date is required');
+    if (!eventName.trim()) return toastError('Validation Error', 'Please enter an event name');
+    if (!venue.trim()) return toastError('Validation Error', 'Please enter a venue');
+    if (!eventDate) return toastError('Validation Error', 'Please select an event date');
 
     const today = new Date(); today.setHours(0, 0, 0, 0);
     if (new Date(eventDate) < today) return toastError('Invalid Date', 'Event date must be today or in the future');
 
     await withLock(async () => {
-      const res = await createEvent(hodCode, eventName.trim(), eventDate, venue.trim());
-      if (res.success) {
-        toast('Event Created', `"${eventName}" created. You can now assign coordinators.`);
-        resetCreate();
-        returnToList();
-        loadEvents();
-      } else {
-        toastError('Failed', res.message || 'Could not create event');
+      try {
+        const res = await createEvent(hodCode, eventName.trim(), eventDate, venue.trim());
+        if (res?.success) {
+          toast('Success', `Event "${eventName}" created successfully. Assign coordinators next.`);
+          resetCreate();
+          returnToList();
+          await loadEvents();
+        } else {
+          toastError('Creation Failed', res?.message || 'Unable to create event. Please try again.');
+        }
+      } catch (err) {
+        toastError('Error', 'An unexpected error occurred while creating the event.');
       }
     }, 'Creating event...');
   };
@@ -142,16 +146,21 @@ export default function HODEvents() {
     if (!selectedEvent) return;
     const assignedCodes = new Set(coordinators.map(c => c.staffCode));
     const toAssign = [...selected].filter(c => !assignedCodes.has(c));
-    if (toAssign.length === 0) return toastError('No Selection', 'No new staff selected to assign');
+    if (toAssign.length === 0) return toastError('No Selection', 'Please select at least one coordinator to assign');
 
     await withLock(async () => {
-      const res = await assignCoordinators(selectedEvent.id, hodCode, toAssign);
-      if (res.success) {
-        toast('Assigned', `${toAssign.length} coordinator(s) assigned`);
-        setSelected(new Set());
-        await loadCoordinators(selectedEvent);
-      } else {
-        toastError('Failed', res.message || 'Could not assign coordinators');
+      try {
+        const res = await assignCoordinators(selectedEvent.id, hodCode, toAssign);
+        if (res?.success) {
+          const count = toAssign.length;
+          toast('Success', `${count} coordinator${count > 1 ? 's' : ''} assigned successfully.`);
+          setSelected(new Set());
+          await loadCoordinators(selectedEvent);
+        } else {
+          toastError('Assignment Failed', res?.message || 'Unable to assign coordinators. Please try again.');
+        }
+      } catch (err) {
+        toastError('Error', 'An unexpected error occurred while assigning coordinators.');
       }
     }, 'Assigning coordinators...');
   };
@@ -159,12 +168,16 @@ export default function HODEvents() {
   const handleRemove = async () => {
     if (!selectedEvent || !removeTarget) return;
     setRemoveTarget(null);
-    const res = await removeCoordinator(selectedEvent.id, removeTarget);
-    if (res.success) {
-      toast('Removed', 'Coordinator removed');
-      await loadCoordinators(selectedEvent);
-    } else {
-      toastError('Failed', res.message || 'Could not remove coordinator');
+    try {
+      const res = await removeCoordinator(selectedEvent.id, removeTarget);
+      if (res?.success) {
+        toast('Success', 'Coordinator removed successfully.');
+        await loadCoordinators(selectedEvent);
+      } else {
+        toastError('Removal Failed', res?.message || 'Unable to remove coordinator. Please try again.');
+      }
+    } catch (err) {
+      toastError('Error', 'An unexpected error occurred while removing the coordinator.');
     }
   };
 

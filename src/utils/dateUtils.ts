@@ -1,22 +1,24 @@
-// All date/time formatting uses the device's current local timezone.
-const LOCAL_TZ = (() => {
-  try { return Intl.DateTimeFormat().resolvedOptions().timeZone; }
-  catch { return undefined; }
-})();
-const LOCAL_TZ_OPTS: Intl.DateTimeFormatOptions = LOCAL_TZ ? { timeZone: LOCAL_TZ } : {};
+// Every timestamp is displayed in IST (Asia/Kolkata) regardless of the
+// device timezone, so all users see consistent campus-local times.
+const LOCAL_TZ_OPTS: Intl.DateTimeFormatOptions = { timeZone: 'Asia/Kolkata' };
 
 /**
  * Parse a date value to a JS Date.
- * The backend sends LocalDateTime strings WITHOUT a timezone suffix (e.g. "2026-04-16T06:46:00").
- * Without a suffix, new Date() treats them as LOCAL time on the device — which is wrong when
- * the backend stores UTC. We append "Z" to bare ISO strings so they are always parsed as UTC,
- * then all display functions apply the IST offset correctly via Intl.
+ *
+ * The backend stores every timestamp as a Java `LocalDateTime` while the JVM
+ * runs with `user.timezone=Asia/Kolkata`, so values come back as bare IST
+ * wall-clock strings WITHOUT a timezone suffix (e.g. "2026-06-22T15:00:00"
+ * means 3:00 PM IST). We therefore append "+05:30" to bare ISO strings so they
+ * are parsed as IST. Strings that already carry an offset/"Z" are respected
+ * as-is. This is the single source of truth — preventing the previous
+ * double-conversion where bare IST values were wrongly read as UTC and then
+ * shifted forward another +5:30.
  */
 const toDate = (d: Date | string | null | undefined): Date => {
   if (!d) return new Date();
   if (typeof d === 'string') {
     const bare = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?$/.test(d.trim());
-    return new Date(bare ? d.trim() + 'Z' : d);
+    return new Date(bare ? d.trim() + '+05:30' : d);
   }
   return d;
 };

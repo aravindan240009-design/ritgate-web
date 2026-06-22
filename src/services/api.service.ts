@@ -758,7 +758,16 @@ export async function createEvent(hodCode: string, eventName: string, eventDate:
 
   let lastMessage = 'Could not create event';
   for (const payload of payloads) {
-    try { return (await api.post('/events', payload)).data; }
+    try {
+      const { data } = await api.post('/events', payload);
+      // Backend returns { status: "SUCCESS", message, eventId, event } with no
+      // `success` field — normalize it (mirrors the mobile app) so the UI
+      // doesn't treat a successful create as a failure.
+      const ok = data?.success === true || data?.status === 'SUCCESS' ||
+        data?.status === 'success' || data?.eventId != null || data?.id != null;
+      if (ok) return { success: true, message: data?.message || 'Event created successfully', ...data };
+      lastMessage = data?.message || lastMessage;
+    }
     catch (e) { lastMessage = extractError(e); }
   }
   return { success: false, message: lastMessage };
@@ -800,7 +809,12 @@ export async function assignCoordinators(eventId: number, hodCode: string, staff
 
   let lastMessage = 'Could not assign coordinators';
   for (const payload of bulkPayloads) {
-    try { return (await api.post(`/events/${eventId}/coordinators`, payload)).data; }
+    try {
+      const { data } = await api.post(`/events/${eventId}/coordinators`, payload);
+      // Backend replies { status: "SUCCESS", ... } with no `success` field.
+      if (data?.success !== false) return { success: true, message: data?.message || 'Coordinators assigned', ...data };
+      lastMessage = data?.message || lastMessage;
+    }
     catch (e) { lastMessage = extractError(e); }
   }
 
@@ -836,7 +850,10 @@ export async function assignCoordinators(eventId: number, hodCode: string, staff
 }
 
 export async function removeCoordinator(eventId: number, staffCode: string): Promise<ApiResponse> {
-  try { return (await api.delete(`/events/${eventId}/coordinators/${encodeURIComponent(staffCode)}`)).data; }
+  try {
+    const { data } = await api.delete(`/events/${eventId}/coordinators/${encodeURIComponent(staffCode)}`);
+    return { success: data?.success !== false, message: data?.message || 'Coordinator removed', ...data };
+  }
   catch (e) { return { success: false, message: extractError(e) }; }
 }
 
@@ -853,7 +870,10 @@ export async function uploadEventCsvPreview(eventId: number, staffCode: string, 
 }
 
 export async function confirmEventCsvUpload(eventId: number, staffCode: string, rows: any[]): Promise<ApiResponse> {
-  try { return (await api.post(`/events/${eventId}/csv/confirm`, { staffCode, rows })).data; }
+  try {
+    const { data } = await api.post(`/events/${eventId}/csv/confirm`, { staffCode, rows });
+    return { success: data?.success !== false, message: data?.message, ...data };
+  }
   catch (e) { return { success: false, message: extractError(e) }; }
 }
 
@@ -865,7 +885,10 @@ export async function getEventPasses(eventId: number): Promise<{ success: boolea
 }
 
 export async function completeEvent(eventId: number): Promise<ApiResponse> {
-  try { return (await api.put(`/events/${eventId}/complete`)).data; }
+  try {
+    const { data } = await api.put(`/events/${eventId}/complete`);
+    return { success: data?.success !== false, message: data?.message || 'Event completed', ...data };
+  }
   catch (e) { return { success: false, message: extractError(e) }; }
 }
 

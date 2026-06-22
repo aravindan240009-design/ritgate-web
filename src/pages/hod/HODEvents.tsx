@@ -399,7 +399,7 @@ export default function HODEvents() {
         right={
           <button
             onClick={() => openSubView('create')}
-        <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center shadow-md shadow-blue-200 dark:shadow-none hover:brightness-110 active:scale-90 transition-transform"
+            className="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center shadow-md shadow-blue-200 dark:shadow-none hover:brightness-110 active:scale-90 transition-transform"
             aria-label="New event"
           >
             <Plus className="w-5 h-5" />

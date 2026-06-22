@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CalendarDays } from 'lucide-react';
+import { CalendarDays, Plus } from 'lucide-react';
 import AppHeader from '../components/common/AppHeader';
 import NotificationBell from '../components/common/NotificationBell';
 import { useAuth } from '../context/AuthContext';
@@ -189,15 +189,25 @@ export default function Header({ onMenuClick, sidebarCollapsed }: HeaderProps) {
       sidebarCollapsed={sidebarCollapsed}
       showBack={showBack}
       onBack={handleBack}
-      actions={(
-        <>
-          <div className="hidden items-center gap-2 rounded-2xl border border-white/60 bg-white/70 px-4 py-2.5 text-sm font-bold text-slate-600 shadow-[0_14px_34px_-28px_rgba(15,23,42,0.75)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-200 dark:shadow-none lg:flex">
-            <CalendarDays className="h-4 w-4 text-[var(--color-primary)]" />
-            {currentDate}
-          </div>
-          <NotificationBell />
-        </>
-      )}
+      actions={
+        location.pathname === '/hod-events' ? (
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent('ritgate:new-event'))}
+            className="flex h-11 items-center gap-2 rounded-2xl bg-[var(--color-primary)] px-5 text-[12px] font-black uppercase tracking-widest text-white shadow-md transition-all hover:brightness-110 active:scale-95"
+          >
+            <Plus className="h-4 w-4" /> New Event
+          </button>
+        ) : (location.pathname === '/gate-logs' && (role === 'HR' || role === 'ADMIN_OFFICER')) ? null : (
+          <>
+            <div className="hidden items-center gap-2 rounded-2xl border border-white/60 bg-white/70 px-4 py-2.5 text-sm font-bold text-slate-600 shadow-[0_14px_34px_-28px_rgba(15,23,42,0.75)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-200 dark:shadow-none lg:flex">
+              <CalendarDays className="h-4 w-4 text-[var(--color-primary)]" />
+              {currentDate}
+            </div>
+            <NotificationBell />
+          </>
+        )
+      }
     />
   );
 }

@@ -107,6 +107,14 @@ export default function HODEvents() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, [view]);
 
+  // The "New Event" button lives in the global header on this page; it fires a
+  // custom event so we can open the create view from here.
+  useEffect(() => {
+    const handler = () => openSubView('create');
+    window.addEventListener('ritgate:new-event', handler);
+    return () => window.removeEventListener('ritgate:new-event', handler);
+  }, []);
+
   const openCoordinators = (event: RITGateEvent) => {
     setSelectedEvent(event);
     setSelected(new Set());
@@ -429,15 +437,6 @@ export default function HODEvents() {
             </div>
           ) : (
             <div className="space-y-0">
-              <div className="hidden md:flex items-center justify-end mb-5">
-                <button
-                  onClick={() => openSubView('create')}
-                  className="flex items-center gap-2 h-10 px-4 bg-[var(--color-primary)] rounded-xl text-white font-black text-[11px] uppercase tracking-widest shadow-md shadow-blue-200 dark:shadow-none hover:brightness-110 active:scale-[0.98] transition-all"
-                >
-                  <Plus className="w-4 h-4" /> New Event
-                </button>
-              </div>
-
               <div className="grid gap-3.5 lg:grid-cols-2 2xl:grid-cols-3">
                 {events.map(event => {
                   const cfg = statusConfig(event.status);

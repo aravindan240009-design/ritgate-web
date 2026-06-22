@@ -265,13 +265,13 @@ export default function HODEvents() {
           title="Coordinators"
           onBack={returnToList}
         />
-        <div className="px-5 py-4 pb-28 space-y-4 lg:px-10 xl:px-14 lg:py-3 lg:pb-6 lg:space-y-3">
+        <div className="px-4 py-3 pb-24 space-y-3.5 lg:px-8 xl:px-12 lg:py-4 lg:pb-6 lg:space-y-3">
           {/* Event info pill */}
-          <div className="bg-[var(--color-primary)] rounded-[24px] px-5 py-4 flex items-center gap-3 lg:rounded-[22px] lg:px-6 lg:py-3.5">
-            <CalendarDays className="w-6 h-6 text-white/70 shrink-0" />
+          <div className="bg-gradient-to-r from-[var(--color-primary)] to-blue-600 rounded-xl px-4 py-3.5 flex items-center gap-2.5 shadow-md shadow-blue-200 dark:shadow-none">
+            <CalendarDays className="w-5 h-5 text-white/80 shrink-0" />
             <div className="min-w-0">
-              <p className="text-white font-black text-[15px] truncate lg:text-[17px]">{selectedEvent.eventName}</p>
-              <p className="text-white/70 text-[12px] font-bold">{selectedEvent.eventDate} · {selectedEvent.venue || 'No venue'}</p>
+              <p className="text-white font-black text-[14px] truncate lg:text-[16px]">{selectedEvent.eventName}</p>
+              <p className="text-white/70 text-[11px] font-bold">{selectedEvent.eventDate} · {selectedEvent.venue || 'No venue'}</p>
             </div>
           </div>
 
@@ -281,28 +281,28 @@ export default function HODEvents() {
             <>
               {/* Assigned coordinators */}
               {coordinators.length > 0 && (
-                <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
-                  <div className="px-5 py-3 border-b border-slate-50 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
-                    <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Assigned ({coordinators.length})</p>
+                <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 shadow-md overflow-hidden">
+                  <div className="px-4 py-2.5 border-b border-slate-50 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Assigned ({coordinators.length})</p>
                   </div>
                   <div className="divide-y divide-slate-50 dark:divide-slate-800/50">
                     {coordinators.map(c => {
                       const displayName = c.staffName || c.staffCode;
                       const initials = displayName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
                       return (
-                        <div key={c.id} className="flex items-center gap-3 px-5 py-3.5">
-                          <div className="w-9 h-9 rounded-full bg-[var(--color-primary)]/10 flex items-center justify-center shrink-0">
-                            <span className="text-[12px] font-black text-[var(--color-primary)]">{initials}</span>
+                        <div key={c.id} className="flex items-center gap-2.5 px-4 py-3">
+                          <div className="w-8 h-8 rounded-lg bg-[var(--color-primary)]/10 flex items-center justify-center shrink-0">
+                            <span className="text-[11px] font-black text-[var(--color-primary)]">{initials}</span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-[14px] font-black text-slate-900 dark:text-white truncate">{displayName}</p>
-                            <p className="text-[11px] font-bold text-slate-400 uppercase">{c.staffCode}</p>
+                            <p className="text-[13px] font-black text-slate-900 dark:text-white truncate">{displayName}</p>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase">{c.staffCode}</p>
                           </div>
                           <button
                             onClick={() => setRemoveTarget(c.staffCode)}
-                            className="w-8 h-8 rounded-full bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center text-rose-500 active:scale-90 transition-transform"
+                            className="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/30 active:scale-90 transition-all"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       );
@@ -312,23 +312,23 @@ export default function HODEvents() {
               )}
 
               {/* Staff search + select */}
-              <div className="space-y-3 lg:space-y-2.5">
-                <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Add Coordinators</p>
+              <div className="space-y-2.5 lg:space-y-2">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Add Coordinators</p>
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
                   <input
                     value={staffSearch}
                     onChange={e => setStaffSearch(e.target.value)}
                     placeholder="Search staff by name or code..."
-                    className="w-full h-11 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl pl-10 pr-4 text-[13px] font-bold text-slate-900 dark:text-white outline-none"
+                    className="w-full h-10 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-lg pl-9.5 pr-3.5 text-[12px] font-bold text-slate-900 dark:text-white placeholder:text-slate-400 outline-none focus:border-[var(--color-primary)] focus:ring-3 focus:ring-[var(--color-primary)]/10 transition-all"
                   />
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden max-h-[340px] overflow-y-auto divide-y divide-slate-50 dark:divide-slate-800/50 lg:max-h-[calc(100vh-330px)] xl:max-h-[calc(100vh-310px)]">
+                <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-800 shadow-md overflow-hidden max-h-[320px] overflow-y-auto divide-y divide-slate-50 dark:divide-slate-800/50 lg:max-h-[calc(100vh-340px)] xl:max-h-[calc(100vh-320px)]">
                   {filtered.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-12">
-                      <Users className="w-8 h-8 text-slate-200 mb-2" />
-                      <p className="text-[13px] font-bold text-slate-400">No staff found</p>
+                    <div className="flex flex-col items-center justify-center py-10">
+                      <Users className="w-6 h-6 text-slate-300 dark:text-slate-700 mb-2" />
+                      <p className="text-[12px] font-bold text-slate-400">No staff found</p>
                     </div>
                   ) : filtered.map(s => {
                     const code = s.staffCode || '';
@@ -343,22 +343,22 @@ export default function HODEvents() {
                         }}
                         disabled={isAssigned}
                         className={cn(
-                          'w-full flex items-center gap-3 px-5 py-3.5 text-left transition-colors lg:py-3',
-                          isAssigned ? 'opacity-60 cursor-default' : isSel ? 'bg-[var(--color-primary)]/5' : 'hover:bg-slate-50/50 dark:hover:bg-slate-800/30'
+                          'w-full flex items-center gap-2.5 px-4 py-3 text-left transition-colors lg:py-2.5',
+                          isAssigned ? 'opacity-50 cursor-default' : isSel ? 'bg-[var(--color-primary)]/5' : 'hover:bg-slate-50/50 dark:hover:bg-slate-800/30'
                         )}
                       >
                         <div className={cn(
-                          'w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all',
-                          isAssigned ? 'border-emerald-500 bg-emerald-500' : isSel ? 'border-[var(--color-primary)] bg-[var(--color-primary)]' : 'border-slate-200 dark:border-slate-700'
+                          'w-4.5 h-4.5 rounded-md border-1.5 flex items-center justify-center shrink-0 transition-all',
+                          isAssigned ? 'border-emerald-500 bg-emerald-500' : isSel ? 'border-[var(--color-primary)] bg-[var(--color-primary)]' : 'border-slate-300 dark:border-slate-600'
                         )}>
-                          {(isAssigned || isSel) && <CheckCheck className="w-3 h-3 text-white" />}
+                          {(isAssigned || isSel) && <CheckCheck className="w-2.5 h-2.5 text-white" />}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-[14px] font-black text-slate-900 dark:text-white truncate">{s.staffName || s.name || code}</p>
-                          <p className="text-[11px] font-bold text-slate-400 uppercase">{code} · {s.department || ''}</p>
+                          <p className="text-[13px] font-black text-slate-900 dark:text-white truncate">{s.staffName || s.name || code}</p>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase">{code} · {s.department || ''}</p>
                         </div>
                         {isAssigned && (
-                          <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full uppercase">Assigned</span>
+                          <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-1.5 py-0.5 rounded-full uppercase">Assigned</span>
                         )}
                       </button>
                     );
@@ -370,9 +370,9 @@ export default function HODEvents() {
                 <button
                   onClick={handleAssign}
                   disabled={isLocked}
-                  className="w-full h-14 bg-[var(--color-primary)] rounded-2xl text-white font-black text-[14px] uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 active:scale-[0.98] transition-all"
+                  className="w-full h-12 bg-[var(--color-primary)] rounded-lg text-white font-black text-[13px] uppercase tracking-widest flex items-center justify-center gap-2 shadow-md shadow-blue-200 dark:shadow-none disabled:opacity-50 disabled:saturate-50 hover:brightness-110 active:scale-[0.98] transition-all"
                 >
-                  {isLocked ? <Loader2 className="w-5 h-5 animate-spin" /> : <><UserCheck className="w-5 h-5" /> Assign {selected.size} Coordinator{selected.size > 1 ? 's' : ''}</>}
+                  {isLocked ? <Loader2 className="w-4 h-4 animate-spin" /> : <><UserCheck className="w-4 h-4" /> Assign {selected.size} Coordinator{selected.size > 1 ? 's' : ''}</>}
                 </button>
               )}
             </>

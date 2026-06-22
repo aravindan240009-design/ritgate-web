@@ -320,7 +320,7 @@ export default function NCIDashboard() {
       </div>
 
       {/* Detail Modal */}
-      <Modal isOpen={showDetail} onClose={() => setShowDetail(false)} title="Visitor Request Details" size="md">
+      <Modal isOpen={showDetail} onClose={() => setShowDetail(false)} title="Visitor Request Details" size="md" presentation="page">
         {selectedRequest && (
           <div className="space-y-5 pt-2">
             <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">

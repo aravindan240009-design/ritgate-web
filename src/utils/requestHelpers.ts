@@ -1,4 +1,5 @@
 // Helper functions for gate pass request status
+import { getStatusMeta } from './statusUtils';
 
 export interface RequestStatusResult {
   text: string;
@@ -7,33 +8,23 @@ export interface RequestStatusResult {
 }
 
 export const getRequestStatus = (request: any, theme: any): RequestStatusResult => {
-  if (request.status === 'APPROVED') {
-    return {
-      text: 'Active',
-      color: theme.success,
-      bgColor: theme.success + '15',
-    };
-  }
-  
-  if (request.status === 'REJECTED') {
-    return {
-      text: 'Rejected',
-      color: theme.error,
-      bgColor: theme.error + '15',
-    };
-  }
-  
-  if (request.staffApproval === 'APPROVED' && request.hodApproval === 'PENDING') {
-    return {
-      text: 'Processing',
-      color: theme.warning,
-      bgColor: theme.warning + '15',
-    };
-  }
-  
+  const meta = getStatusMeta(request);
+  const palette: Record<string, string> = {
+    emerald: theme.success,
+    green: theme.success,
+    red: theme.error,
+    danger: theme.error,
+    amber: theme.warning,
+    orange: theme.warning,
+    warning: theme.warning,
+    blue: theme.primary || theme.info || theme.warning,
+    gray: theme.textSecondary,
+  };
+  const color = palette[meta.variant] || theme.textSecondary;
+
   return {
-    text: 'Pending',
-    color: theme.textSecondary,
-    bgColor: theme.surfaceHighlight,
+    text: meta.label,
+    color,
+    bgColor: color + '15',
   };
 };

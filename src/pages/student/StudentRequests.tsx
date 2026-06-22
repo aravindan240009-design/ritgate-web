@@ -329,7 +329,6 @@ export default function StudentRequests() {
             isOpen={showSingleModal}
             onClose={closeRequestDetails}
             request={selectedRequest}
-            floatingDesktop
           />
         )}
 

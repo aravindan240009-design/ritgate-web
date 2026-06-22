@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   CalendarDays, Plus, Users, MapPin,
-  Calendar, Search, Trash2, UserCheck, CheckCircle2,
+  Calendar, Search, Trash2, UserCheck,
   Loader2, CheckCheck
 } from 'lucide-react';
 import { usePageTitle } from '../../hooks/usePageTitle';
@@ -16,7 +16,6 @@ import {
   assignCoordinators,
   removeCoordinator,
   getHODDepartmentStaff,
-  completeEvent,
 } from '../../services/api.service';
 import PageHeader from '../../components/common/PageHeader';
 import TopRefreshControl from '../../components/common/TopRefreshControl';
@@ -35,6 +34,7 @@ export default function HODEvents() {
   const { withLock, isLocked } = useActionLock();
 
   const [view, setView] = useState<View>('list');
+  const subViewHistoryPushed = useRef(false);
   const [events, setEvents] = useState<RITGateEvent[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -52,7 +52,6 @@ export default function HODEvents() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [staffSearch, setStaffSearch] = useState('');
   const [removeTarget, setRemoveTarget] = useState<string | null>(null);
-  const [completeTarget, setCompleteTarget] = useState<RITGateEvent | null>(null);
 
   const loadEvents = useCallback(async () => {
     try {
@@ -75,11 +74,44 @@ export default function HODEvents() {
     setLoadingCoords(false);
   };
 
+  const openSubView = (nextView: Exclude<View, 'list'>) => {
+    if (!subViewHistoryPushed.current) {
+      window.history.pushState({ ritgateHodEventsSubView: nextView }, '', window.location.href);
+      subViewHistoryPushed.current = true;
+    } else {
+      window.history.replaceState({ ritgateHodEventsSubView: nextView }, '', window.location.href);
+    }
+    setView(nextView);
+  };
+
+  const returnToList = () => {
+    if (subViewHistoryPushed.current) {
+      window.history.back();
+      return;
+    }
+    setView('list');
+    setSelectedEvent(null);
+  };
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (view !== 'list') {
+        subViewHistoryPushed.current = false;
+        setView('list');
+        setSelectedEvent(null);
+        resetCreate();
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [view]);
+
   const openCoordinators = (event: RITGateEvent) => {
     setSelectedEvent(event);
     setSelected(new Set());
     setStaffSearch('');
-    setView('coordinators');
+    openSubView('coordinators');
     loadCoordinators(event);
   };
 
@@ -98,7 +130,7 @@ export default function HODEvents() {
       if (res.success) {
         toast('Event Created', `"${eventName}" created. You can now assign coordinators.`);
         resetCreate();
-        setView('list');
+        returnToList();
         loadEvents();
       } else {
         toastError('Failed', res.message || 'Could not create event');
@@ -136,20 +168,6 @@ export default function HODEvents() {
     }
   };
 
-  const handleComplete = async () => {
-    if (!completeTarget) return;
-    setCompleteTarget(null);
-    await withLock(async () => {
-      const res = await completeEvent(completeTarget.id);
-      if (res.success) {
-        toast('Event Completed', `"${completeTarget.eventName}" marked as completed`);
-        loadEvents();
-      } else {
-        toastError('Failed', res.message || 'Could not complete event');
-      }
-    }, 'Completing event...');
-  };
-
   const statusConfig = (status: string) => {
     if (status === 'ACTIVE') return { color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-900/20', dot: 'bg-emerald-500', border: 'border-emerald-200 dark:border-emerald-800' };
     if (status === 'COMPLETED') return { color: 'text-slate-500', bg: 'bg-slate-50 dark:bg-slate-800/30', dot: 'bg-slate-400', border: 'border-slate-200 dark:border-slate-700' };
@@ -161,7 +179,7 @@ export default function HODEvents() {
     const todayStr = new Date().toISOString().split('T')[0];
     return (
       <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
-        <PageHeader title="Create Event" onBack={() => { resetCreate(); setView('list'); }} />
+        <PageHeader title="Create Event" onBack={() => { resetCreate(); returnToList(); }} />
         <div className="px-5 py-6 pb-28 space-y-5 max-w-lg mx-auto">
           <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 p-5 space-y-5 shadow-sm">
             {/* Event Name */}
@@ -222,14 +240,14 @@ export default function HODEvents() {
       <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
         <PageHeader
           title="Coordinators"
-          onBack={() => { setView('list'); setSelectedEvent(null); }}
+          onBack={returnToList}
         />
-        <div className="px-5 py-4 pb-28 space-y-4">
+        <div className="px-5 py-4 pb-28 space-y-4 lg:px-10 xl:px-14 lg:py-3 lg:pb-6 lg:space-y-3">
           {/* Event info pill */}
-          <div className="bg-[var(--color-primary)] rounded-[24px] px-5 py-4 flex items-center gap-3">
+          <div className="bg-[var(--color-primary)] rounded-[24px] px-5 py-4 flex items-center gap-3 lg:rounded-[22px] lg:px-6 lg:py-3.5">
             <CalendarDays className="w-6 h-6 text-white/70 shrink-0" />
             <div className="min-w-0">
-              <p className="text-white font-black text-[15px] truncate">{selectedEvent.eventName}</p>
+              <p className="text-white font-black text-[15px] truncate lg:text-[17px]">{selectedEvent.eventName}</p>
               <p className="text-white/70 text-[12px] font-bold">{selectedEvent.eventDate} · {selectedEvent.venue || 'No venue'}</p>
             </div>
           </div>
@@ -271,7 +289,7 @@ export default function HODEvents() {
               )}
 
               {/* Staff search + select */}
-              <div className="space-y-3">
+              <div className="space-y-3 lg:space-y-2.5">
                 <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Add Coordinators</p>
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -283,7 +301,7 @@ export default function HODEvents() {
                   />
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden max-h-[340px] overflow-y-auto divide-y divide-slate-50 dark:divide-slate-800/50">
+                <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden max-h-[340px] overflow-y-auto divide-y divide-slate-50 dark:divide-slate-800/50 lg:max-h-[calc(100vh-330px)] xl:max-h-[calc(100vh-310px)]">
                   {filtered.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12">
                       <Users className="w-8 h-8 text-slate-200 mb-2" />
@@ -302,7 +320,7 @@ export default function HODEvents() {
                         }}
                         disabled={isAssigned}
                         className={cn(
-                          'w-full flex items-center gap-3 px-5 py-3.5 text-left transition-colors',
+                          'w-full flex items-center gap-3 px-5 py-3.5 text-left transition-colors lg:py-3',
                           isAssigned ? 'opacity-60 cursor-default' : isSel ? 'bg-[var(--color-primary)]/5' : 'hover:bg-slate-50/50 dark:hover:bg-slate-800/30'
                         )}
                       >
@@ -353,10 +371,21 @@ export default function HODEvents() {
   // ─── List View ───────────────────────────────────────────────────────────────
   return (
     <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
-      <PageHeader title="Events" />
+      <PageHeader
+        title="Events"
+        right={
+          <button
+            onClick={() => openSubView('create')}
+            className="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center shadow-lg shadow-blue-100 active:scale-90 transition-transform"
+            aria-label="New event"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        }
+      />
 
       <TopRefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); loadEvents(); }}>
-        <div className="px-5 pt-6 pb-28">
+        <div className="px-5 pt-6 pb-28 lg:px-10 xl:px-14">
           {loadingEvents ? (
             <SkeletonList count={4} />
           ) : events.length === 0 ? (
@@ -369,7 +398,7 @@ export default function HODEvents() {
                 Create an event and assign staff coordinators who can upload participant lists.
               </p>
               <button
-                onClick={() => setView('create')}
+                onClick={() => openSubView('create')}
                 className="flex items-center gap-2 px-6 py-3 bg-[var(--color-primary)] rounded-2xl text-white font-black text-[13px] uppercase tracking-widest shadow-lg"
               >
                 <Plus className="w-4 h-4" /> New Event
@@ -377,83 +406,78 @@ export default function HODEvents() {
             </div>
           ) : (
             <div className="space-y-4">
-              {events.map(event => {
-                const cfg = statusConfig(event.status);
-                return (
-                  <motion.div
-                    key={event.id}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-white dark:bg-slate-900 rounded-[28px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm"
-                  >
-                    <div className="flex items-start justify-between gap-3 mb-4">
-                      <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                        <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center shrink-0">
-                          <CalendarDays className="w-6 h-6 text-[var(--color-primary)]" />
-                        </div>
-                        <div className="min-w-0">
-                          <h5 className="text-[16px] font-black text-slate-900 dark:text-white truncate">{event.eventName}</h5>
-                          <p className="text-[12px] font-bold text-slate-400">ID: {event.id}</p>
-                        </div>
-                      </div>
-                      <div className={cn('flex items-center gap-1.5 px-3 py-1.5 rounded-full border shrink-0', cfg.bg, cfg.border)}>
-                        <div className={cn('w-1.5 h-1.5 rounded-full', cfg.dot)} />
-                        <span className={cn('text-[10px] font-black uppercase tracking-widest', cfg.color)}>{event.status}</span>
-                      </div>
-                    </div>
+              <div className="hidden md:flex items-center justify-end">
+                <button
+                  onClick={() => openSubView('create')}
+                  className="flex items-center gap-2 h-11 px-5 bg-[var(--color-primary)] rounded-2xl text-white font-black text-[12px] uppercase tracking-widest shadow-lg shadow-blue-100 dark:shadow-none hover:brightness-105 active:scale-[0.98] transition-all"
+                >
+                  <Plus className="w-4 h-4" /> New Event
+                </button>
+              </div>
 
-                    <div className="bg-slate-50 dark:bg-slate-950/50 rounded-2xl p-3.5 space-y-2 border border-slate-100/50 dark:border-slate-800/30 mb-4">
-                      <div className="flex items-center gap-3">
-                        <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
-                        <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">{event.eventDate}</span>
+              <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-3">
+                {events.map(event => {
+                  const cfg = statusConfig(event.status);
+                  return (
+                    <motion.div
+                      key={event.id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-white dark:bg-slate-900 rounded-[28px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm lg:p-6 lg:shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
+                    >
+                      <div className="flex items-start justify-between gap-3 mb-4 lg:mb-5">
+                        <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                          <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center shrink-0 lg:w-14 lg:h-14">
+                            <CalendarDays className="w-6 h-6 text-[var(--color-primary)]" />
+                          </div>
+                          <div className="min-w-0">
+                            <h5 className="text-[16px] font-black text-slate-900 dark:text-white truncate lg:text-[18px]">{event.eventName}</h5>
+                            <p className="text-[12px] font-bold text-slate-400">ID: {event.id}</p>
+                          </div>
+                        </div>
+                        <div className={cn('flex items-center gap-1.5 px-3 py-1.5 rounded-full border shrink-0', cfg.bg, cfg.border)}>
+                          <div className={cn('w-1.5 h-1.5 rounded-full', cfg.dot)} />
+                          <span className={cn('text-[10px] font-black uppercase tracking-widest', cfg.color)}>{event.status}</span>
+                        </div>
                       </div>
-                      {event.venue && (
+
+                      <div className="bg-slate-50 dark:bg-slate-950/50 rounded-2xl p-3.5 space-y-2 border border-slate-100/50 dark:border-slate-800/30 mb-4 lg:p-4 lg:mb-5">
                         <div className="flex items-center gap-3">
-                          <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
-                          <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300 truncate">{event.venue}</span>
+                          <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
+                          <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">{event.eventDate}</span>
                         </div>
-                      )}
-                    </div>
+                        {event.venue && (
+                          <div className="flex items-center gap-3">
+                            <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
+                            <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300 truncate">{event.venue}</span>
+                          </div>
+                        )}
+                      </div>
 
-                    <div className="flex items-center gap-2">
-                      {event.status === 'ACTIVE' && (
-                        <>
+                      <div className="flex items-center gap-2">
+                        {event.status === 'ACTIVE' && (
                           <button
                             onClick={() => openCoordinators(event)}
-                            className="flex-1 h-10 bg-[var(--color-primary)]/10 rounded-xl text-[var(--color-primary)] text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform"
+                            className="flex-1 h-11 bg-[var(--color-primary)] rounded-xl text-white text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-blue-100 dark:shadow-none active:scale-95 transition-transform lg:h-12"
                           >
                             <Users className="w-4 h-4" /> Coordinators
                           </button>
-                          <button
-                            onClick={() => setCompleteTarget(event)}
-                            className="flex-1 h-10 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl text-emerald-600 text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform"
-                          >
-                            <CheckCircle2 className="w-4 h-4" /> Complete
-                          </button>
-                        </>
-                      )}
-                      {event.status !== 'ACTIVE' && (
-                        <div className="flex-1 h-10 bg-slate-50 dark:bg-slate-800/30 rounded-xl flex items-center justify-center">
-                          <span className="text-[12px] font-black text-slate-400 uppercase tracking-widest">Event {event.status}</span>
-                        </div>
-                      )}
-                    </div>
-                  </motion.div>
-                );
-              })}
+                        )}
+                        {event.status !== 'ACTIVE' && (
+                          <div className="flex-1 h-10 bg-slate-50 dark:bg-slate-800/30 rounded-xl flex items-center justify-center">
+                            <span className="text-[12px] font-black text-slate-400 uppercase tracking-widest">Event {event.status}</span>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
       </TopRefreshControl>
 
-      <ConfirmationModal
-        visible={!!completeTarget}
-        title="Complete Event"
-        message={`Mark "${completeTarget?.eventName}" as completed? This cannot be undone.`}
-        confirmText="Complete"
-        onConfirm={handleComplete}
-        onCancel={() => setCompleteTarget(null)}
-      />
     </div>
   );
 }

@@ -9,7 +9,6 @@ import { isPdfAttachment } from '../../utils/attachmentUtils';
 import Badge from '../ui/Badge';
 import GatePassQRModal from './GatePassQRModal';
 import Button from '../ui/Button';
-import { useAdaptive } from '../../utils/useAdaptive';
 
 interface MyRequestsBulkModalProps {
   isOpen: boolean;
@@ -36,7 +35,6 @@ export default function MyRequestsBulkModal({
   onReject,
   showActions,
 }: MyRequestsBulkModalProps) {
-  const { isDesktop } = useAdaptive();
   const [loading, setLoading] = useState(true);
   const [details, setDetails] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -105,19 +103,13 @@ export default function MyRequestsBulkModal({
   return createPortal(
     <AnimatePresence>
       <motion.div
-        initial={isDesktop ? { opacity: 0 } : { y: '100%' }}
-        animate={isDesktop ? { opacity: 1 } : { y: 0 }}
-        exit={isDesktop ? { opacity: 0 } : { y: '100%' }}
-        transition={isDesktop ? { duration: 0.18, ease: 'easeOut' } : { type: 'spring', damping: 25, stiffness: 200 }}
-        className="fixed inset-0 z-[120] bg-white dark:bg-slate-950 flex flex-col pt-safe lg:bg-slate-950/25 lg:dark:bg-slate-950/55 lg:backdrop-blur-md lg:p-8 lg:items-center lg:justify-center"
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className="fixed inset-0 z-[120] bg-[#F8FAFC] dark:bg-slate-950 flex flex-col pt-safe"
       >
-        <motion.div
-          initial={isDesktop ? { opacity: 0, y: 16, scale: 0.98 } : undefined}
-          animate={isDesktop ? { opacity: 1, y: 0, scale: 1 } : undefined}
-          exit={isDesktop ? { opacity: 0, y: 10, scale: 0.98 } : undefined}
-          transition={{ duration: 0.2, ease: 'easeOut' }}
-          className="flex min-h-0 w-full flex-1 flex-col bg-white dark:bg-slate-950 lg:max-h-[82vh] lg:max-w-[1120px] lg:flex-none lg:overflow-hidden lg:rounded-[28px] lg:border lg:border-white/60 lg:shadow-[0_28px_80px_-34px_rgba(15,23,42,0.55)] lg:dark:border-slate-700/70"
-        >
+        <div className="flex min-h-0 w-full flex-1 flex-col bg-[#F8FAFC] dark:bg-slate-950">
         {/* Header */}
         <header className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 h-16 flex items-center gap-3 z-20 lg:px-6">
           <button 
@@ -325,7 +317,7 @@ export default function MyRequestsBulkModal({
             </Button>
           </footer>
         )}
-        </motion.div>
+        </div>
 
         {/* Integrated QR Modal */}
         <GatePassQRModal

@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { ArrowLeft, X } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 interface ModalProps {
@@ -11,6 +11,7 @@ interface ModalProps {
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   showClose?: boolean;
   className?: string;
+  presentation?: 'dialog' | 'page';
 }
 
 const sizes = {
@@ -21,7 +22,7 @@ const sizes = {
   full: 'max-w-full mx-4',
 };
 
-export default function Modal({ isOpen, onClose, title, children, size = 'md', showClose = true, className }: ModalProps) {
+export default function Modal({ isOpen, onClose, title, children, size = 'md', showClose = true, className, presentation = 'dialog' }: ModalProps) {
   // Lock body scroll
   useEffect(() => {
     if (isOpen) {
@@ -40,6 +41,43 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md', s
     if (isOpen) window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [isOpen, onClose]);
+
+  if (presentation === 'page') {
+    return (
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+            className="fixed inset-0 z-[120] flex flex-col bg-[#F8FAFC] pt-safe dark:bg-slate-950"
+          >
+            {(title || showClose) && (
+              <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-3 border-b border-slate-100 bg-white px-4 shadow-[0_1px_0_0_rgba(0,0,0,0.03)] dark:border-slate-800 dark:bg-slate-900 lg:h-20 lg:px-8">
+                {showClose && (
+                  <button
+                    onClick={onClose}
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-900 shadow-sm transition-all hover:bg-slate-50 active:scale-95 dark:border-slate-800 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
+                    aria-label="Go back"
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                  </button>
+                )}
+                {title && <h2 className="min-w-0 flex-1 truncate text-lg font-black tracking-tight text-slate-950 dark:text-white lg:text-2xl">{title}</h2>}
+              </header>
+            )}
+
+            <div className="flex-1 overflow-y-auto scroll-momentum px-4 py-5 lg:px-8 lg:py-7">
+              <div className={cn('mx-auto w-full max-w-6xl', className)}>
+                {children}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  }
 
   return (
     <AnimatePresence>

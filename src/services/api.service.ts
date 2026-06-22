@@ -751,8 +751,17 @@ export async function markAllNotificationsRead(userId: string): Promise<ApiRespo
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export async function createEvent(hodCode: string, eventName: string, eventDate: string, venue: string): Promise<ApiResponse> {
-  try { return (await api.post('/events', { hodCode, eventName, eventDate, venue })).data; }
-  catch (e) { return { success: false, message: extractError(e) }; }
+  const payloads = [
+    { hodCode, eventName, eventDate, venue },
+    { hod_code: hodCode, event_name: eventName, event_date: eventDate, venue },
+  ];
+
+  let lastMessage = 'Could not create event';
+  for (const payload of payloads) {
+    try { return (await api.post('/events', payload)).data; }
+    catch (e) { lastMessage = extractError(e); }
+  }
+  return { success: false, message: lastMessage };
 }
 
 export async function getHODEvents(hodCode: string): Promise<{ success: boolean; events: any[] }> {
@@ -777,8 +786,53 @@ export async function getEventCoordinators(eventId: number): Promise<{ success: 
 }
 
 export async function assignCoordinators(eventId: number, hodCode: string, staffCodes: string[]): Promise<ApiResponse> {
-  try { return (await api.post(`/events/${eventId}/coordinators`, { hodCode, staffCodes })).data; }
-  catch (e) { return { success: false, message: extractError(e) }; }
+  const uniqueStaffCodes = [...new Set(staffCodes.map(code => code.trim()).filter(Boolean))];
+  if (uniqueStaffCodes.length === 0) {
+    return { success: false, message: 'No staff selected' };
+  }
+
+  const bulkPayloads = [
+    { hodCode, staffCodes: uniqueStaffCodes },
+    { hodCode, coordinatorCodes: uniqueStaffCodes },
+    { hod_code: hodCode, staff_codes: uniqueStaffCodes },
+    { hod_code: hodCode, coordinator_codes: uniqueStaffCodes },
+  ];
+
+  let lastMessage = 'Could not assign coordinators';
+  for (const payload of bulkPayloads) {
+    try { return (await api.post(`/events/${eventId}/coordinators`, payload)).data; }
+    catch (e) { lastMessage = extractError(e); }
+  }
+
+  for (const staffCode of uniqueStaffCodes) {
+    const singlePayloads = [
+      { hodCode, staffCode },
+      { hodCode, coordinatorCode: staffCode },
+      { hod_code: hodCode, staff_code: staffCode },
+      { hod_code: hodCode, coordinator_code: staffCode },
+    ];
+
+    let assigned = false;
+    for (const payload of singlePayloads) {
+      try {
+        const res = (await api.post(`/events/${eventId}/coordinators`, payload)).data;
+        if (res?.success === false) {
+          lastMessage = res.message || lastMessage;
+          continue;
+        }
+        assigned = true;
+        break;
+      } catch (e) {
+        lastMessage = extractError(e);
+      }
+    }
+
+    if (!assigned) {
+      return { success: false, message: lastMessage };
+    }
+  }
+
+  return { success: true, message: 'Coordinators assigned' };
 }
 
 export async function removeCoordinator(eventId: number, staffCode: string): Promise<ApiResponse> {

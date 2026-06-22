@@ -223,6 +223,10 @@ export default function StaffDashboard() {
     }
   };
 
+  const closeRequestDetails = () => {
+    setShowDetailModal(false);
+  };
+
   const staffName = (user as any)?.staffName || (user as any)?.name || (user as any)?.firstName || 'Staff Member';
   const initials = staffName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
 
@@ -360,7 +364,7 @@ export default function StaffDashboard() {
                       <th className="w-[230px]">Purpose</th>
                       <th className="w-[190px]">Date</th>
                       <th className="w-[130px]">Status</th>
-                      <th className="w-[230px] text-right">Actions</th>
+                      <th className="w-[180px] text-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -372,8 +376,7 @@ export default function StaffDashboard() {
                       return (
                         <tr 
                           key={request.id} 
-                          className="hover:bg-slate-50/70 dark:hover:bg-slate-800/35 transition-colors cursor-pointer"
-                          onClick={() => navigate(`/pass-verification/${request.id}`)}
+                          className="hover:bg-slate-50/70 dark:hover:bg-slate-800/35 transition-colors"
                         >
                           <td>
                             <div className="flex items-center gap-3 min-w-0">
@@ -407,8 +410,8 @@ export default function StaffDashboard() {
                               {request.staffApproval || 'PENDING'}
                             </span>
                           </td>
-                          <td className="text-right">
-                            <div className="flex justify-end gap-2">
+                          <td className="text-center">
+                            <div className="flex justify-center gap-2">
                               {isPending && (
                                 <>
                                   <Button
@@ -574,7 +577,7 @@ export default function StaffDashboard() {
         {selectedRequest && showDetailModal && (
           <SinglePassDetailsModal 
             isOpen={showDetailModal}
-            onClose={() => setShowDetailModal(false)}
+            onClose={closeRequestDetails}
             request={selectedRequest}
             onApprove={handleApprove}
             onReject={handleReject}

@@ -346,7 +346,7 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
       )}
 
       {/* Single Detail Modal */}
-      <Modal isOpen={showDetail} onClose={() => setShowDetail(false)} title="Request Details" size="lg">
+      <Modal isOpen={showDetail} onClose={() => setShowDetail(false)} title="Request Details" size="lg" presentation="page">
         {selectedRequest && (
           <div className="space-y-5 pt-2">
             <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
@@ -374,7 +374,7 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
       </Modal>
 
       {/* Bulk Detail Modal */}
-      <Modal isOpen={showBulkDetail} onClose={() => setShowBulkDetail(false)} title="Bulk Student Pass Details" size="lg">
+      <Modal isOpen={showBulkDetail} onClose={() => setShowBulkDetail(false)} title="Bulk Student Pass Details" size="lg" presentation="page">
         {selectedRequest && (
           <div className="space-y-5 pt-2">
             <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl space-y-3">

@@ -315,8 +315,8 @@ export default function HODDashboard() {
                               {(request.status === 'PENDING_HOD' || request.status === 'PENDING') ? 'PENDING' : request.status}
                             </span>
                           </td>
-                          <td className="text-right">
-                            <div className="flex justify-end gap-2">
+                          <td className=\"text-center py-5\">
+                            <div className=\"flex flex-col items-center justify-center gap-2\">
                               {isPending && <Button size="sm" variant="success" onClick={() => handleApprove(request.id)}>Approve</Button>}
                               <Button size="sm" variant="secondary" onClick={() => { setSelectedRequest(request); if (isBulk) setShowBulkModal(true); else setShowDetailModal(true); }}>View</Button>
                             </div>

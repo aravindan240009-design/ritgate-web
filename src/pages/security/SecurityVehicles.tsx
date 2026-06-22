@@ -99,16 +99,7 @@ export default function SecurityVehicles() {
   // 1. Loading State
   if (isLoading && vehicles.length === 0) {
     return (
-      <div className="space-y-8 animate-pulse text-left">
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-20" />
-          <Skeleton className="h-10 w-48" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Skeleton className="h-24 w-full rounded-3xl" />
-          <Skeleton className="h-24 w-full rounded-3xl" />
-        </div>
-      </div>
+      <SkeletonList count={4} />
     );
   }
 

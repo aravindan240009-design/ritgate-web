@@ -985,6 +985,12 @@ html, body {
   animation: scan 3s infinite var(--ease);
 }
 
+/* Neutralise legacy skeleton pulse wrappers that now contain the
+   MotionLoader, so the loader itself doesn't inherit the opacity breathe. */
+.animate-pulse:has(.motion-loader) {
+  animation: none;
+}
+
 /* ── Pulse Dot ─────────────────────────────────────────── */
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }

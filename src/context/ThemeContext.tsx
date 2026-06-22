@@ -5,47 +5,58 @@ type ThemeMode = 'light' | 'dark';
 
 export type ThemePresetId = 'ocean' | 'neon' | 'sunset' | 'minimal';
 
+interface PresetTokens {
+  primary: string;
+  primaryHover: string;
+  primarySubtle: string;
+  gradient: string;
+}
+
 export interface ThemePreset {
   id: ThemePresetId;
   name: string;
   description: string;
   preview: string[];
-  light: { primary: string; primaryHover: string; primarySubtle: string };
-  dark:  { primary: string; primaryHover: string; primarySubtle: string };
+  light: PresetTokens;
+  dark: PresetTokens;
 }
 
+// 4 professional schemes — each with a tuned Light and Dark variant.
+// `gradient` is used for filled accents (sidebar active item, primary buttons)
+// where white text must stay legible; `primary` is the accent for icons,
+// links and borders (lighter in dark for contrast).
 export const THEME_PRESETS: ThemePreset[] = [
   {
     id: 'ocean',
     name: 'Executive Blue',
     description: 'Corporate and reliable',
-    preview: ['#1D4ED8', '#2563EB', '#0EA5E9'],
-    light: { primary: '#1D4ED8', primaryHover: '#1E40AF', primarySubtle: 'rgba(29,78,216,0.08)' },
-    dark:  { primary: '#60A5FA', primaryHover: '#93C5FD', primarySubtle: 'rgba(96,165,250,0.12)' },
+    preview: ['#2563EB', '#3B82F6', '#38BDF8'],
+    light: { primary: '#2563EB', primaryHover: '#1D4ED8', primarySubtle: 'rgba(37,99,235,0.10)', gradient: 'linear-gradient(135deg,#3B82F6,#2563EB)' },
+    dark:  { primary: '#60A5FA', primaryHover: '#93C5FD', primarySubtle: 'rgba(96,165,250,0.14)', gradient: 'linear-gradient(135deg,#2563EB,#1D4ED8)' },
   },
   {
     id: 'neon',
     name: 'Emerald Pro',
-    description: 'Balanced and modern',
+    description: 'Fresh and focused',
     preview: ['#059669', '#10B981', '#34D399'],
-    light: { primary: '#059669', primaryHover: '#047857', primarySubtle: 'rgba(5,150,105,0.08)' },
-    dark:  { primary: '#34D399', primaryHover: '#6EE7B7', primarySubtle: 'rgba(52,211,153,0.12)' },
+    light: { primary: '#059669', primaryHover: '#047857', primarySubtle: 'rgba(5,150,105,0.10)', gradient: 'linear-gradient(135deg,#10B981,#059669)' },
+    dark:  { primary: '#34D399', primaryHover: '#6EE7B7', primarySubtle: 'rgba(52,211,153,0.14)', gradient: 'linear-gradient(135deg,#10B981,#047857)' },
   },
   {
     id: 'sunset',
     name: 'Royal Violet',
     description: 'Premium and refined',
-    preview: ['#6D28D9', '#7C3AED', '#A78BFA'],
-    light: { primary: '#6D28D9', primaryHover: '#5B21B6', primarySubtle: 'rgba(109,40,217,0.08)' },
-    dark:  { primary: '#C4B5FD', primaryHover: '#A78BFA', primarySubtle: 'rgba(196,181,253,0.12)' },
+    preview: ['#7C3AED', '#8B5CF6', '#A78BFA'],
+    light: { primary: '#7C3AED', primaryHover: '#6D28D9', primarySubtle: 'rgba(124,58,237,0.10)', gradient: 'linear-gradient(135deg,#8B5CF6,#7C3AED)' },
+    dark:  { primary: '#A78BFA', primaryHover: '#C4B5FD', primarySubtle: 'rgba(167,139,250,0.14)', gradient: 'linear-gradient(135deg,#7C3AED,#6D28D9)' },
   },
   {
     id: 'minimal',
-    name: 'Slate Mono',
+    name: 'Graphite',
     description: 'Minimal enterprise look',
-    preview: ['#0F172A', '#1E293B', '#475569'],
-    light: { primary: '#0F172A', primaryHover: '#1E293B', primarySubtle: 'rgba(15,23,42,0.08)' },
-    dark:  { primary: '#E2E8F0', primaryHover: '#F1F5F9', primarySubtle: 'rgba(226,232,240,0.12)' },
+    preview: ['#334155', '#475569', '#94A3B8'],
+    light: { primary: '#334155', primaryHover: '#1E293B', primarySubtle: 'rgba(51,65,85,0.10)', gradient: 'linear-gradient(135deg,#334155,#0F172A)' },
+    dark:  { primary: '#CBD5E1', primaryHover: '#E2E8F0', primarySubtle: 'rgba(203,213,225,0.12)', gradient: 'linear-gradient(135deg,#475569,#334155)' },
   },
 ];
 
@@ -67,6 +78,7 @@ function applyCSSVars(preset: ThemePreset, isDark: boolean) {
   root.style.setProperty('--color-primary', tokens.primary);
   root.style.setProperty('--color-primary-hover', tokens.primaryHover);
   root.style.setProperty('--color-primary-subtle', tokens.primarySubtle);
+  root.style.setProperty('--gradient-primary', tokens.gradient);
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

@@ -59,7 +59,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         <button
           onClick={onToggle}
           className={cn(
-            "absolute right-4 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/70 bg-white/82 text-slate-500 shadow-[0_12px_28px_-18px_rgba(15,23,42,0.65)] backdrop-blur-xl transition-all hover:bg-blue-50 hover:text-blue-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-300 dark:shadow-none dark:hover:bg-white/[0.1] dark:hover:text-white",
+            "absolute right-4 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/70 bg-white/82 text-slate-500 shadow-[0_12px_28px_-18px_rgba(15,23,42,0.65)] backdrop-blur-xl transition-all hover:bg-[var(--color-primary-subtle)] hover:text-[var(--color-primary)] dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-300 dark:shadow-none dark:hover:bg-white/[0.1] dark:hover:text-white",
             collapsed && "right-1/2 translate-x-1/2",
           )}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -82,12 +82,13 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
               key={item.path}
               to={item.path}
               title={collapsed ? item.label : undefined}
+              style={isActive ? { backgroundImage: 'var(--gradient-primary)' } : undefined}
               className={cn(
                 'group flex items-center gap-3 rounded-lg min-h-[42px] transition-all duration-150 relative select-none',
                 collapsed ? 'justify-center px-0 py-2' : 'px-3 py-2',
                 isActive
-                  ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-[0_8px_18px_-12px_rgba(37,99,235,0.45)]'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-blue-50/70 dark:hover:bg-white/[0.06] hover:text-blue-700 dark:hover:text-blue-300',
+                  ? 'text-white shadow-[0_8px_18px_-12px_rgba(15,23,42,0.45)]'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-[var(--color-primary-subtle)] dark:hover:bg-white/[0.06] hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary)]',
               )}
             >
               {/* Active left bar */}
@@ -98,7 +99,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
               <item.icon className={cn(
                 'shrink-0 transition-transform duration-150',
                 collapsed ? 'w-5 h-5' : 'w-[18px] h-[18px]',
-                isActive ? 'text-white' : 'group-hover:text-blue-700 dark:group-hover:text-blue-300',
+                isActive ? 'text-white' : 'group-hover:text-[var(--color-primary)]',
                 !isActive && 'group-hover:scale-110',
               )} />
 

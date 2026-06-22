@@ -180,7 +180,7 @@ export default function Header({ onMenuClick, sidebarCollapsed }: HeaderProps) {
       actions={(
         <>
           <div className="hidden items-center gap-2 rounded-2xl border border-white/60 bg-white/70 px-4 py-2.5 text-sm font-bold text-slate-600 shadow-[0_14px_34px_-28px_rgba(15,23,42,0.75)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-200 dark:shadow-none lg:flex">
-            <CalendarDays className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+            <CalendarDays className="h-4 w-4 text-[var(--color-primary)]" />
             {currentDate}
           </div>
           <NotificationBell />

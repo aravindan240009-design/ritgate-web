@@ -180,45 +180,53 @@ export default function HODEvents() {
     return (
       <div className="bg-[#F8FAFC] dark:bg-slate-950 min-h-screen">
         <PageHeader title="Create Event" onBack={() => { resetCreate(); returnToList(); }} />
-        <div className="px-5 py-6 pb-28 space-y-5 max-w-lg mx-auto">
-          <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 p-5 space-y-5 shadow-sm">
+        <div className="px-5 py-8 pb-32 space-y-6 max-w-2xl mx-auto lg:px-8 lg:py-10">
+          {/* Header Section */}
+          <div className="space-y-2">
+            <h2 className="text-[22px] font-black text-slate-900 dark:text-white lg:text-[26px]">New Event Details</h2>
+            <p className="text-[13px] font-medium text-slate-500 dark:text-slate-400">Create a new event and assign coordinators to manage participant lists.</p>
+          </div>
+          <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 p-6 space-y-6 shadow-lg lg:shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
             {/* Event Name */}
-            <div className="space-y-2">
-              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Event Name *</label>
+            <div className="space-y-2.5">
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Event Name *</label>
               <input
                 value={eventName}
                 onChange={e => setEventName(e.target.value)}
                 placeholder="e.g. National Level Symposium 2026"
-                className="w-full h-12 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl px-4 text-[14px] font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20"
+                className="w-full h-13 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl px-4 text-[14px] font-bold text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition-all focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/10 lg:focus:border-[var(--color-primary)]/80"
               />
             </div>
             {/* Venue */}
-            <div className="space-y-2">
-              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Venue *</label>
+            <div className="space-y-2.5">
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Venue *</label>
               <input
                 value={venue}
                 onChange={e => setVenue(e.target.value)}
                 placeholder="e.g. Seminar Hall, Block A"
-                className="w-full h-12 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl px-4 text-[14px] font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20"
+                className="w-full h-13 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl px-4 text-[14px] font-bold text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition-all focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/10 lg:focus:border-[var(--color-primary)]/80"
               />
             </div>
             {/* Date */}
-            <div className="space-y-2">
-              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Event Date *</label>
-              <input
-                type="date"
-                value={eventDate}
-                min={todayStr}
-                onChange={e => setEventDate(e.target.value)}
-                className="w-full h-12 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl px-4 text-[14px] font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20"
-              />
+            <div className="space-y-2.5">
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Event Date *</label>
+              <div className="relative">
+                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400 pointer-events-none" />
+                <input
+                  type="date"
+                  value={eventDate}
+                  min={todayStr}
+                  onChange={e => setEventDate(e.target.value)}
+                  className="w-full h-13 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl pl-12 pr-4 text-[14px] font-bold text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition-all focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/10 lg:focus:border-[var(--color-primary)]/80"
+                />
+              </div>
             </div>
           </div>
 
           <button
             onClick={handleCreate}
             disabled={isLocked || !eventName.trim() || !venue.trim() || !eventDate}
-            className="w-full h-14 bg-[var(--color-primary)] rounded-2xl text-white font-black text-[15px] uppercase tracking-widest shadow-lg shadow-blue-100 dark:shadow-none disabled:opacity-50 flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
+            className="w-full h-14 bg-[var(--color-primary)] rounded-2xl text-white font-black text-[15px] uppercase tracking-widest shadow-lg shadow-blue-200 dark:shadow-none disabled:opacity-50 disabled:saturate-50 flex items-center justify-center gap-2 active:scale-[0.98] hover:brightness-110 transition-all lg:h-[52px] lg:text-[16px]"
           >
             {isLocked ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Plus className="w-5 h-5" /> Create Event</>}
           </button>

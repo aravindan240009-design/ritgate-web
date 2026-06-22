@@ -171,7 +171,7 @@ export default function HODMyRequests() {
                       <th>Type</th>
                       <th>Date</th>
                       <th>Status</th>
-                      <th className="!text-right">Action</th>
+                      <th className="!text-center">Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -194,7 +194,7 @@ export default function HODMyRequests() {
                               'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300'
                             )}>{isApproved ? 'ACTIVE' : isRejected ? 'REJECTED' : 'PENDING'}</span>
                           </td>
-                          <td className="text-right">
+                          <td className="text-center">
                             {isApproved ? (
                               <Button size="sm" onClick={(e) => { e.stopPropagation(); handleViewQR(request); }} icon={<QrCode className="w-4 h-4" />}>View QR</Button>
                             ) : (

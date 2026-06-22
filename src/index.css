@@ -365,7 +365,7 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     padding: 16px 20px;
-    text-align: left;
+    text-align: center;
   }
 
   .dark .desktop-table th {
@@ -379,6 +379,11 @@
     color: #0f172a;
     font-size: 14px;
     font-weight: 600;
+    text-align: center;
+  }
+
+  .desktop-table td > .flex.items-center {
+    justify-content: center;
   }
 
   .dark .desktop-table td {

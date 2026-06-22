@@ -221,7 +221,7 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
                     <th>Purpose</th>
                     <th>Exit Date</th>
                     <th>Status</th>
-                    <th className="!text-right">Action</th>
+                    <th className="!text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -250,8 +250,8 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
                             {(statusVal === 'PENDING_HR' || statusVal === 'PENDING' || !statusVal) ? 'PENDING' : statusVal}
                           </span>
                         </td>
-                        <td className="text-right">
-                          <div className="flex justify-end gap-2">
+                        <td className="text-center">
+                          <div className="flex justify-center gap-2">
                             {isPending && <Button size="sm" variant="success" onClick={() => handleApprove(req)} disabled={processing}>Approve</Button>}
                             <Button size="sm" variant="secondary" onClick={() => { setSelectedRequest(req); isBulk ? setShowBulkDetail(true) : setShowDetail(true); }}>View</Button>
                           </div>

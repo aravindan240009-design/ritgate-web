@@ -176,7 +176,7 @@ export default function SecurityActivePersons() {
                     <th>Type</th>
                     <th>Purpose</th>
                     <th>Inside Since</th>
-                    <th className="!text-right">Action</th>
+                    <th className="!text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -189,7 +189,7 @@ export default function SecurityActivePersons() {
                       <td>{person.type || person.personType}</td>
                       <td className="max-w-[320px] truncate">{person.purpose || 'Campus Access'}</td>
                       <td>{formatTime(person.inTime || person.timestamp)}</td>
-                      <td className="text-right">
+                      <td className="text-center">
                         <Button size="sm" variant="secondary" onClick={() => { setSelectedPerson(person); setShowExitModal(true); }} icon={<LogOut className="w-4 h-4" />}>Manual Exit</Button>
                       </td>
                     </tr>

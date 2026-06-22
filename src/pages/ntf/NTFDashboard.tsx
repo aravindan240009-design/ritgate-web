@@ -225,7 +225,7 @@ export default function NTFDashboard() {
                     <th>Phone</th>
                     <th>Requested</th>
                     <th>Status</th>
-                    <th className="!text-right">Action</th>
+                    <th className="!text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -243,9 +243,9 @@ export default function NTFDashboard() {
                         <td>{req.visitorPhone || 'No Phone'}</td>
                         <td>{relativeTime(req.createdAt)}</td>
                         <td><Badge status={req.status} size="sm" /></td>
-                        <td className="text-right">
+                        <td className="text-center">
                           {req.status === 'PENDING' ? (
-                            <div className="flex justify-end gap-2">
+                            <div className="flex justify-center gap-2">
                               <Button variant="success" size="sm" onClick={() => handleApprove(req)} disabled={isProcessing}>Approve</Button>
                               <Button variant="secondary" size="sm" onClick={() => handleReject(req)} disabled={isProcessing}>Reject</Button>
                             </div>

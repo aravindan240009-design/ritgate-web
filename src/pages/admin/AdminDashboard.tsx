@@ -156,6 +156,14 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
       </div>
       )}
 
+      {isDesktop && (
+        <DesktopToolbar
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder="Search visitor requests..."
+        />
+      )}
+
       {/* 3. Stats Cards */}
       {isDesktop ? (
         <div className="grid grid-cols-3 gap-4">
@@ -192,14 +200,6 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
         </div>
       )}
 
-      {isDesktop && (
-        <DesktopToolbar
-          searchValue={searchQuery}
-          onSearchChange={setSearchQuery}
-          searchPlaceholder="Search visitor requests..."
-        />
-      )}
-
       {/* 4. Requests List */}
       {isDesktop ? (
         <section className="desktop-card overflow-hidden">
@@ -225,7 +225,7 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
                     <th>Purpose</th>
                     <th>Requested</th>
                     <th>Status</th>
-                    <th className="text-right">Action</th>
+                    <th className="text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -238,7 +238,7 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
                       <td className="max-w-[360px] truncate">{req.purpose || 'Campus Visit'}</td>
                       <td>{relativeTime(req.createdAt)}</td>
                       <td><Badge status={req.status} size="sm" /></td>
-                      <td className="text-right"><Button size="sm" variant="secondary">View</Button></td>
+                      <td className="text-center"><Button size="sm" variant="secondary">View</Button></td>
                     </tr>
                   ))}
                 </tbody>

@@ -451,7 +451,7 @@ export default function StudentHome() {
                       <th>Type</th>
                       <th>Date</th>
                       <th>Status</th>
-                      <th className="text-right">Action</th>
+                      <th className="text-center">Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -470,7 +470,7 @@ export default function StudentHome() {
                               {status.label}
                             </span>
                           </td>
-                          <td className="text-right">
+                          <td className="text-center">
                             {request.status === 'APPROVED' && request.passType !== 'BULK' ? (
                               <Button size="sm" onClick={(e) => { e.stopPropagation(); handleViewQR(request); }} icon={<QrCode className="w-4 h-4" />}>View QR</Button>
                             ) : (

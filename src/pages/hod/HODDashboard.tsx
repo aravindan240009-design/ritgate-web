@@ -222,19 +222,19 @@ export default function HODDashboard() {
         </div>
 
         {isDesktop && (
-          <div className="grid grid-cols-3 gap-4">
-            <DesktopStatCard label="Pending" value={getStats().PENDING} icon={Clock} tone="amber" active={activeTab === 'PENDING'} onClick={() => setActiveTab('PENDING')} />
-            <DesktopStatCard label="Approved" value={getStats().APPROVED} icon={CheckCircle2} tone="emerald" active={activeTab === 'APPROVED'} onClick={() => setActiveTab('APPROVED')} />
-            <DesktopStatCard label="Rejected" value={getStats().REJECTED} icon={XCircle} tone="rose" active={activeTab === 'REJECTED'} onClick={() => setActiveTab('REJECTED')} />
-          </div>
-        )}
-
-        {isDesktop && (
           <DesktopToolbar
             searchValue={searchQuery}
             onSearchChange={setSearchQuery}
             searchPlaceholder="Search by student, visitor, purpose, or request ID..."
           />
+        )}
+
+        {isDesktop && (
+          <div className="grid grid-cols-3 gap-4">
+            <DesktopStatCard label="Pending" value={getStats().PENDING} icon={Clock} tone="amber" active={activeTab === 'PENDING'} onClick={() => setActiveTab('PENDING')} />
+            <DesktopStatCard label="Approved" value={getStats().APPROVED} icon={CheckCircle2} tone="emerald" active={activeTab === 'APPROVED'} onClick={() => setActiveTab('APPROVED')} />
+            <DesktopStatCard label="Rejected" value={getStats().REJECTED} icon={XCircle} tone="rose" active={activeTab === 'REJECTED'} onClick={() => setActiveTab('REJECTED')} />
+          </div>
         )}
 
         {/* Stats Tabs */}
@@ -287,7 +287,7 @@ export default function HODDashboard() {
                       <th>Purpose</th>
                       <th>Requested</th>
                       <th>Status</th>
-                      <th className="text-right">Action</th>
+                      <th className="text-center">Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -315,8 +315,8 @@ export default function HODDashboard() {
                               {(request.status === 'PENDING_HOD' || request.status === 'PENDING') ? 'PENDING' : request.status}
                             </span>
                           </td>
-                          <td className="text-right py-5">
-                            <div className="flex items-center justify-end gap-2">
+                          <td className="text-center py-5">
+                            <div className="flex items-center justify-center gap-2">
                               {isPending && (
                                 <>
                                   <Button size="sm" variant="success" onClick={() => handleApprove(request.id)}>Approve</Button>

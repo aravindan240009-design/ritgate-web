@@ -197,7 +197,7 @@ export default function StaffMyRequests() {
                       <th>Date</th>
                       <th>Purpose</th>
                       <th>Status</th>
-                      <th className="text-right">Action</th>
+                      <th className="text-center">Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -225,7 +225,7 @@ export default function StaffMyRequests() {
                               {isApproved ? 'Approved' : isRejected ? 'Rejected' : 'Pending'}
                             </span>
                           </td>
-                          <td className="text-right">
+                          <td className="text-center">
                             <Button size="sm" variant="secondary" onClick={() => handleReviewRequest(request)}>View</Button>
                           </td>
                         </tr>

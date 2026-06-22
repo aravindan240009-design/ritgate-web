@@ -137,14 +137,6 @@ export default function NCIDashboard() {
       )}
 
       {/* Search */}
-      {isDesktop && (
-        <div className="grid grid-cols-3 gap-4">
-          <DesktopStatCard label="Pending" value={stats.pending} icon={Clock} tone="amber" active={activeTab === 'PENDING'} onClick={() => setActiveTab('PENDING')} />
-          <DesktopStatCard label="Approved" value={stats.approved} icon={CheckCircle2} tone="emerald" active={activeTab === 'APPROVED'} onClick={() => setActiveTab('APPROVED')} />
-          <DesktopStatCard label="Rejected" value={stats.rejected} icon={XCircle} tone="rose" active={activeTab === 'REJECTED'} onClick={() => setActiveTab('REJECTED')} />
-        </div>
-      )}
-
       {isDesktop ? (
         <DesktopToolbar
           searchValue={searchQuery}
@@ -157,6 +149,14 @@ export default function NCIDashboard() {
         <input type="text" placeholder="Search requests..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
           className="w-full pl-11 pr-4 h-11 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500/10 placeholder:text-slate-300" />
       </div>
+      )}
+
+      {isDesktop && (
+        <div className="grid grid-cols-3 gap-4">
+          <DesktopStatCard label="Pending" value={stats.pending} icon={Clock} tone="amber" active={activeTab === 'PENDING'} onClick={() => setActiveTab('PENDING')} />
+          <DesktopStatCard label="Approved" value={stats.approved} icon={CheckCircle2} tone="emerald" active={activeTab === 'APPROVED'} onClick={() => setActiveTab('APPROVED')} />
+          <DesktopStatCard label="Rejected" value={stats.rejected} icon={XCircle} tone="rose" active={activeTab === 'REJECTED'} onClick={() => setActiveTab('REJECTED')} />
+        </div>
       )}
 
       {/* Stats Tabs */}
@@ -199,7 +199,7 @@ export default function NCIDashboard() {
                     <th>Purpose</th>
                     <th>Visit</th>
                     <th>Status</th>
-                    <th className="text-right">Action</th>
+                    <th className="text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -224,9 +224,9 @@ export default function NCIDashboard() {
                             'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300'
                           )}>{req.status}</span>
                         </td>
-                        <td className="text-right">
+                        <td className="text-center">
                           {req.status === 'PENDING' ? (
-                            <div className="flex justify-end gap-2">
+                            <div className="flex justify-center gap-2">
                               <Button variant="success" size="sm" onClick={(e) => { e.stopPropagation(); handleApprove(req); }} disabled={isProcessing}>Approve</Button>
                               <Button variant="secondary" size="sm" onClick={(e) => { e.stopPropagation(); handleReject(req); }} disabled={isProcessing}>Reject</Button>
                             </div>

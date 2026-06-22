@@ -399,7 +399,7 @@ export default function HODEvents() {
         right={
           <button
             onClick={() => openSubView('create')}
-            className="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center shadow-lg shadow-blue-100 active:scale-90 transition-transform"
+        <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center shadow-md shadow-blue-200 dark:shadow-none hover:brightness-110 active:scale-90 transition-transform"
             aria-label="New event"
           >
             <Plus className="w-5 h-5" />
@@ -408,37 +408,37 @@ export default function HODEvents() {
       />
 
       <TopRefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); loadEvents(); }}>
-        <div className="px-5 pt-6 pb-28 lg:px-10 xl:px-14">
+        <div className="px-4 pt-4 pb-24 lg:px-8 xl:px-12 lg:pt-5 lg:pb-8">
           {loadingEvents ? (
             <SkeletonList count={4} />
           ) : events.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mb-5">
-                <CalendarDays className="w-10 h-10 text-slate-200 dark:text-slate-800" />
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-full flex items-center justify-center mb-4">
+                <CalendarDays className="w-8 h-8 text-[var(--color-primary)]" />
               </div>
-              <h5 className="text-[17px] font-black text-slate-900 dark:text-white mb-1.5">No Events Yet</h5>
-              <p className="text-[13px] font-medium text-slate-400 max-w-[220px] leading-relaxed italic mb-6">
-                Create an event and assign staff coordinators who can upload participant lists.
+              <h5 className="text-[18px] font-black text-slate-900 dark:text-white mb-2">No Events Created Yet</h5>
+              <p className="text-[13px] font-medium text-slate-500 dark:text-slate-400 max-w-[240px] leading-relaxed mb-6">
+                Get started by creating your first event and assigning staff coordinators.
               </p>
               <button
                 onClick={() => openSubView('create')}
-                className="flex items-center gap-2 px-6 py-3 bg-[var(--color-primary)] rounded-2xl text-white font-black text-[13px] uppercase tracking-widest shadow-lg"
+                className="flex items-center gap-2 px-6 py-2.5 bg-[var(--color-primary)] rounded-xl text-white font-black text-[12px] uppercase tracking-widest shadow-lg shadow-blue-200 dark:shadow-none hover:brightness-110 active:scale-[0.98] transition-all"
               >
-                <Plus className="w-4 h-4" /> New Event
+                <Plus className="w-4 h-4" /> Create Event
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div className="hidden md:flex items-center justify-end">
+            <div className="space-y-0">
+              <div className="hidden md:flex items-center justify-end mb-5">
                 <button
                   onClick={() => openSubView('create')}
-                  className="flex items-center gap-2 h-11 px-5 bg-[var(--color-primary)] rounded-2xl text-white font-black text-[12px] uppercase tracking-widest shadow-lg shadow-blue-100 dark:shadow-none hover:brightness-105 active:scale-[0.98] transition-all"
+                  className="flex items-center gap-2 h-10 px-4 bg-[var(--color-primary)] rounded-xl text-white font-black text-[11px] uppercase tracking-widest shadow-md shadow-blue-200 dark:shadow-none hover:brightness-110 active:scale-[0.98] transition-all"
                 >
                   <Plus className="w-4 h-4" /> New Event
                 </button>
               </div>
 
-              <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-3">
+              <div className="grid gap-3.5 lg:grid-cols-2 2xl:grid-cols-3">
                 {events.map(event => {
                   const cfg = statusConfig(event.status);
                   return (
@@ -446,33 +446,33 @@ export default function HODEvents() {
                       key={event.id}
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="bg-white dark:bg-slate-900 rounded-[28px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm lg:p-6 lg:shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
+                      className="bg-white dark:bg-slate-900 rounded-[24px] p-4 border border-slate-100 dark:border-slate-800 shadow-md hover:shadow-lg dark:hover:shadow-slate-800/50 transition-shadow lg:p-5 lg:shadow-[0_12px_35px_rgba(15,23,42,0.05)]"
                     >
-                      <div className="flex items-start justify-between gap-3 mb-4 lg:mb-5">
-                        <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                          <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center shrink-0 lg:w-14 lg:h-14">
-                            <CalendarDays className="w-6 h-6 text-[var(--color-primary)]" />
+                      <div className="flex items-start justify-between gap-2 mb-3.5 lg:mb-4">
+                        <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                          <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center shrink-0 lg:w-12 lg:h-12">
+                            <CalendarDays className="w-5 h-5 text-[var(--color-primary)]" />
                           </div>
                           <div className="min-w-0">
-                            <h5 className="text-[16px] font-black text-slate-900 dark:text-white truncate lg:text-[18px]">{event.eventName}</h5>
-                            <p className="text-[12px] font-bold text-slate-400">ID: {event.id}</p>
+                            <h5 className="text-[14px] font-black text-slate-900 dark:text-white truncate lg:text-[16px]">{event.eventName}</h5>
+                            <p className="text-[11px] font-bold text-slate-400">ID: {event.id}</p>
                           </div>
                         </div>
-                        <div className={cn('flex items-center gap-1.5 px-3 py-1.5 rounded-full border shrink-0', cfg.bg, cfg.border)}>
-                          <div className={cn('w-1.5 h-1.5 rounded-full', cfg.dot)} />
-                          <span className={cn('text-[10px] font-black uppercase tracking-widest', cfg.color)}>{event.status}</span>
+                        <div className={cn('flex items-center gap-1.5 px-2.5 py-1 rounded-full border shrink-0 text-[9px]', cfg.bg, cfg.border)}>
+                          <div className={cn('w-1 h-1 rounded-full', cfg.dot)} />
+                          <span className={cn('font-black uppercase tracking-widest', cfg.color)}>{event.status}</span>
                         </div>
                       </div>
 
-                      <div className="bg-slate-50 dark:bg-slate-950/50 rounded-2xl p-3.5 space-y-2 border border-slate-100/50 dark:border-slate-800/30 mb-4 lg:p-4 lg:mb-5">
-                        <div className="flex items-center gap-3">
-                          <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
-                          <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">{event.eventDate}</span>
+                      <div className="bg-slate-50 dark:bg-slate-950/50 rounded-xl p-3 space-y-1.5 border border-slate-100/50 dark:border-slate-800/30 mb-3.5 lg:p-3.5 lg:mb-4">
+                        <div className="flex items-center gap-2.5">
+                          <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span className="text-[12px] font-bold text-slate-700 dark:text-slate-300">{event.eventDate}</span>
                         </div>
                         {event.venue && (
-                          <div className="flex items-center gap-3">
-                            <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
-                            <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300 truncate">{event.venue}</span>
+                          <div className="flex items-center gap-2.5">
+                            <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                            <span className="text-[12px] font-bold text-slate-700 dark:text-slate-300 truncate">{event.venue}</span>
                           </div>
                         )}
                       </div>
@@ -481,14 +481,14 @@ export default function HODEvents() {
                         {event.status === 'ACTIVE' && (
                           <button
                             onClick={() => openCoordinators(event)}
-                            className="flex-1 h-11 bg-[var(--color-primary)] rounded-xl text-white text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-blue-100 dark:shadow-none active:scale-95 transition-transform lg:h-12"
+                            className="flex-1 h-10 bg-[var(--color-primary)] rounded-lg text-white text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 shadow-md shadow-blue-200 dark:shadow-none hover:brightness-110 active:scale-95 transition-all lg:h-11"
                           >
-                            <Users className="w-4 h-4" /> Coordinators
+                            <Users className="w-3.5 h-3.5" /> Coordinators
                           </button>
                         )}
                         {event.status !== 'ACTIVE' && (
-                          <div className="flex-1 h-10 bg-slate-50 dark:bg-slate-800/30 rounded-xl flex items-center justify-center">
-                            <span className="text-[12px] font-black text-slate-400 uppercase tracking-widest">Event {event.status}</span>
+                          <div className="flex-1 h-9 bg-slate-50 dark:bg-slate-800/30 rounded-lg flex items-center justify-center">
+                            <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Event {event.status}</span>
                           </div>
                         )}
                       </div>

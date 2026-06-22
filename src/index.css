@@ -170,10 +170,7 @@
   }
 
   .dark .main-area {
-    background:
-      radial-gradient(circle at 20% 0%, rgba(37, 99, 235, 0.14), transparent 32%),
-      radial-gradient(circle at 90% 20%, rgba(56, 189, 248, 0.1), transparent 30%),
-      linear-gradient(135deg, #070b16 0%, #0b1220 55%, #111827 100%);
+    background: linear-gradient(180deg, #0b1120 0%, #0c1322 60%, #0e1626 100%);
     background-attachment: fixed;
   }
 
@@ -1197,12 +1194,12 @@ html, body {
 @media (min-width: 769px) {
   /* ── Shell backgrounds ─────────────────────────────────── */
   .dark .desktop-shell-bg {
-    background:
-      radial-gradient(circle at 20% 0%, rgba(37, 99, 235, 0.14), transparent 32%),
-      radial-gradient(circle at 90% 20%, rgba(56, 189, 248, 0.1), transparent 30%),
-      linear-gradient(135deg, #070b16 0%, #0b1220 55%, #111827 100%);
+    background: #0b1120;
   }
   .dark .main-area::before { display: none; }
+  /* Remove the floating blue/cyan glow orbs in dark mode (clean navy, no gaming-style glow) */
+  .dark .desktop-shell-bg::before,
+  .dark .desktop-shell-bg::after { display: none; }
 
   /* ── Cards (glass navy) ────────────────────────────────── */
   .dark .desktop-card,

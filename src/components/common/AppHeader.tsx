@@ -21,7 +21,7 @@ export default function AppHeader({
   return (
     <header
       className={cn(
-        'sticky inset-x-0 top-0 z-[90] flex h-[82px] shrink-0 items-center overflow-visible border-b border-white/55 bg-white/76 shadow-[0_18px_48px_-44px_rgba(15,23,42,0.75)] backdrop-blur-2xl dark:border-slate-800/75 dark:bg-[#0b1120]/82',
+        'sticky inset-x-0 top-0 z-[90] flex h-[82px] shrink-0 items-center overflow-visible border-b border-white/55 bg-white/76 shadow-[0_18px_48px_-44px_rgba(15,23,42,0.75)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#0b1120]/85 dark:shadow-none',
         className,
       )}
     >

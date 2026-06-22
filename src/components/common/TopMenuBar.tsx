@@ -39,7 +39,7 @@ export default function TopMenuBar({
 
   return (
     <header
-      className="sticky inset-x-0 top-0 z-[90] bg-white/82 dark:bg-slate-950/88 border-b border-white/55 dark:border-slate-800/80 shadow-[0_14px_34px_-30px_rgba(15,23,42,0.72)] backdrop-blur-2xl shrink-0"
+      className="sticky inset-x-0 top-0 z-[90] bg-white/82 dark:bg-[#0b1120]/90 border-b border-white/55 dark:border-white/[0.08] shadow-[0_14px_34px_-30px_rgba(15,23,42,0.72)] dark:shadow-none backdrop-blur-2xl shrink-0"
       style={{ paddingTop: 'env(safe-area-inset-top)' }}
     >
       <div className="flex items-center justify-between px-4 h-[72px]">
@@ -49,7 +49,7 @@ export default function TopMenuBar({
           {showBackButton ? (
             <button
               onClick={onBackPress ?? (() => navigate(-1))}
-              className="w-11 h-11 rounded-full bg-white/72 dark:bg-slate-900/78 border border-white/60 dark:border-slate-800 flex items-center justify-center text-slate-700 dark:text-white active:scale-90 transition-all shadow-sm shrink-0"
+              className="w-11 h-11 rounded-full bg-white/72 dark:bg-white/[0.05] border border-white/60 dark:border-white/10 flex items-center justify-center text-slate-700 dark:text-slate-200 active:scale-90 transition-all shadow-sm dark:shadow-none shrink-0"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
@@ -83,7 +83,7 @@ export default function TopMenuBar({
           {/* Notification bell */}
           <button
             onClick={() => navigate('/notifications')}
-            className="relative w-11 h-11 rounded-full bg-white/72 dark:bg-slate-900/78 border border-white/60 dark:border-slate-800 flex items-center justify-center text-slate-700 dark:text-white active:scale-90 transition-all shadow-sm shrink-0"
+            className="relative w-11 h-11 rounded-full bg-white/72 dark:bg-white/[0.05] border border-white/60 dark:border-white/10 flex items-center justify-center text-slate-700 dark:text-slate-200 active:scale-90 transition-all shadow-sm dark:shadow-none shrink-0"
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (

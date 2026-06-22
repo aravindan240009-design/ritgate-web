@@ -29,10 +29,10 @@ export default function NotificationBell() {
       <button
         ref={bellRef}
         onClick={() => setOpen(v => !v)}
-        className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-white/60 bg-white/72 shadow-[0_14px_34px_-28px_rgba(15,23,42,0.75)] backdrop-blur-xl transition-all hover:border-blue-200 hover:bg-blue-50/70 dark:border-slate-700 dark:bg-slate-900/72 dark:hover:bg-slate-800"
+        className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-white/60 bg-white/72 shadow-[0_14px_34px_-28px_rgba(15,23,42,0.75)] backdrop-blur-xl transition-all hover:border-blue-200 hover:bg-blue-50/70 dark:border-white/10 dark:bg-white/[0.05] dark:shadow-none dark:hover:border-white/20 dark:hover:bg-white/[0.1]"
         aria-label="Notifications"
       >
-        <Bell className="w-5 h-5 text-slate-900 dark:text-white" />
+        <Bell className="w-5 h-5 text-slate-900 dark:text-slate-200" />
         <AnimatePresence>
           {unreadCount > 0 && (
             <motion.span
@@ -76,7 +76,7 @@ export default function NotificationBell() {
                   width: 320,
                   maxWidth: 'calc(100vw - 16px)',
                 }}
-                className="bg-white/88 dark:bg-slate-900/92 rounded-2xl border border-white/60 dark:border-slate-800 shadow-[0_28px_90px_-34px_rgba(15,23,42,0.72)] backdrop-blur-2xl overflow-hidden flex flex-col max-h-[480px]"
+                className="bg-white/88 dark:bg-[#0e1626]/95 rounded-2xl border border-white/60 dark:border-white/10 shadow-[0_28px_90px_-34px_rgba(15,23,42,0.72)] backdrop-blur-2xl overflow-hidden flex flex-col max-h-[480px]"
               >
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-100/80 dark:border-slate-800 shrink-0">

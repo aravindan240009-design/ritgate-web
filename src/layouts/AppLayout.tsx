@@ -48,7 +48,7 @@ export default function AppLayout() {
   };
 
   // Sidebar width for margin offset
-  const sidebarWidth = isMobile ? 0 : sidebarCollapsed ? 76 : 280;
+  const sidebarWidth = isMobile ? 0 : sidebarCollapsed ? 76 : 304;
 
   // ── MOBILE LAYOUT ──────────────────────────────────────────────────────────
   if (isMobile) {

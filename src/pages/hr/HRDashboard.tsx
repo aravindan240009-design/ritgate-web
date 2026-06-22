@@ -221,7 +221,7 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
                     <th>Purpose</th>
                     <th>Exit Date</th>
                     <th>Status</th>
-                    <th className="text-right">Action</th>
+                    <th className="!text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody>

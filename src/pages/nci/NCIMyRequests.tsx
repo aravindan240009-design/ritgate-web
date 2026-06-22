@@ -132,7 +132,7 @@ export default function NCIMyRequests() {
                       <th>Type</th>
                       <th>Date</th>
                       <th>Status</th>
-                      <th className="text-center">Action</th>
+                      <th className="!text-center">Action</th>
                     </tr>
                   </thead>
                   <tbody>

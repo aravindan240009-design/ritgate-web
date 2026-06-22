@@ -21,7 +21,7 @@ export default function DesktopToolbar({
     <div className={cn('desktop-toolbar animate-fade-up w-full', className)}>
       {onSearchChange && (
         <div className="relative min-w-[280px] flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500/70" />
+          <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-500 stroke-[2.5] dark:text-slate-300" />
           <input
             value={searchValue}
             onChange={(event) => onSearchChange(event.target.value)}

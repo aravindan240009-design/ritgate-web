@@ -26,17 +26,17 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
   return (
     <motion.aside
-      animate={{ width: collapsed ? 76 : 280 }}
+      animate={{ width: collapsed ? 76 : 304 }}
       transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed left-0 top-0 h-screen z-40 flex flex-col overflow-hidden border-r border-white/55 bg-white/78 shadow-[18px_0_54px_-46px_rgba(15,23,42,0.75)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#0b1120]/90"
+      className="fixed left-0 top-0 h-screen z-40 flex flex-col overflow-hidden border-r border-slate-200/70 bg-white/78 shadow-[18px_0_54px_-46px_rgba(15,23,42,0.75)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#0b1120]/90"
     >
       {/* ── Brand ─────────────────────────────────────────── */}
       <div className={cn(
-        'relative flex items-center border-b border-slate-100 dark:border-white/[0.07] shrink-0',
-        collapsed ? 'h-[72px] justify-center px-0' : 'h-[72px] px-5 gap-3',
+        'relative flex items-center border-b border-slate-200/70 dark:border-white/[0.07] shrink-0',
+        collapsed ? 'h-[82px] justify-center px-0' : 'h-[82px] gap-3 px-6 pr-16',
       )}>
         <div className="shrink-0">
-          <RITLogo size={collapsed ? 30 : 32} />
+          <RITLogo size={collapsed ? 34 : 42} />
         </div>
         <AnimatePresence>
           {!collapsed && (
@@ -45,12 +45,12 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -8 }}
               transition={{ duration: 0.15 }}
-              className="flex flex-col min-w-0 overflow-hidden"
+              className="flex min-w-0 flex-col overflow-hidden"
             >
-              <span className="text-[15px] font-bold text-slate-900 dark:text-white leading-none tracking-tight">
+              <span className="whitespace-nowrap text-[20px] font-black leading-none tracking-tight text-slate-950 dark:text-white">
                 RIT <span className="text-[var(--color-primary)]">Gate</span>
               </span>
-              <span className="text-[10px] font-semibold text-slate-400 mt-1 tracking-[0.14em] uppercase">
+              <span className="mt-1.5 whitespace-nowrap text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
                 Gate Pass System
               </span>
             </motion.div>
@@ -71,7 +71,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
       {/* ── User Card ─────────────────────────────────────── */}
       {/* ── Navigation ────────────────────────────────────── */}
-      <nav className="flex-1 overflow-y-auto sidebar-scroll py-4 px-4 space-y-1">
+      <nav className="flex-1 overflow-y-auto sidebar-scroll py-5 px-3.5 space-y-1.5">
         {navItems.map((item) => {
           const isActive =
             location.pathname === item.path ||
@@ -84,11 +84,11 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
               title={collapsed ? item.label : undefined}
               style={isActive ? { backgroundImage: 'var(--gradient-primary)' } : undefined}
               className={cn(
-                'group flex items-center gap-3 rounded-lg min-h-[42px] transition-all duration-150 relative select-none',
-                collapsed ? 'justify-center px-0 py-2' : 'px-3 py-2',
+                'group flex items-center gap-3 rounded-xl min-h-[44px] border transition-all duration-150 relative select-none',
+                collapsed ? 'justify-center px-0 py-2.5' : 'px-3.5 py-2.5',
                 isActive
-                  ? 'text-white shadow-[0_8px_18px_-12px_rgba(15,23,42,0.45)]'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-[var(--color-primary-subtle)] dark:hover:bg-white/[0.06] hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary)]',
+                  ? 'text-white border-slate-700/40 shadow-[0_8px_18px_-12px_rgba(15,23,42,0.55)]'
+                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:bg-[var(--color-primary-subtle)] dark:hover:bg-white/[0.06] hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary)]',
               )}
             >
               {/* Active left bar */}
@@ -125,7 +125,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       </nav>
 
       {/* ── Bottom Controls ───────────────────────────────── */}
-      <div className="shrink-0 border-t border-slate-100 dark:border-white/[0.07] py-3 px-3 space-y-1">
+      <div className="shrink-0 border-t border-slate-200/70 dark:border-white/[0.07] py-4 px-3.5 space-y-1.5">
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}

@@ -197,7 +197,7 @@ export default function StaffMyRequests() {
                       <th>Date</th>
                       <th>Purpose</th>
                       <th>Status</th>
-                      <th className="text-center">Action</th>
+                      <th className="!text-center">Action</th>
                     </tr>
                   </thead>
                   <tbody>

@@ -176,7 +176,7 @@ export default function SecurityActivePersons() {
                     <th>Type</th>
                     <th>Purpose</th>
                     <th>Inside Since</th>
-                    <th className="text-right">Action</th>
+                    <th className="!text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody>

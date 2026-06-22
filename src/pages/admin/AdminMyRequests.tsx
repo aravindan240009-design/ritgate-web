@@ -166,7 +166,7 @@ export default function AdminMyRequests({ onBack }: AdminMyRequestsProps = {}) {
                     <th>Type</th>
                     <th>Date</th>
                     <th>Status</th>
-                    <th className="text-right">Action</th>
+                    <th className="!text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody>

@@ -52,7 +52,8 @@
   --color-primary: #2563eb;
   --color-primary-hover: #1d4ed8;
   --color-primary-subtle: rgba(37, 99, 235, 0.1);
-  --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  /* Unified action gradient — mild dark (near-black → dark gray), left→right */
+  --gradient-primary: linear-gradient(to right, #111827 0%, #374151 100%);
   --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
   --gradient-danger: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
   --gradient-shell: radial-gradient(circle at 16% 8%, rgba(96, 165, 250, 0.23), transparent 30%),
@@ -79,12 +80,34 @@
   --duration-slow: 0.25s;
   --duration-premium: 0.35s;
 
-  --sidebar-width: 280px;
+  --sidebar-width: 304px;
   --sidebar-collapsed: 76px;
   --header-height: 82px;
   --mobile-nav-height: 60px;
   --container-max: 1280px;
   --container-max-wide: 1440px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Unified primary action surface (ALL screens / all pages).
+   Every filled primary button or link uses ONE mild dark
+   gradient (near-black → dark gray, left→right). Button
+   backgrounds are only ever this gradient or white — never
+   a raw accent color.
+   ══════════════════════════════════════════════════════════ */
+:where(
+  button[class*="bg-[var(--color-primary)]"],
+  a[class*="bg-[var(--color-primary)]"],
+  button[class*="bg-blue-500"],
+  button[class*="bg-blue-600"],
+  button[class*="bg-blue-700"],
+  a[class*="bg-blue-600"],
+  a[class*="bg-blue-700"]
+) {
+  background-image: var(--gradient-primary) !important;
+  background-color: transparent !important;
+  color: #fff !important;
+  border-color: rgba(55, 65, 81, 0.45) !important;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -95,7 +118,7 @@
 @media (min-width: 769px) {
   :root {
     --header-height: 82px;
-    --sidebar-width: 280px;
+    --sidebar-width: 304px;
     --container-max: 1280px;
     --container-max-wide: 1440px;
   }
@@ -486,18 +509,18 @@
   .desktop-page :where(button[class*="h-10"][class*="bg-blue-"], button[class*="h-11"][class*="bg-blue-"], button[class*="h-12"][class*="bg-blue-"], button[class*="h-14"][class*="bg-blue-"], button[class*="bg-[var(--color-primary)]"], a[class*="h-10"][class*="bg-blue-"], a[class*="h-11"][class*="bg-blue-"], a[class*="h-12"][class*="bg-blue-"]) {
     background: var(--gradient-primary) !important;
     color: #fff !important;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.24), 0 1px 2px rgba(15, 23, 42, 0.08) !important;
-    border-color: rgba(96, 165, 250, 0.35) !important;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.22), 0 1px 2px rgba(15, 23, 42, 0.10) !important;
+    border-color: rgba(55, 65, 81, 0.45) !important;
     min-height: 40px !important;
     height: auto !important;
   }
 
   .desktop-page :where(button[class*="h-10"][class*="bg-blue-"], button[class*="h-11"][class*="bg-blue-"], button[class*="h-12"][class*="bg-blue-"], button[class*="h-14"][class*="bg-blue-"], button[class*="bg-[var(--color-primary)]"], a[class*="h-10"][class*="bg-blue-"], a[class*="h-11"][class*="bg-blue-"], a[class*="h-12"][class*="bg-blue-"]):hover {
-    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.32), 0 2px 6px rgba(15, 23, 42, 0.12) !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.30), 0 2px 6px rgba(15, 23, 42, 0.14) !important;
   }
 
   .desktop-page :where(button[class*="h-10"][class*="bg-blue-"], button[class*="h-11"][class*="bg-blue-"], button[class*="h-12"][class*="bg-blue-"], button[class*="h-14"][class*="bg-blue-"], button[class*="bg-[var(--color-primary)]"], a[class*="h-10"][class*="bg-blue-"], a[class*="h-11"][class*="bg-blue-"], a[class*="h-12"][class*="bg-blue-"]):active {
-    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.18), 0 0 1px rgba(15, 23, 42, 0.06) !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.18), 0 0 1px rgba(15, 23, 42, 0.06) !important;
   }
 
   /* Success Buttons (Green) - Reduced height */

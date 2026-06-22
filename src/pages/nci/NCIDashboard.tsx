@@ -199,7 +199,7 @@ export default function NCIDashboard() {
                     <th>Purpose</th>
                     <th>Visit</th>
                     <th>Status</th>
-                    <th className="text-center">Action</th>
+                    <th className="!text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>

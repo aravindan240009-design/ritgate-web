@@ -156,7 +156,7 @@ export default function NTFMyRequests() {
                     <th>Type</th>
                     <th>Date</th>
                     <th>Status</th>
-                    <th className="text-right">Action</th>
+                    <th className="!text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody>

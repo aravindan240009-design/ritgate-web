@@ -364,7 +364,7 @@ export default function StaffDashboard() {
                       <th className="w-[230px]">Purpose</th>
                       <th className="w-[190px]">Date</th>
                       <th className="w-[130px]">Status</th>
-                      <th className="w-[180px] text-center">Actions</th>
+                      <th className="w-[180px] !text-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody>

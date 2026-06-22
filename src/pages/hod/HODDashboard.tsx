@@ -287,7 +287,7 @@ export default function HODDashboard() {
                       <th>Purpose</th>
                       <th>Requested</th>
                       <th>Status</th>
-                      <th className="text-center">Action</th>
+                      <th className="!text-center">Action</th>
                     </tr>
                   </thead>
                   <tbody>

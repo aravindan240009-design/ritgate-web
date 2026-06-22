@@ -19,10 +19,10 @@ export default function RITLogo({ className, size = 100, variant = 'color', glow
         </>
       )}
       
-      <div 
+      <div
         className={cn(
           "relative w-full h-full flex items-center justify-center rounded-full overflow-hidden bg-white shadow-xl",
-          glow ? "border-[6px] border-blue-100" : "border-4 border-slate-50",
+          glow ? "border-[6px] border-blue-100" : "border-2 border-white ring-1 ring-slate-200/70",
           className
         )}
       >
@@ -30,7 +30,7 @@ export default function RITLogo({ className, size = 100, variant = 'color', glow
           src={LogoImg}
           alt="RIT Logo"
           className={cn(
-            "w-full h-full object-cover",
+            "h-full w-full scale-[1.18] object-contain object-center",
             variant === 'white' && "brightness-0 invert opacity-90"
           )}
         />

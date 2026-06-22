@@ -1,12 +1,13 @@
 import { type ReactNode } from 'react';
 import { cn } from '../../utils/cn';
-import { STATUS_MAP } from '../../config/api.config';
+import { getStatusMeta } from '../../utils/statusUtils';
 
 interface BadgeProps {
   status?: string;
   variant?: 'amber' | 'orange' | 'blue' | 'green' | 'red' | 'gray' | 'indigo' | 'emerald' | 'success' | 'warning' | 'danger';
   size?: 'sm' | 'md';
   pulse?: boolean;
+  showIcon?: boolean;
   className?: string;
   children?: ReactNode;
 }
@@ -14,9 +15,10 @@ interface BadgeProps {
 /**
  * Badge — Standardized status indicators with vibrant colors.
  */
-export default function Badge({ status, variant, size = 'sm', pulse = false, className, children }: BadgeProps) {
-  const mapped = status ? (STATUS_MAP[status] || STATUS_MAP['PENDING']) : null;
-  const isPending = status ? (status.startsWith('PENDING') || status === 'APPROVED_BY_STAFF' || status === 'APPROVED_BY_HOD') : false;
+export default function Badge({ status, variant, size = 'sm', pulse = false, showIcon = true, className, children }: BadgeProps) {
+  const mapped = status ? getStatusMeta(status) : null;
+  const isPending = mapped ? mapped.key.startsWith('PENDING') || mapped.key.startsWith('APPROVED_BY') : false;
+  const StatusIcon = mapped?.icon;
 
   const colorVariants: Record<string, string> = {
     amber: 'bg-amber-100/85 text-amber-700 border-amber-200/80 shadow-amber-500/10 dark:bg-amber-900/35 dark:text-amber-300 dark:border-amber-800/40',
@@ -32,7 +34,7 @@ export default function Badge({ status, variant, size = 'sm', pulse = false, cla
     danger: 'bg-rose-100/85 text-rose-700 border-rose-200/80 shadow-rose-500/10 dark:bg-rose-900/35 dark:text-rose-300 dark:border-rose-800/40',
   };
 
-  const activeVariant = variant || mapped?.color || 'gray';
+  const activeVariant = variant || mapped?.variant || 'gray';
 
   return (
     <span
@@ -43,18 +45,11 @@ export default function Badge({ status, variant, size = 'sm', pulse = false, cla
         className,
       )}
     >
-      {(pulse || isPending) && (
-        <span className={cn(
-          'w-1 h-1 rounded-full animate-pulse mr-0.5',
-          activeVariant === 'amber' && 'bg-amber-500',
-          activeVariant === 'orange' && 'bg-orange-500',
-          activeVariant === 'blue' && 'bg-blue-500',
-          activeVariant === 'green' && 'bg-emerald-500',
-          activeVariant === 'red' && 'bg-rose-500',
-          activeVariant === 'gray' && 'bg-slate-500',
-          activeVariant === 'indigo' && 'bg-blue-500',
-          activeVariant === 'emerald' && 'bg-emerald-500',
-        )} />
+      {showIcon && StatusIcon && (
+        <StatusIcon className={cn(size === 'sm' ? 'h-3 w-3' : 'h-3.5 w-3.5', isPending && 'animate-pulse')} />
+      )}
+      {!showIcon && (pulse || isPending) && (
+        <span className={cn('w-1 h-1 rounded-full animate-pulse mr-0.5', mapped?.dotClass)} />
       )}
       {children || mapped?.label}
     </span>

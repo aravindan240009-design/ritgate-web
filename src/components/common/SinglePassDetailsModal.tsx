@@ -5,7 +5,6 @@ import {
   ArrowLeft, 
   Calendar, 
   FileText, 
-  AlertCircle, 
   CheckCircle2, 
   XCircle,
   Maximize2,
@@ -20,6 +19,7 @@ import {
 import { cn } from '../../utils/cn';
 import { isPdfAttachment } from '../../utils/attachmentUtils';
 import { formatDate } from '../../utils/date';
+import { getStatusMeta, normalizeRequestStatus } from '../../utils/statusUtils';
 import Button from '../ui/Button';
 import ConfirmationModal from './ConfirmationModal';
 import GatePassQRModal from './GatePassQRModal';
@@ -44,7 +44,6 @@ interface SinglePassDetailsModalProps {
   timelineSteps?: TimelineStep[];
   viewerRole?: string;
   processing?: boolean;
-  floatingDesktop?: boolean;
 }
 
 export default function SinglePassDetailsModal({
@@ -58,7 +57,6 @@ export default function SinglePassDetailsModal({
   timelineSteps,
   viewerRole,
   processing: externalProcessing,
-  floatingDesktop = false,
 }: SinglePassDetailsModalProps) {
   const { getUserId } = useAuth();
   const [remark, setRemark] = useState('');
@@ -113,18 +111,9 @@ export default function SinglePassDetailsModal({
 
   if (!request || !isOpen) return null;
 
-  const status = (request.hrApproval || request.status || 'PENDING').toUpperCase();
-  const getStatusColor = (s: string) => {
-    switch (s) {
-      case 'APPROVED': return 'text-emerald-500 bg-emerald-500';
-      case 'REJECTED': return 'text-rose-500 bg-rose-500';
-      default: return 'text-amber-500 bg-amber-500';
-    }
-  };
-
-  const statusColorClass = getStatusColor(status);
+  const status = normalizeRequestStatus(request);
+  const statusMeta = getStatusMeta(request);
   const isApproved = status === 'APPROVED';
-  const isRejected = status === 'REJECTED';
   const attachmentUri = request.attachmentUri || request.fileUrl;
   const isPdf = isPdfAttachment(attachmentUri);
 
@@ -133,24 +122,12 @@ export default function SinglePassDetailsModal({
 
   return createPortal(
     <AnimatePresence mode="wait">
-      {floatingDesktop && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="fixed inset-0 z-[129] hidden bg-slate-950/55 backdrop-blur-md lg:block"
-        />
-      )}
       <motion.div
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className={cn(
-          "fixed inset-0 z-[130] bg-[#F8FAFC] dark:bg-slate-950 flex flex-col pt-safe",
-          floatingDesktop && "lg:inset-x-0 lg:bottom-auto lg:top-[7vh] lg:mx-auto lg:h-[min(86vh,760px)] lg:w-[min(1120px,calc(100vw-72px))] lg:overflow-hidden lg:rounded-[32px] lg:border lg:border-white/80 lg:pt-0 lg:shadow-[0_34px_100px_-36px_rgba(15,23,42,0.65)] dark:lg:border-slate-800",
-        )}
+        className="fixed inset-0 z-[130] bg-[#F8FAFC] dark:bg-slate-950 flex flex-col pt-safe"
       >
         {/* Header */}
         <header className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 h-16 flex items-center gap-3 z-20">
@@ -164,10 +141,9 @@ export default function SinglePassDetailsModal({
             {!showActions ? 'Request Details' : 'Pass Verification'}
           </h1>
           <Badge 
-            className={cn("uppercase tracking-widest text-[10px] py-1 px-3 border-none text-white", statusColorClass.split(' ')[1])}
-          >
-            {status}
-          </Badge>
+            status={status}
+            className="uppercase tracking-widest text-[10px] py-1 px-3"
+          />
         </header>
 
         {/* Scrollable Body */}
@@ -177,7 +153,7 @@ export default function SinglePassDetailsModal({
             <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex items-center gap-4">
               <div className={cn(
                 "w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-black shadow-lg",
-                statusColorClass.split(' ')[1]
+                statusMeta.dotClass
               )}>
                 {getInitials(request.studentName || request.staffName || request.regNo || 'ST')}
               </div>

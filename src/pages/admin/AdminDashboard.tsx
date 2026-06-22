@@ -5,7 +5,7 @@ import {
   Activity,
   AlertCircle,
   Clock,
-  CheckCircle,
+  CheckCircle2,
   XCircle,
   FileText
 } from 'lucide-react';
@@ -160,7 +160,7 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
       {isDesktop ? (
         <div className="grid grid-cols-3 gap-4">
           <DesktopStatCard label="Pending" value={stats.pending} icon={Clock} tone="amber" active={activeTab === 'PENDING'} onClick={() => setActiveTab('PENDING')} />
-          <DesktopStatCard label="Approved" value={stats.approved} icon={CheckCircle} tone="emerald" active={activeTab === 'APPROVED'} onClick={() => setActiveTab('APPROVED')} />
+          <DesktopStatCard label="Approved" value={stats.approved} icon={CheckCircle2} tone="emerald" active={activeTab === 'APPROVED'} onClick={() => setActiveTab('APPROVED')} />
           <DesktopStatCard label="Rejected" value={stats.rejected} icon={XCircle} tone="rose" active={activeTab === 'REJECTED'} onClick={() => setActiveTab('REJECTED')} />
         </div>
       ) : (

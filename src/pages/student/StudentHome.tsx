@@ -17,7 +17,7 @@ import TopMenuBar from '../../components/common/TopMenuBar';
 import TopRefreshControl from '../../components/common/TopRefreshControl';
 import { SkeletonList } from '../../components/ui/Skeleton';
 import GatePassQRModal from '../../components/common/GatePassQRModal';
-import RequestDetailsModal from '../../components/common/RequestDetailsModal';
+import SinglePassDetailsModal from '../../components/common/SinglePassDetailsModal';
 import { cn } from '../../utils/cn';
 import type { Student } from '../../types';
 import { formatDateTime, isToday } from '../../utils/dateUtils';
@@ -204,11 +204,10 @@ export default function StudentHome() {
           manualCode={qrData?.manual}
           validUntil={qrData?.expires}
         />
-        <RequestDetailsModal
+        <SinglePassDetailsModal
           isOpen={showDetailsModal}
           onClose={() => setShowDetailsModal(false)}
           request={selectedRequest}
-          student={user}
         />
       </>
     ) : null

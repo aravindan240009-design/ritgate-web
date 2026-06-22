@@ -220,7 +220,7 @@ export default function SecurityVehicles() {
                     <th>Owner</th>
                     <th>Owner Type</th>
                     <th>Vehicle Type</th>
-                    <th>Status</th>
+                    <th className="!text-center">Status</th>
                   </tr>
                 </thead>
                 <tbody>

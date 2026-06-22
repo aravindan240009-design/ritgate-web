@@ -150,7 +150,7 @@ export default function SecurityHODContacts() {
                   <th>Department</th>
                   <th>Phone</th>
                   <th>Email</th>
-                  <th>Status</th>
+                  <th className="!text-center">Status</th>
                 </tr>
               </thead>
               <tbody>

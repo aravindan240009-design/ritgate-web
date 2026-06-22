@@ -224,7 +224,7 @@ export default function NTFDashboard() {
                     <th>Purpose</th>
                     <th>Phone</th>
                     <th>Requested</th>
-                    <th>Status</th>
+                    <th className="!text-center">Status</th>
                     <th className="!text-center">Action</th>
                   </tr>
                 </thead>

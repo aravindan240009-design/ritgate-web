@@ -224,7 +224,7 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
                     <th>Visitor</th>
                     <th>Purpose</th>
                     <th>Requested</th>
-                    <th>Status</th>
+                    <th className="!text-center">Status</th>
                     <th className="!text-center">Action</th>
                   </tr>
                 </thead>

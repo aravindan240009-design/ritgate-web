@@ -159,7 +159,7 @@ export default function HRMyRequests() {
                     <th>Request</th>
                     <th>Department</th>
                     <th>Date</th>
-                    <th>Status</th>
+                    <th className="!text-center">Status</th>
                     <th className="!text-center">Action</th>
                   </tr>
                 </thead>

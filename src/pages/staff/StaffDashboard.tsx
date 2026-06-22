@@ -363,7 +363,7 @@ export default function StaffDashboard() {
                       <th className="w-[160px]">Type</th>
                       <th className="w-[230px]">Purpose</th>
                       <th className="w-[190px]">Date</th>
-                      <th className="w-[130px]">Status</th>
+                      <th className="w-[130px] !text-center">Status</th>
                       <th className="w-[180px] !text-center">Actions</th>
                     </tr>
                   </thead>
@@ -397,7 +397,7 @@ export default function StaffDashboard() {
                               </div>
                             </div>
                           </td>
-                          <td className="font-bold text-slate-700 dark:text-slate-200">{isVisitor ? 'Visitor' : request.passType === 'BULK' ? 'Bulk GatePass' : 'Single GatePass'}</td>
+                          <td className="font-bold text-slate-700 dark:text-slate-200">{isVisitor ? 'Visitor' : request.passType === 'BULK' ? 'Bulk Gate Pass' : 'Single Gate Pass'}</td>
                           <td className="max-w-[320px] truncate font-bold text-slate-800 dark:text-slate-100">{request.purpose || request.reason || 'General'}</td>
                           <td className="font-semibold text-slate-700 dark:text-slate-300">{formatDateTime(request.requestDate || request.createdAt)}</td>
                           <td>
@@ -482,7 +482,7 @@ export default function StaffDashboard() {
                            <h5 className="text-[16px] font-black text-slate-900 dark:text-white truncate tracking-tight">{requesterName}</h5>
                            <div className="px-2 py-0.5 bg-slate-50 dark:bg-slate-800 rounded-md border border-slate-100 dark:border-slate-700">
                               <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider">
-                                {isVisitor ? (request.role || 'Visitor') : (request.passType === 'BULK' ? 'Bulk GatePass' : 'Single GatePass')}
+                                {isVisitor ? (request.role || 'Visitor') : (request.passType === 'BULK' ? 'Bulk Gate Pass' : 'Single Gate Pass')}
                               </span>
                            </div>
                         </div>

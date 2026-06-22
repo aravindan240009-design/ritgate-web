@@ -191,7 +191,7 @@ export default function SecurityDashboard() {
                     <th>Type</th>
                     <th>Scan</th>
                     <th>Time</th>
-                    <th>Status</th>
+                    <th className="!text-center">Status</th>
                   </tr>
                 </thead>
                 <tbody>

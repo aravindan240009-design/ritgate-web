@@ -220,7 +220,7 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
                     <th>Type</th>
                     <th>Purpose</th>
                     <th>Exit Date</th>
-                    <th>Status</th>
+                    <th className="!text-center">Status</th>
                     <th className="!text-center">Action</th>
                   </tr>
                 </thead>
@@ -238,7 +238,7 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
                           <p className="font-bold text-slate-950 dark:text-white">{name}</p>
                           <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{sub}</p>
                         </td>
-                        <td>{isBulk ? 'Bulk GatePass' : isVisitor ? 'Visitor Request' : 'Single GatePass'}</td>
+                        <td>{isBulk ? 'Bulk Gate Pass' : isVisitor ? 'Visitor Request' : 'Single Gate Pass'}</td>
                         <td className="max-w-[320px] truncate">{req.purpose || req.reason || 'General'}</td>
                         <td>{fmtDate(req.exitDateTime || req.requestDate || req.createdAt || '')}</td>
                         <td>

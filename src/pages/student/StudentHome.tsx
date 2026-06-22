@@ -318,7 +318,7 @@ export default function StudentHome() {
                           <th>Request</th>
                           <th>Type</th>
                           <th>Date</th>
-                          <th>Status</th>
+                          <th className="!text-center">Status</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -450,7 +450,7 @@ export default function StudentHome() {
                       <th>Request</th>
                       <th>Type</th>
                       <th>Date</th>
-                      <th>Status</th>
+                      <th className="!text-center">Status</th>
                       <th className="!text-center">Action</th>
                     </tr>
                   </thead>

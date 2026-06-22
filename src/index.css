@@ -365,7 +365,7 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     padding: 16px 20px;
-    text-align: center;
+    text-align: left;
   }
 
   .dark .desktop-table th {
@@ -379,11 +379,12 @@
     color: #0f172a;
     font-size: 14px;
     font-weight: 600;
-    text-align: center;
+    text-align: left;
   }
 
-  .desktop-table td > .flex.items-center {
-    justify-content: center;
+  .desktop-table td:has(> .inline-flex),
+  .desktop-table td:has(> span[class*="rounded-full"]) {
+    text-align: center;
   }
 
   .dark .desktop-table td {

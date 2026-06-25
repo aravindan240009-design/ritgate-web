@@ -62,6 +62,22 @@ export default function AuthShell({ background, headline, subline, children }: A
           background-size: cover;
           background-position: center;
           z-index: 0;
+          /* Professional entrance: fade in, then a slow, endless Ken Burns drift */
+          animation:
+            authPhotoIn 1.1s ease-out both,
+            authKenBurns 26s ease-in-out 1.1s infinite alternate;
+          will-change: transform, opacity;
+        }
+        @keyframes authPhotoIn {
+          from { opacity: 0; transform: scale(1.12); }
+          to   { opacity: 1; transform: scale(1.06); }
+        }
+        @keyframes authKenBurns {
+          from { transform: scale(1.06) translate3d(0, 0, 0); }
+          to   { transform: scale(1.14) translate3d(-2.5%, -2%, 0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .auth-shell__photo { animation: authPhotoIn 0.6s ease-out both; }
         }
         .auth-shell__overlay {
           position: absolute;
@@ -123,6 +139,11 @@ export default function AuthShell({ background, headline, subline, children }: A
           border-radius: 24px;
           padding: 28px 24px;
           box-shadow: 0 24px 70px rgba(2,6,23,0.45);
+          animation: authCardIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+        }
+        @keyframes authCardIn {
+          from { opacity: 0; transform: translateY(18px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
 
         /* Tablet & desktop — split screen, solid form panel on the right */

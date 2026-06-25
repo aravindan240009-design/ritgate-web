@@ -12,6 +12,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { detectRole } from '../../services/api.service';
 import type { UserRole } from '../../types';
+import AuthShell from '../../components/auth/AuthShell';
 
 
 export default function LoginPage() {
@@ -71,49 +72,34 @@ const handleSendOTP = async (id?: string) => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div style={{ width: '100%', maxWidth: 420 }}>
-
-        {/* Hero */}
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <img
-            src="/logo.png"
-            alt="RIT Gate"
-            style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 16px', display: 'block' }}
-          />
-          <h1 style={{ fontSize: 36, fontWeight: 900, color: '#000000', letterSpacing: 2, margin: 0 }}>RIT GATE</h1>
-          <p style={{ fontSize: 12, color: '#64748B', marginTop: 6, marginBottom: 16, letterSpacing: 1.3, textTransform: 'uppercase', fontWeight: 600 }}>
-            Secure Access Control System
-          </p>
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-            {[
-              { icon: <Fingerprint size={13} />, label: 'Biometric' },
-              { icon: <QrCode size={13} />, label: 'Badge Scan' },
-              { icon: <Zap size={13} />, label: 'Instant' },
-            ].map((item, i) => (
-              <span key={i} style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                padding: '6px 12px', borderRadius: 999,
-                background: '#F8FAFC', border: '1px solid #E2E8F0',
-                fontSize: 11, fontWeight: 700, color: '#1E293B',
-                textTransform: 'uppercase', letterSpacing: 0.5,
-              }}>
-                {item.icon}{item.label}
-              </span>
-            ))}
-          </div>
+    <>
+      <AuthShell
+        background="/auth-bg-login.jpg"
+        headline="Secure access, beautifully simple."
+        subline="Sign in to manage gate passes, approvals and campus access — all in one place."
+      >
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
+          {[
+            { icon: <Fingerprint size={13} />, label: 'Biometric' },
+            { icon: <QrCode size={13} />, label: 'Badge Scan' },
+            { icon: <Zap size={13} />, label: 'Instant' },
+          ].map((item, i) => (
+            <span key={i} style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '6px 12px', borderRadius: 999,
+              background: '#F1F5F9', border: '1px solid #E2E8F0',
+              fontSize: 11, fontWeight: 700, color: '#1E293B',
+              textTransform: 'uppercase', letterSpacing: 0.5,
+            }}>
+              {item.icon}{item.label}
+            </span>
+          ))}
         </div>
 
-        {/* Card */}
-        <div style={{
-          background: '#FFFFFF', borderRadius: 24,
-          border: '1px solid #E2E8F0', padding: '24px 20px',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-        }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, color: '#000000', marginBottom: 4 }}>Welcome Back</h2>
-          <p style={{ fontSize: 13, color: '#64748B', marginBottom: 24 }}>Sign in with your institute credential.</p>
+        <h2 style={{ fontSize: 26, fontWeight: 800, color: '#0F172A', marginBottom: 4 }}>Welcome Back</h2>
+        <p style={{ fontSize: 13, color: '#64748B', marginBottom: 24 }}>Sign in with your institute credential.</p>
 
-<div style={{ marginBottom: 20 }}>
+        <div style={{ marginBottom: 20 }}>
             <label style={{ display: 'block', fontSize: 10, fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: 8 }}>
               IDENTIFICATION
             </label>
@@ -182,9 +168,7 @@ const handleSendOTP = async (id?: string) => {
             <span style={{ flex: 1, textAlign: 'left', fontSize: 15, fontWeight: 700, color: '#0F172A' }}>Scan QR Code</span>
             <ChevronRight size={20} color="#CBD5E1" />
           </button>
-        </div>
-
-      </div>
+      </AuthShell>
 
       {/* OTP Sent Modal */}
       {showOtpSentModal && (
@@ -297,6 +281,6 @@ const handleSendOTP = async (id?: string) => {
         @keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
       `}</style>
-    </div>
+    </>
   );
 }

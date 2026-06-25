@@ -26,17 +26,17 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
   return (
     <motion.aside
-      animate={{ width: collapsed ? 76 : 304 }}
+      animate={{ width: collapsed ? 76 : 256 }}
       transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
       className="fixed left-0 top-0 h-screen z-40 flex flex-col overflow-hidden border-r border-slate-200/70 bg-white/78 shadow-[18px_0_54px_-46px_rgba(15,23,42,0.75)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#0b1120]/90"
     >
       {/* ── Brand ─────────────────────────────────────────── */}
       <div className={cn(
         'relative flex items-center border-b border-slate-200/70 dark:border-white/[0.07] shrink-0',
-        collapsed ? 'h-[82px] justify-center px-0' : 'h-[82px] gap-3 px-6 pr-16',
+        collapsed ? 'h-[82px] justify-center px-0' : 'h-[82px] gap-2.5 px-5 pr-14',
       )}>
         <div className="shrink-0">
-          <RITLogo size={collapsed ? 36 : 44} />
+          <RITLogo size={collapsed ? 36 : 40} />
         </div>
         <AnimatePresence>
           {!collapsed && (
@@ -47,7 +47,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
               transition={{ duration: 0.15 }}
               className="flex min-w-0 items-center overflow-hidden"
             >
-              <span className="whitespace-nowrap text-[24px] font-black uppercase leading-none tracking-tight text-black dark:text-white">
+              <span className="whitespace-nowrap text-[20px] font-black uppercase leading-none tracking-tight text-black dark:text-white">
                 RIT GATE
               </span>
             </motion.div>

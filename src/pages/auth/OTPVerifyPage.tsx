@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Fingerprint, QrCode, Zap, Loader2, RefreshCw, Mail, X } from 'lucide-react';
+import { ArrowLeft, Loader2, RefreshCw, Mail, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { OTP_CONFIG } from '../../config/api.config';
 import type { UserRole } from '../../types';
+import AuthShell from '../../components/auth/AuthShell';
 
 export default function OTPVerifyPage() {
   const navigate = useNavigate();
@@ -104,45 +105,12 @@ export default function OTPVerifyPage() {
   const activeIndex = otpDigits.findIndex(d => d === '');
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div style={{ width: '100%', maxWidth: 420 }}>
-
-        {/* Hero */}
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <img
-            src="/logo.png"
-            alt="RIT Gate"
-            style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 16px', display: 'block' }}
-          />
-          <h1 style={{ fontSize: 36, fontWeight: 900, color: '#000000', letterSpacing: 2, margin: 0 }}>RIT GATE</h1>
-          <p style={{ fontSize: 12, color: '#64748B', marginTop: 6, marginBottom: 16, letterSpacing: 1.3, textTransform: 'uppercase', fontWeight: 600 }}>
-            Secure Access Control System
-          </p>
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-            {[
-              { icon: <Fingerprint size={13} />, label: 'Biometric' },
-              { icon: <QrCode size={13} />, label: 'Badge Scan' },
-              { icon: <Zap size={13} />, label: 'Instant' },
-            ].map((item, i) => (
-              <span key={i} style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                padding: '6px 12px', borderRadius: 999,
-                background: '#F8FAFC', border: '1px solid #E2E8F0',
-                fontSize: 11, fontWeight: 700, color: '#1E293B',
-                textTransform: 'uppercase', letterSpacing: 0.5,
-              }}>
-                {item.icon}{item.label}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Card */}
-        <div style={{
-          background: '#FFFFFF', borderRadius: 24,
-          border: '1px solid #E2E8F0', padding: '24px 20px',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-        }}>
+    <>
+      <AuthShell
+        background="/auth-bg-otp.jpg"
+        headline="One last step to verify it's you."
+        subline="We've sent a one-time code to your registered institute email. Enter it to continue."
+      >
           {/* Header row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
             <button
@@ -253,9 +221,7 @@ export default function OTPVerifyPage() {
               ? <Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} />
               : 'Verify & Login'}
           </button>
-        </div>
-
-      </div>
+      </AuthShell>
 
       {/* Error Modal */}
       {errorModal && (
@@ -314,6 +280,6 @@ export default function OTPVerifyPage() {
         @keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
       `}</style>
-    </div>
+    </>
   );
 }

@@ -115,6 +115,15 @@ export default function HODEvents() {
     return () => window.removeEventListener('ritgate:new-event', handler);
   }, []);
 
+  // Tell the global header which sub-view is active so it can hide the
+  // "New Event" button when we are not on the list (e.g. the create form).
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('ritgate:hod-events-view', { detail: view }));
+    return () => {
+      window.dispatchEvent(new CustomEvent('ritgate:hod-events-view', { detail: 'list' }));
+    };
+  }, [view]);
+
   const openCoordinators = (event: RITGateEvent) => {
     setSelectedEvent(event);
     setSelected(new Set());

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CalendarDays, Plus } from 'lucide-react';
 import AppHeader from '../components/common/AppHeader';
@@ -146,6 +147,16 @@ export default function Header({ onMenuClick, sidebarCollapsed }: HeaderProps) {
   const navigate = useNavigate();
   const { user, role } = useAuth();
 
+  // The HOD Events page reports its active sub-view ('list' | 'create' |
+  // 'coordinators'); the "New Event" button only makes sense on the list.
+  const [hodEventsView, setHodEventsView] = useState<string>('list');
+  useEffect(() => {
+    const handler = (e: Event) => setHodEventsView((e as CustomEvent).detail || 'list');
+    window.addEventListener('ritgate:hod-events-view', handler);
+    return () => window.removeEventListener('ritgate:hod-events-view', handler);
+  }, []);
+  useEffect(() => { setHodEventsView('list'); }, [location.pathname]);
+
   const userName = getUserName(user);
   const staticRoute = routeCopy[location.pathname];
   const dynamicRoute = location.pathname.startsWith('/pass-verification/')
@@ -190,7 +201,7 @@ export default function Header({ onMenuClick, sidebarCollapsed }: HeaderProps) {
       showBack={showBack}
       onBack={handleBack}
       actions={
-        location.pathname === '/hod-events' ? (
+        (location.pathname === '/hod-events' && hodEventsView === 'list') ? (
           <button
             type="button"
             onClick={() => window.dispatchEvent(new CustomEvent('ritgate:new-event'))}

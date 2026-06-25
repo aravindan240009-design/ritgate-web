@@ -80,7 +80,7 @@
   --duration-slow: 0.25s;
   --duration-premium: 0.35s;
 
-  --sidebar-width: 304px;
+  --sidebar-width: 256px;
   --sidebar-collapsed: 76px;
   --header-height: 82px;
   --mobile-nav-height: 60px;
@@ -118,7 +118,7 @@
 @media (min-width: 769px) {
   :root {
     --header-height: 82px;
-    --sidebar-width: 304px;
+    --sidebar-width: 256px;
     --container-max: 1280px;
     --container-max-wide: 1440px;
   }

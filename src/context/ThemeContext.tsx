@@ -78,8 +78,13 @@ function applyCSSVars(preset: ThemePreset, isDark: boolean) {
   root.style.setProperty('--color-primary', tokens.primary);
   root.style.setProperty('--color-primary-hover', tokens.primaryHover);
   root.style.setProperty('--color-primary-subtle', tokens.primarySubtle);
-  root.style.setProperty('--gradient-primary', tokens.gradient);
+  // Filled action surfaces (buttons, active nav) always use the unified
+  // mild dark gradient (near-black → dark gray, left→right) — never a
+  // preset accent color — so button backgrounds stay consistent everywhere.
+  root.style.setProperty('--gradient-primary', UNIFIED_ACTION_GRADIENT);
 }
+
+const UNIFIED_ACTION_GRADIENT = 'linear-gradient(to right, #111827 0%, #374151 100%)';
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<ThemeMode>(() => {

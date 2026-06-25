@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ArrowLeft, 
-  Calendar, 
-  FileText, 
-  CheckCircle2, 
+import {
+  ArrowLeft,
+  Calendar,
+  FileText,
+  CheckCircle2,
   XCircle,
   Maximize2,
   FileIcon,
@@ -14,8 +14,15 @@ import {
   Check,
   X,
   Clock,
-  QrCode
+  QrCode,
+  Target,
+  CalendarDays,
+  StickyNote,
+  Paperclip,
+  MessageSquare,
+  ListChecks
 } from 'lucide-react';
+import SectionLabel from './SectionLabel';
 import { cn } from '../../utils/cn';
 import { isPdfAttachment } from '../../utils/attachmentUtils';
 import { formatDate } from '../../utils/date';
@@ -177,17 +184,17 @@ export default function SinglePassDetailsModal({
             {/* Info Grid */}
             <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 grid grid-cols-2 shadow-sm">
               <div className="p-4 border-r border-slate-50 dark:border-slate-800">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 leading-none">
+                <SectionLabel icon={Target} className="mb-2">
                   {request.requestType === 'VISITOR' ? 'PURPOSE OF VISIT' : 'PURPOSE'}
-                </p>
+                </SectionLabel>
                 <p className="text-sm font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug">
                   {request.purpose || 'General'}
                 </p>
               </div>
               <div className="p-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 leading-none">
+                <SectionLabel icon={CalendarDays} className="mb-2">
                   {request.requestType === 'VISITOR' ? 'ENTRY DATE' : 'DATE'}
-                </p>
+                </SectionLabel>
                 <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
                   {formatDate(request.visitDate || request.exitDateTime || request.requestDate)}
                 </p>
@@ -197,7 +204,7 @@ export default function SinglePassDetailsModal({
             {/* Reason */}
             {request.requestType !== 'VISITOR' && (
               <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5 leading-none">REASON</p>
+                <SectionLabel icon={StickyNote} className="mb-2.5">REASON</SectionLabel>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 leading-relaxed italic">
                   {request.reason || 'No reason provided.'}
                 </p>
@@ -207,7 +214,7 @@ export default function SinglePassDetailsModal({
             {/* Attachment Preview */}
             {attachmentUri && (
               <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 leading-none">PREVIEW</p>
+                <SectionLabel icon={Paperclip} className="mb-3">PREVIEW</SectionLabel>
                 <div 
                   className="relative w-40 h-24 bg-slate-900 rounded-xl overflow-hidden cursor-pointer group"
                   onClick={() => isPdf ? window.open(attachmentUri, '_blank') : setIsFullScreen(true)}
@@ -232,7 +239,7 @@ export default function SinglePassDetailsModal({
             {/* Remarks */}
             {(request.staffRemark || request.hodRemark || request.hrRemark) && (
               <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-3">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 leading-none">REMARKS</p>
+                <SectionLabel icon={MessageSquare} className="mb-1.5">REMARKS</SectionLabel>
                 {request.staffRemark && (
                   <div className="bg-amber-50 dark:bg-amber-900/10 border-l-4 border-amber-500 p-3 rounded-r-xl">
                     <p className="text-[10px] font-black text-amber-600 uppercase mb-1">Staff</p>
@@ -257,7 +264,7 @@ export default function SinglePassDetailsModal({
             {/* Approval Timeline */}
             {!showActions && timelineSteps && timelineSteps.length > 0 && (
               <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-5">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 leading-none">APPROVAL TIMELINE</p>
+                <SectionLabel icon={ListChecks} className="mb-1.5">APPROVAL TIMELINE</SectionLabel>
                 <div className="space-y-0">
                   {timelineSteps.map((step, idx) => {
                     const isDone = step.status === 'done';

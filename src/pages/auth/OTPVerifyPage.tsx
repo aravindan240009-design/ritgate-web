@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, ShieldCheck as Shield, Fingerprint, QrCode, Zap, Loader2, RefreshCw, Mail, X } from 'lucide-react';
+import { ArrowLeft, Fingerprint, QrCode, Zap, Loader2, RefreshCw, Mail, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { OTP_CONFIG } from '../../config/api.config';
 import type { UserRole } from '../../types';
@@ -109,13 +109,11 @@ export default function OTPVerifyPage() {
 
         {/* Hero */}
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <div style={{
-            width: 100, height: 100, borderRadius: '50%',
-            background: '#1E293B', margin: '0 auto 16px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <Shield size={48} color="#FFFFFF" />
-          </div>
+          <img
+            src="/logo.png"
+            alt="RIT Gate"
+            style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 16px', display: 'block' }}
+          />
           <h1 style={{ fontSize: 36, fontWeight: 900, color: '#000000', letterSpacing: 2, margin: 0 }}>RIT GATE</h1>
           <p style={{ fontSize: 12, color: '#64748B', marginTop: 6, marginBottom: 16, letterSpacing: 1.3, textTransform: 'uppercase', fontWeight: 600 }}>
             Secure Access Control System
@@ -257,9 +255,6 @@ export default function OTPVerifyPage() {
           </button>
         </div>
 
-        <p style={{ textAlign: 'center', fontSize: 11, color: '#CBD5E1', marginTop: 20, fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase' }}>
-          Access Verification System
-        </p>
       </div>
 
       {/* Error Modal */}

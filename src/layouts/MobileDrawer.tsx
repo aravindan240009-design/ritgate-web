@@ -85,11 +85,12 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                   key={item.path}
                   to={item.path}
                   onClick={onClose}
+                  style={({ isActive }) => isActive ? { backgroundImage: 'var(--gradient-primary)' } : undefined}
                   className={({ isActive }) => cn(
-                    'flex items-center gap-3 px-3 min-h-[48px] rounded-xl transition-colors duration-150',
+                    'flex items-center gap-3 px-3.5 min-h-[48px] rounded-xl transition-colors duration-150 border',
                     isActive
-                      ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-semibold'
-                      : 'text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800',
+                      ? 'text-white font-semibold border-slate-700/40 shadow-[0_8px_18px_-12px_rgba(15,23,42,0.55)]'
+                      : 'border-transparent text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800',
                   )}
                 >
                   <item.icon className="w-5 h-5 shrink-0" />

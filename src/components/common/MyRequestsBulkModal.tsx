@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Users, UserCircle, QrCode, X, Search, Maximize2, Loader2, AlertCircle, CheckCircle2, XCircle, FileText } from 'lucide-react';
+import { ArrowLeft, Users, UserCircle, QrCode, X, Search, Maximize2, Loader2, AlertCircle, CheckCircle2, XCircle, FileText, Target, CalendarDays, StickyNote, Paperclip, ListChecks } from 'lucide-react';
 import { apiService } from '../../services/api.service';
+import SectionLabel from './SectionLabel';
 import { cn } from '../../utils/cn';
 import { formatDateShort } from '../../utils/date';
 import { isPdfAttachment } from '../../utils/attachmentUtils';
@@ -187,13 +188,13 @@ export default function MyRequestsBulkModal({
               {/* Info Grid */}
               <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 grid grid-cols-2 shadow-sm lg:rounded-[22px]">
                 <div className="p-4 border-r border-slate-50 dark:border-slate-800">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Purpose</p>
+                  <SectionLabel icon={Target} className="mb-2">Purpose</SectionLabel>
                   <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
                     {details?.purpose || 'N/A'}
                   </p>
                 </div>
                 <div className="p-4">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Date</p>
+                  <SectionLabel icon={CalendarDays} className="mb-2">Date</SectionLabel>
                   <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
                     {formatDateShort(details?.exitDateTime || details?.requestDate)}
                   </p>
@@ -202,7 +203,7 @@ export default function MyRequestsBulkModal({
 
               {/* Reason */}
               <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm lg:rounded-[22px] lg:p-5">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Reason</p>
+                <SectionLabel icon={StickyNote} className="mb-2.5">Reason</SectionLabel>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 leading-relaxed italic">
                   {details?.reason || 'No reason provided.'}
                 </p>
@@ -211,7 +212,7 @@ export default function MyRequestsBulkModal({
               {/* Attachment Preview */}
               {details?.attachmentUri && (
                 <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Preview</p>
+                  <SectionLabel icon={Paperclip} className="mb-3">Preview</SectionLabel>
                   <div 
                     className="relative w-40 h-24 bg-slate-900 rounded-xl overflow-hidden cursor-pointer group"
                     onClick={() => isPdf ? window.open(details.attachmentUri, '_blank') : setShowFullscreen(true)}
@@ -235,7 +236,7 @@ export default function MyRequestsBulkModal({
 
               {/* Approval Timeline */}
               <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Approval Timeline</p>
+                <SectionLabel icon={ListChecks}>Approval Timeline</SectionLabel>
                 <div className="flex gap-4">
                   <div className="flex flex-col items-center">
                     <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">

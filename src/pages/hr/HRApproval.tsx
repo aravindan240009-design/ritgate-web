@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ArrowLeft, 
-  CheckCircle2, 
-  XCircle, 
-  Paperclip, 
-  Maximize2, 
-  X, 
+import {
+  ArrowLeft,
+  CheckCircle2,
+  XCircle,
+  Paperclip,
+  Maximize2,
+  X,
   ShieldCheck,
   AlertCircle,
   Loader2,
-  FileText
+  FileText,
+  User,
+  Hash,
+  Target,
+  StickyNote,
+  Clock,
+  type LucideIcon
 } from 'lucide-react';
+import SectionLabel from '../../components/common/SectionLabel';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { apiService } from '../../services/api.service';
@@ -126,11 +133,11 @@ export default function HRApproval({ request, onBack, onSuccess }: HRApprovalPro
           </div>
 
           <div className="space-y-6">
-            <InfoGrid label="Student Name" value={`${request.studentName || 'N/A'}`} />
-            <InfoGrid label="Reg No" value={request.regNo || 'N/A'} />
-            <InfoGrid label="Purpose" value={request.purpose || 'N/A'} />
-            <InfoGrid label="Reason" value={request.reason || 'N/A'} />
-            <InfoGrid label="Request Time" value={formatDateTime(request.requestDate)} />
+            <InfoGrid icon={User} label="Student Name" value={`${request.studentName || 'N/A'}`} />
+            <InfoGrid icon={Hash} label="Reg No" value={request.regNo || 'N/A'} />
+            <InfoGrid icon={Target} label="Purpose" value={request.purpose || 'N/A'} />
+            <InfoGrid icon={StickyNote} label="Reason" value={request.reason || 'N/A'} />
+            <InfoGrid icon={Clock} label="Request Time" value={formatDateTime(request.requestDate)} />
             
             {request.attachmentUri && (
               <div className="pt-4">
@@ -246,10 +253,10 @@ export default function HRApproval({ request, onBack, onSuccess }: HRApprovalPro
   );
 }
 
-function InfoGrid({ label, value }: { label: string; value: string }) {
+function InfoGrid({ label, value, icon }: { label: string; value: string; icon: LucideIcon }) {
   return (
-    <div className="flex flex-col gap-1 border-b border-slate-50 dark:border-slate-800 pb-4 last:border-0 last:pb-0 grow">
-      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</span>
+    <div className="flex flex-col gap-2 border-b border-slate-50 dark:border-slate-800 pb-4 last:border-0 last:pb-0 grow">
+      <SectionLabel icon={icon}>{label}</SectionLabel>
       <span className="text-[15px] font-bold text-slate-900 dark:text-white leading-snug">{value}</span>
     </div>
   );

@@ -5,7 +5,6 @@ import {
   Fingerprint,
   QrCode,
   ChevronRight,
-  ShieldCheck as Shield,
   Loader2,
   Zap,
   X,
@@ -185,9 +184,6 @@ const handleSendOTP = async (id?: string) => {
           </button>
         </div>
 
-        <p style={{ textAlign: 'center', fontSize: 11, color: '#CBD5E1', marginTop: 20, fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase' }}>
-          Access Verification System
-        </p>
       </div>
 
       {/* OTP Sent Modal */}
@@ -210,12 +206,11 @@ const handleSendOTP = async (id?: string) => {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
-              <div style={{
-                width: 62, height: 62, borderRadius: 20, background: '#1E293B',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Shield size={30} color="#FFFFFF" />
-              </div>
+              <img
+                src="/logo.png"
+                alt="RIT Gate"
+                style={{ width: 62, height: 62, borderRadius: 20, objectFit: 'cover', display: 'block' }}
+              />
               <button
                 onClick={() => setShowOtpSentModal(false)}
                 style={{

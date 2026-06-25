@@ -21,7 +21,8 @@ import {
   rejectGatePassByHR,
   rejectGatePassByStaff,
 } from '../../services/api.service';
-import { AlertCircle, CheckCircle2, FileText } from 'lucide-react';
+import { AlertCircle, CheckCircle2, FileText, Target, CalendarDays, StickyNote } from 'lucide-react';
+import SectionLabel from '../../components/common/SectionLabel';
 import { useAdaptive } from '../../utils/useAdaptive';
 import { cn } from '../../utils/cn';
 import { formatDate } from '../../utils/date';
@@ -259,13 +260,13 @@ export default function PassVerificationPage() {
 
             <div className="grid overflow-hidden rounded-[28px] border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 md:grid-cols-2">
               <div className="border-b border-slate-50 p-6 dark:border-slate-800 md:border-b-0 md:border-r">
-                <p className="mb-2 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Purpose</p>
+                <SectionLabel icon={Target} className="mb-2.5">Purpose</SectionLabel>
                 <p className="text-lg font-black text-slate-950 dark:text-white">
                   {request.purpose || 'General'}
                 </p>
               </div>
               <div className="p-6">
-                <p className="mb-2 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Date</p>
+                <SectionLabel icon={CalendarDays} className="mb-2.5">Date</SectionLabel>
                 <p className="text-lg font-black text-slate-950 dark:text-white">
                   {formatDate(request.visitDate || request.exitDateTime || request.requestDate || request.createdAt)}
                 </p>
@@ -273,7 +274,7 @@ export default function PassVerificationPage() {
             </div>
 
             <div className="rounded-[28px] border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <p className="mb-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Reason</p>
+              <SectionLabel icon={StickyNote} className="mb-3">Reason</SectionLabel>
               <p className="text-base font-semibold italic leading-relaxed text-slate-700 dark:text-slate-300">
                 {request.reason || 'No reason provided.'}
               </p>

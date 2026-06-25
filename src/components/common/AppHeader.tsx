@@ -26,11 +26,11 @@ export default function AppHeader({
   return (
     <header
       className={cn(
-        'sticky inset-x-0 top-0 z-[90] flex h-[82px] shrink-0 items-center overflow-visible border-b border-white/55 bg-white/76 shadow-[0_18px_48px_-44px_rgba(15,23,42,0.75)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#0b1120]/85 dark:shadow-none',
+        'sticky inset-x-0 top-0 z-[90] flex h-[82px] shrink-0 items-center overflow-visible border-b border-slate-200/70 bg-white/76 shadow-[0_18px_48px_-44px_rgba(15,23,42,0.75)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#0b1120]/85 dark:shadow-none',
         className,
       )}
     >
-      <div className="mx-auto flex h-full w-full max-w-[1440px] items-center justify-between gap-4 px-8 lg:px-10">
+      <div className="mx-auto flex h-full w-full max-w-[1440px] items-center justify-between gap-4 px-9 lg:px-12">
         <div className="flex min-w-0 items-center gap-4">
           {showBack && (
             <button

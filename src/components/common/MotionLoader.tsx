@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useId } from 'react';
 import { cn } from '../../utils/cn';
 
 interface MotionLoaderProps {
@@ -6,6 +7,13 @@ interface MotionLoaderProps {
   className?: string;
   compact?: boolean;
 }
+
+/* Flight path — shared by the dashed trail AND the plane's offset-path so the
+   plane always rides exactly on the dotted line. Coordinates are in the SAME
+   pixel space as the box below (no scaling), so 1 unit === 1px. */
+const TRAIL_PATH = 'M 34 196 C 150 196, 180 84, 300 74 S 420 44, 452 22';
+const BOX_W = 480;
+const BOX_H = 220;
 
 function PaperPlane({ className }: { className?: string }) {
   return (
@@ -29,58 +37,127 @@ function Cloud({ className }: { className?: string }) {
 }
 
 /**
- * Professional motion-graphic loader — a paper plane gliding along a dashed
- * trail with drifting clouds. Replaces static skeletons across all views.
+ * Professional motion-graphic loader — a paper plane gliding along a gradient
+ * dashed trail with drifting clouds and a soft glow. The plane follows the
+ * trail exactly using a CSS offset-path, so it never drifts off the line.
+ * Replaces static skeletons across all views.
  */
 export default function MotionLoader({ label = 'Loading', className, compact = false }: MotionLoaderProps) {
+  const gid = useId().replace(/[:]/g, '');
+  const gradId = `ml-grad-${gid}`;
+  const glowId = `ml-glow-${gid}`;
+
   return (
     <div
-      className={cn('motion-loader flex w-full flex-col items-center justify-center gap-5', compact ? 'py-10' : 'py-16', className)}
+      className={cn(
+        'motion-loader flex w-full flex-col items-center justify-center gap-8',
+        compact ? 'py-12' : 'min-h-[55vh] py-16',
+        className,
+      )}
       role="status"
       aria-live="polite"
     >
-      <div className="relative h-28 w-56">
-        {/* Flight trail */}
-        <svg viewBox="0 0 224 112" className="absolute inset-0 h-full w-full" fill="none" preserveAspectRatio="none">
-          <motion.path
-            d="M14 98 C 64 98, 78 44, 134 40 S 198 28, 210 16"
-            stroke="rgba(93,104,248,0.40)"
-            strokeWidth="2.5"
+      <div
+        className={cn('relative max-w-full shrink-0', compact && 'origin-center scale-[0.55]')}
+        style={{ width: BOX_W, height: BOX_H }}
+      >
+        {/* Soft radial glow behind everything */}
+        <motion.div
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{
+            width: BOX_W * 0.8,
+            height: BOX_H * 0.8,
+            background: 'radial-gradient(circle, rgba(93,104,248,0.16) 0%, rgba(93,104,248,0) 70%)',
+          }}
+          animate={{ scale: [0.9, 1.08, 0.9], opacity: [0.6, 1, 0.6] }}
+          transition={{ repeat: Infinity, duration: 3.4, ease: 'easeInOut' }}
+        />
+
+        {/* Flight trail (gradient dotted line) */}
+        <svg
+          viewBox={`0 0 ${BOX_W} ${BOX_H}`}
+          className="absolute inset-0 h-full w-full overflow-visible"
+          fill="none"
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <linearGradient id={gradId} x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0%" stopColor="rgba(93,104,248,0.05)" />
+              <stop offset="55%" stopColor="rgba(93,104,248,0.55)" />
+              <stop offset="100%" stopColor="rgba(70,75,216,0.9)" />
+            </linearGradient>
+            <filter id={glowId} x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* faint static guide line under the moving dashes */}
+          <path
+            d={TRAIL_PATH}
+            stroke={`url(#${gradId})`}
+            strokeWidth="2"
             strokeLinecap="round"
-            strokeDasharray="1 13"
-            animate={{ strokeDashoffset: [0, -28] }}
+            strokeOpacity="0.25"
+          />
+          {/* animated travelling dashes */}
+          <motion.path
+            d={TRAIL_PATH}
+            stroke={`url(#${gradId})`}
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeDasharray="1 18"
+            filter={`url(#${glowId})`}
+            animate={{ strokeDashoffset: [0, -38] }}
             transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
           />
         </svg>
 
-        {/* Drifting clouds */}
+        {/* Drifting clouds — layered for depth */}
         <motion.div
-          className="absolute left-1 top-2 text-slate-200 dark:text-slate-700"
-          animate={{ x: [0, 9, 0], opacity: [0.5, 0.85, 0.5] }}
+          className="absolute left-3 top-3 text-slate-200 dark:text-slate-700"
+          animate={{ x: [0, 16, 0], opacity: [0.5, 0.85, 0.5] }}
           transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
         >
-          <Cloud className="h-5 w-9" />
+          <Cloud className="h-11 w-20" />
         </motion.div>
         <motion.div
-          className="absolute right-2 bottom-3 text-slate-200 dark:text-slate-700"
-          animate={{ x: [0, -11, 0], opacity: [0.4, 0.75, 0.4] }}
+          className="absolute right-5 bottom-6 text-slate-200 dark:text-slate-700"
+          animate={{ x: [0, -18, 0], opacity: [0.4, 0.75, 0.4] }}
           transition={{ repeat: Infinity, duration: 6.5, ease: 'easeInOut' }}
         >
-          <Cloud className="h-6 w-11" />
+          <Cloud className="h-12 w-24" />
+        </motion.div>
+        <motion.div
+          className="absolute left-1/2 top-1/3 text-slate-100 dark:text-slate-800"
+          animate={{ x: [0, 12, 0], opacity: [0.3, 0.6, 0.3] }}
+          transition={{ repeat: Infinity, duration: 7.5, ease: 'easeInOut', delay: 0.6 }}
+        >
+          <Cloud className="h-8 w-16" />
         </motion.div>
 
-        {/* Gliding paper plane */}
+        {/* Gliding paper plane — rides exactly along TRAIL_PATH */}
         <motion.div
           className="absolute left-0 top-0"
-          animate={{ x: [6, 184], y: [82, 8], rotate: [-7, 9], opacity: [0, 1, 1, 0] }}
-          transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut', times: [0, 0.18, 0.82, 1] }}
+          style={{ offsetPath: `path('${TRAIL_PATH}')`, offsetRotate: '0deg' }}
+          initial={{ offsetDistance: '0%', opacity: 0 }}
+          animate={{ offsetDistance: ['0%', '100%'], opacity: [0, 1, 1, 0] }}
+          transition={{ repeat: Infinity, duration: 2.8, ease: 'easeInOut', times: [0, 0.16, 0.84, 1] }}
         >
-          <PaperPlane className="h-9 w-9 drop-shadow-[0_8px_12px_rgba(70,75,216,0.35)]" />
+          <motion.div
+            animate={{ y: [0, -3, 0], rotate: [-2, 2, -2] }}
+            transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
+          >
+            <PaperPlane className="h-20 w-20 drop-shadow-[0_12px_22px_rgba(70,75,216,0.45)]" />
+          </motion.div>
         </motion.div>
       </div>
 
       <motion.span
-        className="text-[11px] font-black uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500"
+        className="text-[13px] font-black uppercase tracking-[0.34em] text-slate-400 dark:text-slate-500"
         animate={{ opacity: [0.35, 1, 0.35] }}
         transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
       >

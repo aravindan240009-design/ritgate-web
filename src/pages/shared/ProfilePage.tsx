@@ -5,16 +5,13 @@ import {
   Smartphone,
   CreditCard,
   ArrowLeft,
-  RotateCw,
 } from "lucide-react";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { useAuth } from "../../context/AuthContext";
-import { useTheme } from "../../context/ThemeContext";
 import { useProfile } from "../../context/ProfileContext";
 import { cn } from "../../utils/cn";
 import { useAdaptive } from "../../utils/useAdaptive";
 import TopRefreshControl from "../../components/common/TopRefreshControl";
-import ThemePresetSelector from "../../components/common/ThemePresetSelector";
 
 interface ProfilePageProps {
   user?: any;
@@ -30,7 +27,6 @@ export default function ProfilePage({
   const { user: authUser, role, getUserId } = useAuth();
   const user = propUser || authUser;
   const { isDesktop } = useAdaptive();
-  const { resetTheme } = useTheme();
   const { profileImage } = useProfile();
 
   const [refreshing, setRefreshing] = useState(false);
@@ -168,24 +164,6 @@ export default function ProfilePage({
             </div>
           </div>
 
-          <div className="mb-8 lg:col-start-2 lg:mb-0 lg:min-h-0">
-            <div className="flex items-center justify-between mb-3 px-1">
-              <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest lg:text-[15px] lg:tracking-[0.14em]">
-                Interface Theme
-              </h3>
-              <button
-                onClick={resetTheme}
-                className="inline-flex items-center gap-1.5 text-[10px] font-bold text-blue-700 dark:text-blue-300"
-              >
-                Reset
-                <RotateCw className="h-3 w-3" />
-              </button>
-            </div>
-            <div className="lg:w-full [&>*]:lg:mb-0 [&>*]:lg:rounded-[24px]">
-              <ThemePresetSelector />
-            </div>
-          </div>
-
           <div className="mb-10 lg:col-start-2 lg:mb-0 lg:min-h-0 lg:self-start">
             <div className="mb-3 px-2 lg:px-1">
               <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest lg:text-[15px] lg:tracking-[0.14em]">
@@ -219,14 +197,6 @@ export default function ProfilePage({
             </div>
           </div>
 
-          <div className="mt-12 text-center pb-12 lg:hidden">
-            <p className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.4em] mb-1">
-              RIT Gate Matrix v2.0
-            </p>
-            <p className="text-[9px] font-bold text-slate-200 uppercase tracking-widest italic opacity-50">
-              Secure Infrastructure Node 42
-            </p>
-          </div>
         </div>
       </TopRefreshControl>
     </div>

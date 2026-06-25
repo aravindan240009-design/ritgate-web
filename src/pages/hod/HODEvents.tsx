@@ -275,7 +275,7 @@ export default function HODEvents() {
         />
         <div className="px-4 py-3 pb-24 space-y-3.5 lg:px-8 xl:px-12 lg:py-4 lg:pb-6 lg:space-y-3">
           {/* Event info pill */}
-          <div className="bg-gradient-to-r from-[var(--color-primary)] to-blue-600 rounded-xl px-4 py-3.5 flex items-center gap-2.5 shadow-md shadow-blue-200 dark:shadow-none">
+          <div className="rounded-xl px-4 py-3.5 flex items-center gap-2.5 shadow-md shadow-slate-300/40 dark:shadow-none" style={{ background: 'var(--gradient-primary)' }}>
             <CalendarDays className="w-5 h-5 text-white/80 shrink-0" />
             <div className="min-w-0">
               <p className="text-white font-black text-[14px] truncate lg:text-[16px]">{selectedEvent.eventName}</p>

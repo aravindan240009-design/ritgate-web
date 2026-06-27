@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { motion } from 'framer-motion';
 
 interface AuthShellProps {
   /** Background image shown behind the form (full-bleed on phone, left panel on desktop/tablet). */
@@ -19,6 +20,10 @@ interface AuthShellProps {
  *   the right.
  * - Phone: the photo fills the whole screen (kept visible at the edges) with a
  *   dark overlay, and the form floats in a frosted-glass card.
+ *
+ * Motion: a security "scan beam" sweeps the photo, a faint tech grid drifts,
+ * and the branding / headline reveal with a staggered spring entrance. All
+ * decorative motion is disabled under `prefers-reduced-motion`.
  */
 export default function AuthShell({ background, headline, subline, children }: AuthShellProps) {
   return (
@@ -26,25 +31,67 @@ export default function AuthShell({ background, headline, subline, children }: A
       {/* Background photo — full-bleed on phone, left half on md+ */}
       <div className="auth-shell__photo" style={{ backgroundImage: `url(${background})` }}>
         <div className="auth-shell__overlay" />
+        {/* Faint engineered grid for a "secure system" texture */}
+        <div className="auth-shell__grid" aria-hidden />
+        {/* Security scan beam sweeping down the photo */}
+        <div className="auth-shell__beam" aria-hidden />
+
         {/* Branding over the photo (visible on md+; on phone it's the top strip) */}
-        <div className="auth-shell__brand">
-          <img src="/logo.png" alt="RIT Gate" className="auth-shell__logo" />
+        <motion.div
+          className="auth-shell__brand"
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+        >
+          <div className="auth-shell__logo-wrap">
+            <img src="/logo.png" alt="RIT Gate" className="auth-shell__logo" />
+            <span className="auth-shell__logo-ring" aria-hidden />
+          </div>
           <div>
             <p className="auth-shell__brand-name">RIT GATE</p>
-            <p className="auth-shell__brand-tag">Secure Access Control System</p>
+            <p className="auth-shell__brand-tag">
+              <span className="auth-shell__live-dot" aria-hidden />
+              Secure Access Control System
+            </p>
           </div>
-        </div>
+        </motion.div>
+
         {headline && (
-          <div className="auth-shell__headline">
+          <motion.div
+            className="auth-shell__headline"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
+          >
             <h2>{headline}</h2>
             {subline && <p>{subline}</p>}
-          </div>
+            <div className="auth-shell__trust">
+              {['256-bit Encrypted', 'OTP Verified', 'Audit Logged'].map((t, i) => (
+                <motion.span
+                  key={t}
+                  className="auth-shell__trust-pill"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: 'easeOut', delay: 0.55 + i * 0.1 }}
+                >
+                  {t}
+                </motion.span>
+              ))}
+            </div>
+          </motion.div>
         )}
       </div>
 
       {/* Form panel */}
       <div className="auth-shell__panel">
-        <div className="auth-shell__card">{children}</div>
+        <motion.div
+          className="auth-shell__card"
+          initial={{ opacity: 0, y: 22, scale: 0.985 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+        >
+          {children}
+        </motion.div>
       </div>
 
       <style>{`
@@ -76,36 +123,102 @@ export default function AuthShell({ background, headline, subline, children }: A
           from { transform: scale(1.06) translate3d(0, 0, 0); }
           to   { transform: scale(1.14) translate3d(-2.5%, -2%, 0); }
         }
-        @media (prefers-reduced-motion: reduce) {
-          .auth-shell__photo { animation: authPhotoIn 0.6s ease-out both; }
-        }
         .auth-shell__overlay {
           position: absolute;
           inset: 0;
+          z-index: 1;
           /* Strong on phone so the card is readable over the photo */
           background:
             linear-gradient(180deg, rgba(8,12,24,0.55) 0%, rgba(8,12,24,0.78) 100%);
         }
+
+        /* Engineered grid texture */
+        .auth-shell__grid {
+          position: absolute;
+          inset: -1px;
+          z-index: 1;
+          background-image:
+            linear-gradient(rgba(148,197,255,0.06) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(148,197,255,0.06) 1px, transparent 1px);
+          background-size: 46px 46px;
+          mask-image: radial-gradient(circle at 30% 35%, #000 0%, transparent 72%);
+          -webkit-mask-image: radial-gradient(circle at 30% 35%, #000 0%, transparent 72%);
+          animation: authGridDrift 32s linear infinite;
+        }
+        @keyframes authGridDrift {
+          from { background-position: 0 0, 0 0; }
+          to   { background-position: 46px 46px, 46px 46px; }
+        }
+
+        /* Security scan beam */
+        .auth-shell__beam {
+          position: absolute;
+          left: 0; right: 0;
+          top: -40%;
+          height: 38%;
+          z-index: 1;
+          background: linear-gradient(180deg,
+            transparent 0%,
+            rgba(96,165,250,0.00) 35%,
+            rgba(120,190,255,0.16) 50%,
+            rgba(96,165,250,0.00) 65%,
+            transparent 100%);
+          filter: blur(2px);
+          animation: authBeam 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+        }
+        @keyframes authBeam {
+          0%   { transform: translateY(0); opacity: 0; }
+          12%  { opacity: 1; }
+          55%  { opacity: 1; }
+          70%  { transform: translateY(360%); opacity: 0; }
+          100% { transform: translateY(360%); opacity: 0; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .auth-shell__photo { animation: authPhotoIn 0.6s ease-out both; }
+          .auth-shell__grid,
+          .auth-shell__beam,
+          .auth-shell__logo-ring,
+          .auth-shell__live-dot { animation: none; }
+          .auth-shell__beam { display: none; }
+        }
+
         .auth-shell__brand {
           position: absolute;
           top: 22px;
           left: 22px;
-          z-index: 2;
+          z-index: 3;
           display: flex;
           align-items: center;
           gap: 12px;
         }
+        .auth-shell__logo-wrap { position: relative; width: 46px; height: 46px; flex-shrink: 0; }
         .auth-shell__logo {
           width: 46px;
           height: 46px;
           border-radius: 50%;
           object-fit: cover;
           box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+          position: relative;
+          z-index: 1;
+        }
+        .auth-shell__logo-ring {
+          position: absolute;
+          inset: -5px;
+          border-radius: 50%;
+          border: 1.5px solid rgba(120,190,255,0.55);
+          animation: authPulseRing 2.8s ease-out infinite;
+        }
+        @keyframes authPulseRing {
+          0%   { transform: scale(0.85); opacity: 0.9; }
+          70%  { transform: scale(1.25); opacity: 0; }
+          100% { transform: scale(1.25); opacity: 0; }
         }
         .auth-shell__brand-name {
           margin: 0;
+          font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
           font-size: 18px;
-          font-weight: 900;
+          font-weight: 800;
           letter-spacing: 2px;
           color: #FFFFFF;
         }
@@ -116,13 +229,29 @@ export default function AuthShell({ background, headline, subline, children }: A
           letter-spacing: 1.4px;
           text-transform: uppercase;
           color: rgba(255,255,255,0.7);
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .auth-shell__live-dot {
+          width: 6px; height: 6px;
+          border-radius: 50%;
+          background: #34D399;
+          box-shadow: 0 0 0 0 rgba(52,211,153,0.7);
+          animation: authLive 2s ease-out infinite;
+        }
+        @keyframes authLive {
+          0%   { box-shadow: 0 0 0 0 rgba(52,211,153,0.55); }
+          70%  { box-shadow: 0 0 0 7px rgba(52,211,153,0); }
+          100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
         }
         .auth-shell__headline { display: none; }
+        .auth-shell__trust { display: none; }
 
         /* Form panel + card */
         .auth-shell__panel {
           position: relative;
-          z-index: 1;
+          z-index: 2;
           flex: 1;
           display: flex;
           align-items: center;
@@ -139,11 +268,7 @@ export default function AuthShell({ background, headline, subline, children }: A
           border-radius: 24px;
           padding: 28px 24px;
           box-shadow: 0 24px 70px rgba(2,6,23,0.45);
-          animation: authCardIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
-        }
-        @keyframes authCardIn {
-          from { opacity: 0; transform: translateY(18px); }
-          to   { opacity: 1; transform: translateY(0); }
+          will-change: transform, opacity;
         }
 
         /* Tablet & desktop — split screen, solid form panel on the right */
@@ -162,14 +287,15 @@ export default function AuthShell({ background, headline, subline, children }: A
             left: 44px;
             bottom: 56px;
             right: 44px;
-            z-index: 2;
+            z-index: 3;
             color: #FFFFFF;
           }
           .auth-shell__headline h2 {
             margin: 0;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
             font-size: 34px;
             line-height: 1.12;
-            font-weight: 900;
+            font-weight: 800;
             letter-spacing: -0.5px;
             text-shadow: 0 2px 18px rgba(0,0,0,0.45);
           }
@@ -179,6 +305,24 @@ export default function AuthShell({ background, headline, subline, children }: A
             font-weight: 600;
             max-width: 360px;
             color: rgba(255,255,255,0.82);
+          }
+          .auth-shell__trust {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 20px;
+          }
+          .auth-shell__trust-pill {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            color: rgba(255,255,255,0.92);
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.10);
+            border: 1px solid rgba(255,255,255,0.22);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
           }
           .auth-shell__panel {
             margin-left: 52%;

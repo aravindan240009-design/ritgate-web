@@ -1,10 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence, useAnimationControls, type Variants } from 'framer-motion';
 import { ArrowLeft, Loader2, RefreshCw, Mail, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { OTP_CONFIG } from '../../config/api.config';
 import type { UserRole } from '../../types';
 import AuthShell from '../../components/auth/AuthShell';
+
+const container: Variants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.07, delayChildren: 0.32 } },
+};
+const item: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+};
 
 export default function OTPVerifyPage() {
   const navigate = useNavigate();
@@ -18,6 +28,10 @@ export default function OTPVerifyPage() {
   const [isResending, setIsResending] = useState(false);
   const [errorModal, setErrorModal] = useState<string | null>(null);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const shakeControls = useAnimationControls();
+
+  const triggerShake = () =>
+    shakeControls.start({ x: [0, -10, 10, -6, 6, 0], transition: { duration: 0.4 } });
 
   useEffect(() => {
     if (!userId || !role) navigate('/login', { replace: true });
@@ -71,11 +85,13 @@ export default function OTPVerifyPage() {
       if (res.success) {
         navigate('/dashboard', { replace: true });
       } else {
+        triggerShake();
         setErrorModal(res.message || 'Invalid OTP code. Please try again.');
         setOtpDigits(Array(OTP_CONFIG.LENGTH).fill(''));
         setTimeout(() => otpRefs.current[0]?.focus(), 100);
       }
     } catch {
+      triggerShake();
       setErrorModal('Verification failed due to a network error.');
     } finally {
       setIsLoading(false);
@@ -103,6 +119,8 @@ export default function OTPVerifyPage() {
 
   const formatTimer = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
   const activeIndex = otpDigits.findIndex(d => d === '');
+  const complete = otpDigits.join('').length === OTP_CONFIG.LENGTH;
+  const verifyDisabled = !complete || isLoading;
 
   return (
     <>
@@ -111,10 +129,13 @@ export default function OTPVerifyPage() {
         headline="One last step to verify it's you."
         subline="We've sent a one-time code to your registered institute email. Enter it to continue."
       >
+        <motion.div variants={container} initial="hidden" animate="show">
           {/* Header row */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-            <button
+          <motion.div variants={item} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+            <motion.button
               onClick={() => navigate('/login')}
+              whileHover={{ x: -2, backgroundColor: '#E2E8F0' }}
+              whileTap={{ scale: 0.92 }}
               style={{
                 width: 36, height: 36, borderRadius: '50%', background: '#F1F5F9',
                 border: 'none', cursor: 'pointer',
@@ -122,59 +143,68 @@ export default function OTPVerifyPage() {
               }}
             >
               <ArrowLeft size={16} color="#64748B" />
-            </button>
+            </motion.button>
             <div>
-              <h2 style={{ fontSize: 24, fontWeight: 800, color: '#000000', margin: 0 }}>Verify Identity</h2>
+              <h2 style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif", fontSize: 24, fontWeight: 800, color: '#000000', margin: 0, letterSpacing: '-0.3px' }}>Verify Identity</h2>
               <p style={{ fontSize: 13, color: '#64748B', margin: 0 }}>Enter the one-time password sent to your email.</p>
             </div>
-          </div>
+          </motion.div>
 
           {/* OTP boxes */}
-          <div style={{ marginBottom: 12 }}>
+          <motion.div variants={item} style={{ marginBottom: 12 }}>
             <label style={{ display: 'block', fontSize: 10, fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: 10, textAlign: 'center' }}>
               Verification Code
             </label>
-            <div style={{ display: 'flex', gap: 8 }} onPaste={handleOtpPaste}>
-              {otpDigits.map((digit, i) => (
-                <input
-                  key={i}
-                  ref={ref => { otpRefs.current[i] = ref; }}
-                  type="text"
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  maxLength={1}
-                  value={digit}
-                  onChange={e => handleOtpChange(e.target.value, i)}
-                  onKeyDown={e => handleOtpKeyDown(e, i)}
-                  style={{
-                    flex: 1, minWidth: 0, height: 56,
-                    background: digit ? '#F8FAFC' : '#F8FAFC',
-                    border: digit
-                      ? '2px solid #1E293B'
-                      : i === activeIndex
-                      ? '2px solid #3B82F6'
-                      : '1.5px solid #E2E8F0',
-                    borderRadius: 12,
-                    fontSize: 22, fontWeight: 800, textAlign: 'center',
-                    color: '#0F172A', outline: 'none',
-                    boxShadow: i === activeIndex && !digit ? '0 0 0 3px rgba(59,130,246,0.12)' : 'none',
-                    transition: 'border 0.15s, box-shadow 0.15s',
-                    fontFamily: 'inherit',
-                  }}
-                />
-              ))}
-            </div>
-          </div>
+            <motion.div animate={shakeControls} style={{ display: 'flex', gap: 8 }} onPaste={handleOtpPaste}>
+              {otpDigits.map((digit, i) => {
+                const isActive = i === activeIndex;
+                return (
+                  <motion.div
+                    key={i}
+                    animate={digit ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+                    transition={{ duration: 0.22, ease: 'easeOut' }}
+                    style={{ flex: 1, minWidth: 0 }}
+                  >
+                    <input
+                      ref={ref => { otpRefs.current[i] = ref; }}
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      maxLength={1}
+                      value={digit}
+                      onChange={e => handleOtpChange(e.target.value, i)}
+                      onKeyDown={e => handleOtpKeyDown(e, i)}
+                      style={{
+                        width: '100%', height: 56,
+                        background: digit ? '#FFFFFF' : '#F8FAFC',
+                        border: digit
+                          ? '2px solid #1E293B'
+                          : isActive
+                          ? '2px solid #3B82F6'
+                          : '1.5px solid #E2E8F0',
+                        borderRadius: 12,
+                        fontSize: 22, fontWeight: 800, textAlign: 'center',
+                        color: '#0F172A', outline: 'none', boxSizing: 'border-box',
+                        boxShadow: isActive && !digit ? '0 0 0 4px rgba(59,130,246,0.14)' : 'none',
+                        transition: 'border 0.15s, box-shadow 0.15s, background 0.15s',
+                        fontFamily: 'inherit',
+                      }}
+                    />
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </motion.div>
 
           {maskedEmail && (
-            <p style={{ fontSize: 12, color: '#64748B', textAlign: 'center', margin: '0 0 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <motion.p variants={item} style={{ fontSize: 12, color: '#64748B', textAlign: 'center', margin: '0 0 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
               <Mail size={14} />
               Sent to <strong style={{ color: '#0F172A' }}>{maskedEmail}</strong>
-            </p>
+            </motion.p>
           )}
 
           {/* Resend / Change ID row */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+          <motion.div variants={item} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             {resendTimer > 0 ? (
               <span style={{ fontSize: 13, fontWeight: 600, color: '#64748B' }}>
                 Resend in <strong style={{ color: '#0F172A' }}>{formatTimer(resendTimer)}</strong>
@@ -200,85 +230,116 @@ export default function OTPVerifyPage() {
             >
               Change ID
             </button>
-          </div>
+          </motion.div>
 
           {/* Verify button */}
-          <button
+          <motion.button
+            variants={item}
             onClick={() => handleVerify()}
-            disabled={otpDigits.join('').length !== OTP_CONFIG.LENGTH || isLoading}
+            disabled={verifyDisabled}
+            whileHover={verifyDisabled ? undefined : { scale: 1.015 }}
+            whileTap={verifyDisabled ? undefined : { scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
             style={{
+              position: 'relative', overflow: 'hidden',
               width: '100%', height: 54,
-              background: otpDigits.join('').length !== OTP_CONFIG.LENGTH || isLoading ? '#94A3B8' : '#1E293B',
+              background: verifyDisabled
+                ? '#94A3B8'
+                : 'linear-gradient(120deg, #0F172A 0%, #1E293B 50%, #334155 100%)',
               borderRadius: 16, border: 'none',
-              cursor: otpDigits.join('').length !== OTP_CONFIG.LENGTH || isLoading ? 'not-allowed' : 'pointer',
+              cursor: verifyDisabled ? 'not-allowed' : 'pointer',
               color: '#FFFFFF', fontSize: 15, fontWeight: 800,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
               letterSpacing: '0.1em', textTransform: 'uppercase',
-              transition: 'background 0.2s',
+              boxShadow: verifyDisabled ? 'none' : '0 10px 24px rgba(15,23,42,0.30)',
             }}
           >
-            {isLoading
-              ? <Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} />
-              : 'Verify & Login'}
-          </button>
+            {!verifyDisabled && (
+              <motion.span
+                aria-hidden
+                initial={{ x: '-120%' }}
+                animate={{ x: '120%' }}
+                transition={{ duration: 2.4, ease: 'easeInOut', repeat: Infinity, repeatDelay: 1.2 }}
+                style={{
+                  position: 'absolute', top: 0, bottom: 0, width: '45%',
+                  background: 'linear-gradient(105deg, transparent, rgba(255,255,255,0.28), transparent)',
+                  transform: 'skewX(-18deg)',
+                }}
+              />
+            )}
+            <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+              {isLoading
+                ? <Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} />
+                : 'Verify & Login'}
+            </span>
+          </motion.button>
+        </motion.div>
       </AuthShell>
 
       {/* Error Modal */}
-      {errorModal && (
-        <div
-          onClick={() => setErrorModal(null)}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 50,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: 20, background: 'rgba(15,23,42,0.5)',
-          }}
-        >
-          <div
-            onClick={e => e.stopPropagation()}
+      <AnimatePresence>
+        {errorModal && (
+          <motion.div
+            onClick={() => setErrorModal(null)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             style={{
-              background: '#FFFFFF', borderRadius: 32, padding: 24,
-              width: '100%', maxWidth: 360,
-              boxShadow: '0 20px 60px rgba(0,0,0,0.20)',
-              animation: 'slideUp 0.25s ease',
+              position: 'fixed', inset: 0, zIndex: 50,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: 20, background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(4px)',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
-              <div style={{
-                width: 62, height: 62, borderRadius: 20, background: '#EF4444',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <X size={30} color="#FFFFFF" />
-              </div>
-              <button
-                onClick={() => setErrorModal(null)}
-                style={{
-                  width: 36, height: 36, borderRadius: '50%', background: '#F1F5F9',
-                  border: 'none', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}
-              >
-                <X size={18} color="#64748B" />
-              </button>
-            </div>
-            <h3 style={{ fontSize: 24, fontWeight: 800, color: '#000000', marginBottom: 8 }}>Error</h3>
-            <p style={{ fontSize: 14, color: '#64748B', lineHeight: 1.6, marginBottom: 24 }}>{errorModal}</p>
-            <button
-              onClick={() => setErrorModal(null)}
+            <motion.div
+              onClick={e => e.stopPropagation()}
+              initial={{ opacity: 0, y: 24, scale: 0.94 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 12, scale: 0.96 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 26 }}
               style={{
-                width: '100%', height: 56, background: '#1E293B', borderRadius: 20,
-                border: 'none', cursor: 'pointer', color: '#FFFFFF',
-                fontSize: 15, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase',
+                background: '#FFFFFF', borderRadius: 32, padding: 24,
+                width: '100%', maxWidth: 360,
+                boxShadow: '0 20px 60px rgba(0,0,0,0.20)',
               }}
             >
-              Dismiss
-            </button>
-          </div>
-        </div>
-      )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+                <div style={{
+                  width: 62, height: 62, borderRadius: 20, background: '#EF4444',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <X size={30} color="#FFFFFF" />
+                </div>
+                <button
+                  onClick={() => setErrorModal(null)}
+                  style={{
+                    width: 36, height: 36, borderRadius: '50%', background: '#F1F5F9',
+                    border: 'none', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}
+                >
+                  <X size={18} color="#64748B" />
+                </button>
+              </div>
+              <h3 style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif", fontSize: 24, fontWeight: 800, color: '#000000', marginBottom: 8 }}>Error</h3>
+              <p style={{ fontSize: 14, color: '#64748B', lineHeight: 1.6, marginBottom: 24 }}>{errorModal}</p>
+              <motion.button
+                onClick={() => setErrorModal(null)}
+                whileTap={{ scale: 0.97 }}
+                style={{
+                  width: '100%', height: 56, background: 'linear-gradient(120deg, #0F172A, #334155)', borderRadius: 20,
+                  border: 'none', cursor: 'pointer', color: '#FFFFFF',
+                  fontSize: 15, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase',
+                }}
+              >
+                Dismiss
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <style>{`
         @keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
       `}</style>
     </>
   );

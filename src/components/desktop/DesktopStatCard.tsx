@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { useCountUp } from '../../hooks/useCountUp';
 
 interface DesktopStatCardProps {
   label: string;
@@ -48,12 +49,13 @@ const tones = {
 export default function DesktopStatCard({ label, value, icon: Icon, hint, tone = 'blue', active, onClick }: DesktopStatCardProps) {
   const Comp = onClick ? 'button' : 'div';
   const t = tones[tone];
+  const animatedValue = useCountUp(value);
   return (
     <Comp
       onClick={onClick}
       className={cn(
-        'desktop-stat-card group text-left animate-fade-up',
-        onClick && 'cursor-pointer',
+        'desktop-stat-card group text-left animate-fade-up transition-transform duration-200',
+        onClick && 'cursor-pointer hover:-translate-y-0.5',
         active && cn('ring-2', t.ring),
       )}
     >
@@ -66,7 +68,7 @@ export default function DesktopStatCard({ label, value, icon: Icon, hint, tone =
       <div className="relative flex items-center justify-between gap-4">
         <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{label}</p>
-          <p className="text-[28px] font-extrabold leading-none mt-2 tabular-nums text-slate-950 dark:text-white">{value}</p>
+          <p className="text-[28px] font-extrabold leading-none mt-2 tabular-nums text-slate-950 dark:text-white">{animatedValue}</p>
           {hint && <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 mt-2 truncate">{hint}</p>}
         </div>
         <div className={cn('w-12 h-12 rounded-full border flex items-center justify-center shrink-0 shadow-[0_6px_16px_-14px_rgba(15,23,42,0.35)] transition-transform duration-200 group-hover:scale-105', t.chip)}>

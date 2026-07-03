@@ -92,9 +92,8 @@ const handleSendOTP = async (id?: string) => {
         background="/auth-bg-login.jpg"
         headline="Secure access, beautifully simple."
         subline="Sign in to manage gate passes, approvals and campus access — all in one place."
-      >
-        <motion.div variants={container} initial="hidden" animate="show">
-          <motion.div variants={item} style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
+        headerExtra={
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }}>
             {[
               { icon: <Fingerprint size={13} />, label: 'Biometric' },
               { icon: <QrCode size={13} />, label: 'Badge Scan' },
@@ -115,7 +114,11 @@ const handleSendOTP = async (id?: string) => {
                 {chip.icon}{chip.label}
               </motion.span>
             ))}
-          </motion.div>
+          </div>
+        }
+      >
+        <motion.div variants={container} initial="hidden" animate="show">
+
 
           <motion.h2 variants={item} style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif", fontSize: 26, fontWeight: 800, color: '#0F172A', marginBottom: 4, letterSpacing: '-0.4px' }}>Welcome Back</motion.h2>
           <motion.p variants={item} style={{ fontSize: 13, color: '#64748B', marginBottom: 24 }}>Sign in with your institute credential.</motion.p>

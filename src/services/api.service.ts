@@ -877,11 +877,35 @@ export async function confirmEventCsvUpload(eventId: number, staffCode: string, 
   catch (e) { return { success: false, message: extractError(e) }; }
 }
 
-export async function getEventPasses(eventId: number): Promise<{ success: boolean; passes: any[] }> {
+export async function getEventPasses(eventId: number): Promise<{ success: boolean; passes: any[]; message?: string }> {
   try {
     const { data } = await api.get(`/events/${eventId}/passes`);
     return { success: true, passes: data.passes || data.data || [] };
-  } catch { return { success: false, passes: [] }; }
+  } catch (e) { return { success: false, passes: [], message: extractError(e) }; }
+}
+
+export interface SingleEventPassInput {
+  fullName: string;
+  email: string;
+  collegeName: string;
+  phone: string;
+  studentId?: string;
+  department?: string;
+  course?: string;
+}
+
+export async function addSingleEventPass(eventId: number, staffCode: string, row: SingleEventPassInput): Promise<{ success: boolean; pass?: any; message?: string }> {
+  try {
+    const { data } = await api.post(`/events/${eventId}/passes`, { staffCode, ...row });
+    return { success: data?.status !== 'ERROR', pass: data?.pass, message: data?.message };
+  } catch (e) { return { success: false, message: extractError(e) }; }
+}
+
+export async function deleteEventPass(eventId: number, passId: number, staffCode: string): Promise<ApiResponse> {
+  try {
+    const { data } = await api.delete(`/events/${eventId}/passes/${passId}`, { params: { staffCode } });
+    return { success: data?.status !== 'ERROR', message: data?.message || 'Pre-registration deleted' };
+  } catch (e) { return { success: false, message: extractError(e) }; }
 }
 
 export async function completeEvent(eventId: number): Promise<ApiResponse> {

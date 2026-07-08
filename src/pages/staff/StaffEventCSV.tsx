@@ -3,29 +3,37 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   FileSpreadsheet, Upload, X, CheckCircle2, AlertCircle,
   CalendarDays, MapPin, Calendar, Send, Loader2,
-  RefreshCw, Info, PartyPopper, Pencil, Trash2
+  RefreshCw, Info, PartyPopper, Pencil, Trash2,
+  Users, Share2, UserPlus
 } from 'lucide-react';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useActionLock } from '../../context/ActionLockContext';
-import { getStaffEvents, uploadEventCsvPreview, confirmEventCsvUpload } from '../../services/api.service';
+import {
+  getStaffEvents, uploadEventCsvPreview, confirmEventCsvUpload,
+  getEventPasses, addSingleEventPass, deleteEventPass,
+} from '../../services/api.service';
 import PageHeader from '../../components/common/PageHeader';
 import TopRefreshControl from '../../components/common/TopRefreshControl';
 import { SkeletonList } from '../../components/ui/Skeleton';
 import Modal from '../../components/ui/Modal';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
+import VisitorAvatar from '../../components/common/VisitorAvatar';
 import { cn } from '../../utils/cn';
 import type { RITGateEvent } from '../../types';
 import { useAdaptive } from '../../utils/useAdaptive';
 import DesktopPageHeader from '../../components/desktop/DesktopPageHeader';
 import EmptyState from '../../components/ui/EmptyState';
+import { shareVisitorInfo } from '../../utils/share';
 
-type View = 'events' | 'upload' | 'preview' | 'result';
+type View = 'events' | 'upload' | 'preview' | 'result' | 'visitors';
 
 interface UploadResult {
   total: number;
   issued: number;
   failed: number;
+  skipped?: number;
   errors?: { name?: string; email?: string; reason?: string }[];
 }
 
@@ -40,6 +48,34 @@ interface ParsedRow {
   valid: boolean;
   error?: string;
 }
+
+interface EventPassItem {
+  id: number;
+  fullName: string;
+  email: string;
+  collegeName: string;
+  phone: string;
+  studentId?: string;
+  department?: string;
+  course?: string;
+  status: string;
+  manualEntryCode?: string;
+  photoUrl?: string;
+}
+
+interface SingleParticipantForm {
+  fullName: string;
+  email: string;
+  collegeName: string;
+  phone: string;
+  studentId: string;
+  department: string;
+  course: string;
+}
+
+const EMPTY_SINGLE_FORM: SingleParticipantForm = {
+  fullName: '', email: '', collegeName: '', phone: '', studentId: '', department: '', course: '',
+};
 
 const EMAIL_RE = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
@@ -67,7 +103,7 @@ export default function StaffEventCSV() {
   usePageTitle('Event CSV Upload');
   const { isDesktop } = useAdaptive();
   const { getUserId } = useAuth();
-  const { error: toastError } = useToast();
+  const { error: toastError, success: toastSuccess } = useToast();
   const { withLock, isLocked } = useActionLock();
   const staffCode = getUserId();
 
@@ -84,6 +120,18 @@ export default function StaffEventCSV() {
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editDraft, setEditDraft] = useState<ParsedRow | null>(null);
+
+  // ── Add Single Participant ──────────────────────────────────────────────────
+  const [singleForm, setSingleForm] = useState<SingleParticipantForm>(EMPTY_SINGLE_FORM);
+  const [singleErrors, setSingleErrors] = useState<Partial<Record<keyof SingleParticipantForm, string>>>({});
+  const [singleSubmitting, setSingleSubmitting] = useState(false);
+
+  // ── Pre-Registered Visitors list ────────────────────────────────────────────
+  const [passes, setPasses] = useState<EventPassItem[]>([]);
+  const [loadingPasses, setLoadingPasses] = useState(false);
+  const [sharingId, setSharingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<EventPassItem | null>(null);
 
   const loadEvents = useCallback(async () => {
     try {
@@ -183,6 +231,101 @@ export default function StaffEventCSV() {
     setEditDraft(null);
   };
 
+  // ── Add Single Participant ──────────────────────────────────────────────────
+  const validateSingleForm = (): boolean => {
+    const errs: Partial<Record<keyof SingleParticipantForm, string>> = {};
+    if (!singleForm.fullName.trim()) errs.fullName = 'Full name is required';
+    if (!singleForm.email.trim()) errs.email = 'Email is required';
+    else if (!EMAIL_RE.test(singleForm.email.trim())) errs.email = 'Invalid email format';
+    if (!singleForm.collegeName.trim()) errs.collegeName = 'College name is required';
+    if (!singleForm.phone.trim()) errs.phone = 'Phone is required';
+    setSingleErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleAddSingleParticipant = async () => {
+    if (!selectedEvent || singleSubmitting) return;
+    if (!validateSingleForm()) return;
+
+    setSingleSubmitting(true);
+    try {
+      const res = await addSingleEventPass(selectedEvent.id, staffCode, {
+        fullName: singleForm.fullName.trim(),
+        email: singleForm.email.trim(),
+        collegeName: singleForm.collegeName.trim(),
+        phone: singleForm.phone.trim(),
+        studentId: singleForm.studentId.trim() || undefined,
+        department: singleForm.department.trim() || undefined,
+        course: singleForm.course.trim() || undefined,
+      });
+      if (res.success) {
+        toastSuccess('Pass Issued', `${singleForm.fullName} has been emailed their QR pass.`);
+        setSingleForm(EMPTY_SINGLE_FORM);
+        setSingleErrors({});
+      } else {
+        toastError('Could Not Issue Pass', res.message || 'Please check the details and try again.');
+      }
+    } catch {
+      toastError('Could Not Issue Pass', 'Something went wrong. Please try again.');
+    } finally {
+      setSingleSubmitting(false);
+    }
+  };
+
+  // ── Pre-Registered Visitors list ────────────────────────────────────────────
+  const viewVisitors = async (event: RITGateEvent) => {
+    setSelectedEvent(event);
+    setView('visitors');
+    setLoadingPasses(true);
+    try {
+      const res = await getEventPasses(event.id);
+      if (res.success) setPasses(res.passes as EventPassItem[]);
+      else toastError('Could Not Load', res.message || 'Failed to load pre-registered visitors.');
+    } finally {
+      setLoadingPasses(false);
+    }
+  };
+
+  const handleShare = async (pass: EventPassItem) => {
+    if (!selectedEvent || sharingId !== null) return;
+    setSharingId(pass.id);
+    try {
+      const result = await shareVisitorInfo({
+        name: pass.fullName,
+        eventName: selectedEvent.eventName,
+        eventDate: selectedEvent.eventDate,
+        venue: selectedEvent.venue,
+        manualEntryCode: pass.manualEntryCode,
+      });
+      if (result === 'shared') toastSuccess('Shared', `${pass.fullName}'s pass details were shared.`);
+      else if (result === 'copied') toastSuccess('Copied to Clipboard', `${pass.fullName}'s pass details were copied.`);
+      else if (result === 'unavailable') toastError('Share Unavailable', 'Sharing is not supported on this device or browser.');
+      else if (result === 'error') toastError('Share Failed', 'Could not share the pass details.');
+      // 'cancelled' → user backed out of the native share sheet, no feedback needed
+    } finally {
+      setSharingId(null);
+    }
+  };
+
+  const handleDeleteConfirmed = async () => {
+    if (!confirmDelete || !selectedEvent) return;
+    setDeletingId(confirmDelete.id);
+    try {
+      const res = await deleteEventPass(selectedEvent.id, confirmDelete.id, staffCode);
+      if (res.success) {
+        setPasses(prev => prev.filter(p => p.id !== confirmDelete.id));
+        toastSuccess('Deleted', `${confirmDelete.fullName}'s pre-registration was deleted.`);
+      } else {
+        toastError('Delete Failed', res.message || 'Could not delete pre-registration.');
+      }
+    } catch {
+      toastError('Delete Failed', 'Could not delete pre-registration.');
+    } finally {
+      setDeletingId(null);
+      setConfirmDelete(null);
+    }
+  };
+
   const handleConfirm = async () => {
     if (!selectedEvent) return;
     const valid = parsedRows.filter(r => r.valid);
@@ -207,6 +350,7 @@ export default function StaffEventCSV() {
           total,
           issued: result.issued ?? (total - failed),
           failed,
+          skipped: result.skipped ?? 0,
           errors: result.errors || [],
         });
         setView('result');
@@ -263,7 +407,7 @@ export default function StaffEventCSV() {
               <span className="text-[28px] font-black text-emerald-600 leading-none">{uploadResult.issued}</span>
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Issued</span>
             </div>
-            <div className="flex-1 py-5 flex flex-col items-center gap-1.5">
+            <div className={cn('flex-1 py-5 flex flex-col items-center gap-1.5', !!uploadResult.skipped && 'border-r border-slate-100 dark:border-slate-800')}>
               <span className={cn(
                 'text-[28px] font-black leading-none',
                 uploadResult.failed > 0 ? 'text-rose-500' : 'text-slate-300 dark:text-slate-700'
@@ -272,7 +416,18 @@ export default function StaffEventCSV() {
               </span>
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Failed</span>
             </div>
+            {!!uploadResult.skipped && (
+              <div className="flex-1 py-5 flex flex-col items-center gap-1.5">
+                <span className="text-[28px] font-black text-amber-500 leading-none">{uploadResult.skipped}</span>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Skipped</span>
+              </div>
+            )}
           </div>
+          {!!uploadResult.skipped && (
+            <p className="text-[11px] font-bold text-slate-400 -mt-3 px-1">
+              {uploadResult.skipped} duplicate email{uploadResult.skipped !== 1 ? 's were' : ' was'} already registered and skipped.
+            </p>
+          )}
 
           {uploadResult.failed > 0 && uploadResult.errors && uploadResult.errors.length > 0 && (
             <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
@@ -310,6 +465,98 @@ export default function StaffEventCSV() {
             Done
           </button>
         </div>
+      </div>
+    );
+  }
+
+  // ─── Pre-Registered Visitors ────────────────────────────────────────────────
+  if (view === 'visitors' && selectedEvent) {
+    return (
+      <div className="min-h-screen lg:bg-transparent lg:min-h-0 bg-[#F8FAFC] dark:bg-slate-950">
+        <PageHeader title="Pre-Registered Visitors" onBack={() => { setView('events'); setSelectedEvent(null); setPasses([]); }} />
+        {isDesktop && <DesktopPageHeader title="Pre-Registered Visitors" subtitle={`${selectedEvent.eventName} · ${passes.length} issued`} />}
+        <div className="px-5 py-5 pb-28 space-y-4 lg:px-0 lg:py-0 lg:max-w-none">
+          <div className="bg-[var(--color-primary)] rounded-[24px] px-5 py-4 flex items-center gap-3">
+            <CalendarDays className="w-6 h-6 text-white/70 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-white font-black text-[15px] truncate">{selectedEvent.eventName}</p>
+              <p className="text-white/70 text-[12px] font-bold">
+                {passes.length} pre-registered visitor{passes.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+          </div>
+
+          {loadingPasses ? (
+            <SkeletonList count={4} />
+          ) : passes.length === 0 ? (
+            <EmptyState
+              icon={<Users className="w-8 h-8" />}
+              title="No Visitors Yet"
+              description="Upload a CSV or add a single participant to issue passes."
+              action={<button onClick={() => setView('upload')}
+                className="flex items-center gap-2 px-5 py-2.5 bg-[var(--color-primary)] rounded-2xl text-white text-[13px] font-black uppercase tracking-widest">
+                <UserPlus className="w-4 h-4" /> Add Participants
+              </button>}
+            />
+          ) : (
+            <div className="space-y-3">
+              {passes.map(pass => (
+                <motion.div key={pass.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                  className="bg-white dark:bg-slate-900 rounded-2xl p-4 flex items-center gap-3 shadow-sm border border-slate-100 dark:border-slate-800">
+                  <VisitorAvatar name={pass.fullName} photoUrl={pass.photoUrl} size={44} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-[14px] font-black text-slate-900 dark:text-white truncate">{pass.fullName}</p>
+                      {pass.status === 'EMAIL_FAILED' && (
+                        <span className="shrink-0 px-1.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[9px] font-black uppercase tracking-wide">
+                          Email Failed
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] font-bold text-slate-400 truncate">
+                      {pass.collegeName}{pass.department ? ` · ${pass.department}` : ''}
+                    </p>
+                    <p className="text-[11px] font-bold text-slate-400 truncate">{pass.email}</p>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => handleShare(pass)}
+                      disabled={sharingId === pass.id}
+                      aria-label={`Share ${pass.fullName}'s pass`}
+                      className="w-9 h-9 rounded-lg flex items-center justify-center text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10 active:scale-90 transition-all disabled:opacity-50"
+                    >
+                      {sharingId === pass.id
+                        ? <Loader2 className="w-4 h-4 animate-spin" />
+                        : <Share2 className="w-4 h-4" />}
+                    </button>
+                    <button
+                      onClick={() => setConfirmDelete(pass)}
+                      disabled={deletingId === pass.id}
+                      aria-label={`Delete ${pass.fullName}'s pre-registration`}
+                      className="w-9 h-9 rounded-lg flex items-center justify-center text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 active:scale-90 transition-all disabled:opacity-50"
+                    >
+                      {deletingId === pass.id
+                        ? <Loader2 className="w-4 h-4 animate-spin" />
+                        : <Trash2 className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <ConfirmationModal
+          visible={!!confirmDelete}
+          title="Delete Pre-Registration?"
+          message={confirmDelete ? `This will permanently delete ${confirmDelete.fullName}'s pass and QR code. This cannot be undone.` : ''}
+          confirmText="Delete"
+          cancelText="Cancel"
+          confirmColor="bg-rose-500 hover:bg-rose-600"
+          icon={<Trash2 className="w-9 h-9 text-rose-600" />}
+          onConfirm={handleDeleteConfirmed}
+          onCancel={() => setConfirmDelete(null)}
+        />
       </div>
     );
   }
@@ -457,8 +704,33 @@ export default function StaffEventCSV() {
   if (view === 'upload' && selectedEvent) {
     return (
       <div className="min-h-screen lg:bg-transparent lg:min-h-0 bg-[#F8FAFC] dark:bg-slate-950">
-        <PageHeader title="Upload Participants" onBack={() => { setView('events'); setSelectedEvent(null); }} />
-        {isDesktop && <DesktopPageHeader title="Upload Participants" subtitle="Upload and manage event visitor/pass data" />}
+        <PageHeader
+          title="Upload Participants"
+          onBack={() => { setView('events'); setSelectedEvent(null); }}
+          right={
+            <button
+              onClick={() => viewVisitors(selectedEvent)}
+              className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-slate-700 dark:text-white active:scale-90 transition-transform"
+              aria-label="View pre-registered visitors"
+            >
+              <Users className="w-5 h-5" />
+            </button>
+          }
+        />
+        {isDesktop && (
+          <DesktopPageHeader
+            title="Upload Participants"
+            subtitle="Upload and manage event visitor/pass data"
+            action={
+              <button
+                onClick={() => viewVisitors(selectedEvent)}
+                className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl text-slate-600 dark:text-slate-300 text-[13px] font-black uppercase tracking-widest"
+              >
+                <Users className="w-4 h-4" /> View Visitors
+              </button>
+            }
+          />
+        )}
         <div className="px-5 py-5 pb-28 space-y-5 lg:px-0 lg:py-0 lg:max-w-none">
           <div className="bg-[var(--color-primary)] rounded-[24px] px-5 py-4 flex items-center gap-3">
             <CalendarDays className="w-6 h-6 text-white/70 shrink-0" />
@@ -480,7 +752,9 @@ export default function StaffEventCSV() {
                 </span>
               ))}
             </div>
-            <p className="text-[11px] font-medium text-blue-600 dark:text-blue-400">Max 500 rows · Only .csv files accepted</p>
+            <p className="text-[11px] font-medium text-blue-600 dark:text-blue-400">
+              Max 500 rows · Can upload multiple times · Duplicate emails are skipped automatically
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -519,6 +793,57 @@ export default function StaffEventCSV() {
               </div>
             )}
           </div>
+
+          <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 shadow-sm p-5 space-y-4">
+            <div className="flex items-center gap-2">
+              <UserPlus className="w-5 h-5 text-[var(--color-primary)]" />
+              <p className="text-[14px] font-black text-slate-900 dark:text-white">Add Single Participant</p>
+            </div>
+            <p className="text-[11px] font-bold text-slate-400 -mt-2">
+              Type in details directly to issue a single QR pass. Duplicate emails are rejected.
+            </p>
+
+            <div className="space-y-3.5">
+              {([
+                { key: 'fullName', label: 'Full Name *', placeholder: 'Full Name' },
+                { key: 'email', label: 'Email *', placeholder: 'Email' },
+                { key: 'collegeName', label: 'College Name *', placeholder: 'College Name' },
+                { key: 'phone', label: 'Phone *', placeholder: 'Phone' },
+                { key: 'studentId', label: 'Student ID', placeholder: 'Student ID (optional)' },
+                { key: 'department', label: 'Department', placeholder: 'Department (optional)' },
+                { key: 'course', label: 'Course', placeholder: 'Course (optional)' },
+              ] as { key: keyof SingleParticipantForm; label: string; placeholder: string }[]).map(({ key, label, placeholder }) => (
+                <div key={key} className="space-y-1.5">
+                  <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{label}</label>
+                  <input
+                    value={singleForm[key]}
+                    disabled={singleSubmitting}
+                    onChange={e => setSingleForm(prev => ({ ...prev, [key]: e.target.value }))}
+                    placeholder={placeholder}
+                    className={cn(
+                      'w-full h-11 bg-slate-50 dark:bg-slate-800 border rounded-xl px-3.5 text-[13px] font-bold text-slate-900 dark:text-white placeholder:text-slate-400 outline-none focus:ring-4 focus:ring-[var(--color-primary)]/10 transition-all disabled:opacity-60',
+                      singleErrors[key]
+                        ? 'border-rose-300 focus:border-rose-400'
+                        : 'border-slate-100 dark:border-slate-700 focus:border-[var(--color-primary)]'
+                    )}
+                  />
+                  {singleErrors[key] && (
+                    <p className="text-[10px] font-bold text-rose-500 ml-1">{singleErrors[key]}</p>
+                  )}
+                </div>
+              ))}
+
+              <button
+                onClick={handleAddSingleParticipant}
+                disabled={singleSubmitting}
+                className="w-full h-12 bg-[var(--color-primary)] rounded-xl text-white font-black text-[13px] uppercase tracking-widest shadow-lg shadow-blue-100 dark:shadow-none flex items-center justify-center gap-2 disabled:opacity-60 active:scale-[0.98] transition-all"
+              >
+                {singleSubmitting
+                  ? <><Loader2 className="w-4 h-4 animate-spin" /> Issuing…</>
+                  : <><Send className="w-4 h-4" /> Issue Pass &amp; Send Email</>}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -554,9 +879,8 @@ export default function StaffEventCSV() {
             <div className="space-y-4">
               <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Your Assigned Events</p>
               {events.map(event => (
-                <motion.button key={event.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-                  onClick={() => selectEvent(event)}
-                  className="w-full bg-white dark:bg-slate-900 rounded-[28px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm text-left active:scale-[0.98] transition-all">
+                <motion.div key={event.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                  className="w-full bg-white dark:bg-slate-900 rounded-[28px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm text-left">
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex items-center gap-3.5 flex-1 min-w-0">
                       <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center shrink-0">
@@ -581,11 +905,23 @@ export default function StaffEventCSV() {
                       </div>
                     )}
                   </div>
-                  <div className="mt-4 h-9 bg-[var(--color-primary)]/10 rounded-xl flex items-center justify-center gap-2">
-                    <Upload className="w-4 h-4 text-[var(--color-primary)]" />
-                    <span className="text-[12px] font-black text-[var(--color-primary)] uppercase tracking-widest">Upload Participants CSV</span>
+                  <div className="mt-4 flex gap-2">
+                    <button
+                      onClick={() => selectEvent(event)}
+                      className="flex-1 h-9 bg-[var(--color-primary)]/10 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all"
+                    >
+                      <Upload className="w-4 h-4 text-[var(--color-primary)]" />
+                      <span className="text-[12px] font-black text-[var(--color-primary)] uppercase tracking-widest">Upload</span>
+                    </button>
+                    <button
+                      onClick={() => viewVisitors(event)}
+                      className="flex-1 h-9 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all"
+                    >
+                      <Users className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+                      <span className="text-[12px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-widest">Visitors</span>
+                    </button>
                   </div>
-                </motion.button>
+                </motion.div>
               ))}
             </div>
           )}

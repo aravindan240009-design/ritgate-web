@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   FileSpreadsheet, Upload, X, CheckCircle2, AlertCircle,
   CalendarDays, MapPin, Calendar, Send, Loader2,
-  RefreshCw, Info, PartyPopper
+  RefreshCw, Info, PartyPopper, Pencil, Trash2
 } from 'lucide-react';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useAuth } from '../../context/AuthContext';
@@ -13,6 +13,7 @@ import { getStaffEvents, uploadEventCsvPreview, confirmEventCsvUpload } from '..
 import PageHeader from '../../components/common/PageHeader';
 import TopRefreshControl from '../../components/common/TopRefreshControl';
 import { SkeletonList } from '../../components/ui/Skeleton';
+import Modal from '../../components/ui/Modal';
 import { cn } from '../../utils/cn';
 import type { RITGateEvent } from '../../types';
 import { useAdaptive } from '../../utils/useAdaptive';
@@ -40,6 +41,28 @@ interface ParsedRow {
   error?: string;
 }
 
+const EMAIL_RE = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+function validateRow(row: ParsedRow, allRows: ParsedRow[], index: number): ParsedRow {
+  const errors: string[] = [];
+  if (!row.full_name?.trim()) errors.push('full_name is required');
+  if (!row.college_name?.trim()) errors.push('college_name is required');
+  if (!row.phone?.trim()) errors.push('phone is required');
+  if (!row.email?.trim()) {
+    errors.push('email is required');
+  } else if (!EMAIL_RE.test(row.email.trim())) {
+    errors.push('invalid email format');
+  } else {
+    const dupe = allRows.some((r, i) => i !== index && r.email?.trim().toLowerCase() === row.email?.trim().toLowerCase());
+    if (dupe) errors.push('duplicate email');
+  }
+  return { ...row, valid: errors.length === 0, error: errors.length > 0 ? errors.join('; ') : undefined };
+}
+
+function revalidateAll(rows: ParsedRow[]): ParsedRow[] {
+  return rows.map((r, i) => validateRow(r, rows, i));
+}
+
 export default function StaffEventCSV() {
   usePageTitle('Event CSV Upload');
   const { isDesktop } = useAdaptive();
@@ -59,6 +82,8 @@ export default function StaffEventCSV() {
   const [csvError, setCsvError] = useState('');
   const [previewing, setPreviewing] = useState(false);
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [editDraft, setEditDraft] = useState<ParsedRow | null>(null);
 
   const loadEvents = useCallback(async () => {
     try {
@@ -118,25 +143,44 @@ export default function StaffEventCSV() {
       try {
         const res = await uploadEventCsvPreview(selectedEvent.id, staffCode, file);
         if (res.success && res.rows) {
-          setParsedRows((res.rows as any[]).map(r => ({
-            full_name: r.full_name || '',
+          const rows = (res.rows as any[]).map(r => ({
+            full_name: r.fullName ?? r.full_name ?? '',
             email: r.email || '',
-            college_name: r.college_name || '',
+            college_name: r.collegeName ?? r.college_name ?? '',
             phone: r.phone || '',
-            student_id: r.student_id || '',
+            student_id: r.studentId ?? r.student_id ?? '',
             department: r.department || '',
             course: r.course || '',
-            valid: !!r.full_name,
-            error: r.full_name ? undefined : 'full_name is required',
-          })));
+            valid: true,
+            error: undefined as string | undefined,
+          }));
+          setParsedRows(revalidateAll(rows));
+        } else {
+          setParsedRows(revalidateAll(localRows));
         }
         setView('preview');
       } catch {
-        if (localRows.length > 0) setView('preview');
+        if (localRows.length > 0) { setParsedRows(revalidateAll(localRows)); setView('preview'); }
         else setCsvError('Could not parse CSV — check the file format.');
       } finally { setPreviewing(false); }
     };
     reader.readAsText(file);
+  };
+
+  const deleteRow = (index: number) => {
+    setParsedRows(prev => revalidateAll(prev.filter((_, i) => i !== index)));
+  };
+
+  const openEdit = (index: number) => {
+    setEditIndex(index);
+    setEditDraft({ ...parsedRows[index] });
+  };
+
+  const saveEdit = () => {
+    if (editIndex === null || !editDraft) return;
+    setParsedRows(prev => revalidateAll(prev.map((r, i) => (i === editIndex ? editDraft : r))));
+    setEditIndex(null);
+    setEditDraft(null);
   };
 
   const handleConfirm = async () => {
@@ -145,16 +189,25 @@ export default function StaffEventCSV() {
     if (valid.length === 0) return toastError('No Valid Rows', 'Fix errors in the CSV and re-upload');
 
     await withLock(async () => {
-      const rows = valid.map(({ valid: _v, error: _e, ...rest }) => rest);
+      const rows = valid.map(r => ({
+        fullName: r.full_name,
+        email: r.email,
+        collegeName: r.college_name,
+        phone: r.phone,
+        studentId: r.student_id || undefined,
+        department: r.department || undefined,
+        course: r.course || undefined,
+      }));
       const res = await confirmEventCsvUpload(selectedEvent.id, staffCode, rows);
       if (res.success) {
-        const total = valid.length;
-        const failed = (res as any).failed ?? 0;
+        const result = (res as any).result || {};
+        const total = result.total ?? valid.length;
+        const failed = result.failed ?? 0;
         setUploadResult({
           total,
-          issued: total - failed,
+          issued: result.issued ?? (total - failed),
           failed,
-          errors: (res as any).errors || [],
+          errors: result.errors || [],
         });
         setView('result');
         loadEvents();
@@ -302,19 +355,43 @@ export default function StaffEventCSV() {
             </div>
             <div className="divide-y divide-slate-50 dark:divide-slate-800/50">
               {parsedRows.map((row, i) => (
-                <div key={i} className={cn('flex items-center gap-3 px-5 py-3', !row.valid ? 'bg-rose-50/30 dark:bg-rose-900/10' : '')}>
+                <div key={i} className={cn('flex items-start gap-3 px-5 py-3', !row.valid ? 'bg-rose-50/30 dark:bg-rose-900/10' : '')}>
                   {row.valid
-                    ? <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                    : <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />}
+                    ? <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                    : <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />}
                   <div className="flex-1 min-w-0">
                     <p className={cn('text-[13px] font-black truncate', row.valid ? 'text-slate-900 dark:text-white' : 'text-rose-600 dark:text-rose-400')}>
                       {row.full_name || '(empty)'}
                     </p>
                     {row.email && <p className="text-[11px] font-bold text-slate-400 truncate">{row.email}</p>}
-                    {row.error && <p className="text-[10px] font-bold text-rose-500">{row.error}</p>}
+                    {(row.college_name || row.phone) && (
+                      <p className="text-[11px] font-bold text-slate-400 truncate">{row.college_name}{row.college_name && row.phone ? ' · ' : ''}{row.phone}</p>
+                    )}
+                    {row.error && <p className="text-[10px] font-bold text-rose-500 mt-0.5">{row.error}</p>}
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => openEdit(i)}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10 active:scale-90 transition-all"
+                      aria-label="Edit row"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => deleteRow(i)}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 active:scale-90 transition-all"
+                      aria-label="Delete row"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               ))}
+              {parsedRows.length === 0 && (
+                <div className="px-5 py-10 text-center">
+                  <p className="text-[12px] font-bold text-slate-400">No participants left. Go back and re-upload.</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -328,6 +405,50 @@ export default function StaffEventCSV() {
               : <><Send className="w-5 h-5" /> Confirm &amp; Create {validRows.length} Pass{validRows.length !== 1 ? 'es' : ''}</>}
           </button>
         </div>
+
+        <Modal
+          isOpen={editIndex !== null && !!editDraft}
+          onClose={() => { setEditIndex(null); setEditDraft(null); }}
+          title={`Edit Row ${editIndex !== null ? editIndex + 1 : ''}`}
+          size="md"
+        >
+          {editDraft && (
+            <div className="space-y-3.5">
+              {([
+                { key: 'full_name', label: 'Full Name *' },
+                { key: 'email', label: 'Email *' },
+                { key: 'college_name', label: 'College Name *' },
+                { key: 'phone', label: 'Phone *' },
+                { key: 'student_id', label: 'Student ID' },
+                { key: 'department', label: 'Department' },
+                { key: 'course', label: 'Course' },
+              ] as { key: keyof ParsedRow; label: string }[]).map(({ key, label }) => (
+                <div key={key} className="space-y-1.5">
+                  <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{label}</label>
+                  <input
+                    value={(editDraft[key] as string) || ''}
+                    onChange={e => setEditDraft(prev => prev ? { ...prev, [key]: e.target.value } : prev)}
+                    className="w-full h-11 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl px-3.5 text-[13px] font-bold text-slate-900 dark:text-white placeholder:text-slate-400 outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/10 transition-all"
+                  />
+                </div>
+              ))}
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => { setEditIndex(null); setEditDraft(null); }}
+                  className="flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-[13px]"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveEdit}
+                  className="flex-1 h-11 rounded-xl bg-[var(--color-primary)] text-white font-black text-[13px] uppercase tracking-widest"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          )}
+        </Modal>
       </div>
     );
   }

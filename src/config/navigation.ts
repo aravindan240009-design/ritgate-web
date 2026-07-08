@@ -10,6 +10,7 @@ import {
   Clock,
   CalendarDays,
   LogOut,
+  FileSpreadsheet,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -32,6 +33,7 @@ export function getNavItems(role: string): NavItem[] {
       return [
         { path: '/dashboard', label: 'Home', icon: Home },
         { path: '/new-pass', label: 'New Pass', icon: Plus },
+        { path: '/event-csv', label: 'Events', icon: FileSpreadsheet },
         { path: '/my-requests', label: 'My Requests', icon: Clock },
         { path: '/profile', label: 'Profile', icon: User },
       ];

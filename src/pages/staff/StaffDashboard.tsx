@@ -33,6 +33,7 @@ import TopRefreshControl from '../../components/common/TopRefreshControl';
 import { SkeletonList } from '../../components/ui/Skeleton';
 import GatePassQRModal from '../../components/common/GatePassQRModal';
 import SinglePassDetailsModal from '../../components/common/SinglePassDetailsModal';
+import MyRequestsBulkModal from '../../components/common/MyRequestsBulkModal';
 import { cn } from '../../utils/cn';
 import type { Staff } from '../../types';
 import { formatDateTime, relativeTime, isToday } from '../../utils/dateUtils';
@@ -65,6 +66,7 @@ export default function StaffDashboard() {
   
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showBulkModal, setShowBulkModal] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [qrData, setQrData] = useState<{ code: string; manual: string | undefined; expires: string | undefined } | null>(null);
   const [processing, setProcessing] = useState(false);
@@ -171,6 +173,7 @@ export default function StaffDashboard() {
          if (res.success) {
            showToastSuccess('Approved', 'Request authorized successfully');
            setShowDetailModal(false);
+           setShowBulkModal(false);
            loadData();
          } else showToastError('Failed', res.message);
        } catch (e) {
@@ -193,6 +196,7 @@ export default function StaffDashboard() {
          if (res.success) {
            showToastSuccess('Rejected', 'Request has been rejected');
            setShowDetailModal(false);
+           setShowBulkModal(false);
            loadData();
          } else showToastError('Failed', res.message);
        } catch (e) {
@@ -256,10 +260,10 @@ export default function StaffDashboard() {
     request.status === 'PENDING_STAFF' ||
     (request.requestType === 'VISITOR' && (request.status === 'PENDING' || request.status === 'PENDING_STAFF'));
 
-  const handleInlineReject = (request: any) => {
-    const reason = window.prompt('Reason for rejection');
-    if (!reason?.trim()) return;
-    handleReject(request.id, reason.trim());
+  const openReview = (request: any) => {
+    setSelectedRequest(request);
+    if (request.passType === 'BULK') setShowBulkModal(true);
+    else setShowDetailModal(true);
   };
 
   const getGreeting = () => {
@@ -427,7 +431,7 @@ export default function StaffDashboard() {
                                     size="sm"
                                     variant="danger"
                                     disabled={processing}
-                                    onClick={(e) => { e.stopPropagation(); handleInlineReject(request); }}
+                                    onClick={(e) => { e.stopPropagation(); openReview(request); }}
                                     className="h-9 rounded-xl px-3 text-[11px] uppercase tracking-widest"
                                   >
                                     Reject
@@ -437,7 +441,7 @@ export default function StaffDashboard() {
                               <Button
                                 size="sm"
                                 variant="secondary"
-                                onClick={(e) => { e.stopPropagation(); setSelectedRequest(request); setShowDetailModal(true); }}
+                                onClick={(e) => { e.stopPropagation(); openReview(request); }}
                                 className="h-9 rounded-xl px-3 text-[11px] uppercase tracking-widest"
                               >
                                 Details
@@ -462,10 +466,7 @@ export default function StaffDashboard() {
                   <motion.div 
                     key={request.id}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      setSelectedRequest(request);
-                      setShowDetailModal(true);
-                    }}
+                    onClick={() => openReview(request)}
                     className="bg-white dark:bg-slate-900 rounded-[28px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm active:bg-slate-50 transition-colors"
                   >
                     {/* Card Top Row */}
@@ -538,7 +539,7 @@ export default function StaffDashboard() {
                           Approve
                         </button>
                         <button
-                          onClick={(e) => { e.stopPropagation(); handleInlineReject(request); }}
+                          onClick={(e) => { e.stopPropagation(); openReview(request); }}
                           disabled={processing}
                           className="h-11 rounded-2xl bg-rose-600 text-white text-[11px] font-black uppercase tracking-widest disabled:opacity-50"
                         >
@@ -575,13 +576,34 @@ export default function StaffDashboard() {
         )}
 
         {selectedRequest && showDetailModal && (
-          <SinglePassDetailsModal 
+          <SinglePassDetailsModal
             isOpen={showDetailModal}
             onClose={closeRequestDetails}
             request={selectedRequest}
             onApprove={handleApprove}
             onReject={handleReject}
             showActions={activeTab === 'PENDING'}
+            processing={processing}
+          />
+        )}
+
+        {selectedRequest && showBulkModal && (
+          <MyRequestsBulkModal
+            isOpen={showBulkModal}
+            onClose={() => setShowBulkModal(false)}
+            requestId={selectedRequest.id}
+            userRole="STAFF"
+            viewerRole="STAFF"
+            currentUserId={staffCode}
+            requesterInfo={{
+              name: selectedRequest.requestedByStaffName || 'Staff',
+              role: selectedRequest.userType || 'Staff',
+              department: selectedRequest.department || ''
+            }}
+            onApprove={(req, remark) => handleApprove(selectedRequest.id, remark || '')}
+            onReject={(req, remark) => handleReject(selectedRequest.id, remark)}
+            showActions={activeTab === 'PENDING'}
+            processing={processing}
           />
         )}
       </AnimatePresence>

@@ -424,8 +424,8 @@ export default function HODDashboard() {
                            >
                              Approve
                            </button>
-                           <button 
-                             onClick={(e) => { e.stopPropagation(); setSelectedRequest(request); setShowDetailModal(true); }}
+                           <button
+                             onClick={(e) => { e.stopPropagation(); setSelectedRequest(request); if (isBulk) setShowBulkModal(true); else setShowDetailModal(true); }}
                              className="px-3.5 py-2 bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 rounded-xl text-rose-600 dark:text-rose-400 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-transform"
                            >
                              Reject
@@ -490,6 +490,7 @@ export default function HODDashboard() {
             onApprove={(req, remark) => handleApprove(selectedRequest.id, remark || '')}
             onReject={(req, remark) => handleReject(selectedRequest.id, remark)}
             showActions={activeTab === 'PENDING'}
+            processing={processing}
           />
         )}
       </AnimatePresence>

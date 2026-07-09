@@ -9,7 +9,14 @@ import Button from '../../components/ui/Button';
 import TopMenuBar from '../../components/common/TopMenuBar';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
-import { getHRAllRequests, approveGatePassByHR, rejectGatePassByHR } from '../../services/api.service';
+import {
+  getHRAllRequests,
+  getHRVisitorRequests,
+  approveGatePassByHR,
+  rejectGatePassByHR,
+  approveVisitorByHR,
+  rejectVisitorByHR,
+} from '../../services/api.service';
 import { useActionLock } from '../../context/ActionLockContext';
 import { isToday } from '../../utils/dateUtils';
 import { cn } from '../../utils/cn';
@@ -60,9 +67,22 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
     setIsLoading(true);
     setHasError(false);
     try {
-      const res = await getHRAllRequests(hrCode);
-      if (res.success) {
-        setRequests((res.requests || []).filter((r: any) => isToday(r.requestDate || r.createdAt || r.exitDateTime || '')));
+      const [gpRes, visitorRequests] = await Promise.all([
+        getHRAllRequests(hrCode),
+        getHRVisitorRequests(hrCode),
+      ]);
+      if (gpRes.success) {
+        const gpList = gpRes.requests || [];
+        const vList = (visitorRequests || []).map((v: any) => ({
+          ...v,
+          id: `VISITOR-${v.id}`,
+          passType: 'VISITOR',
+          requestType: 'VISITOR',
+          studentName: v.visitorName || v.name,
+          reason: v.purpose,
+        }));
+        const combined = [...gpList, ...vList];
+        setRequests(combined.filter((r: any) => isToday(r.requestDate || r.createdAt || r.exitDateTime || '')));
       } else setHasError(true);
     } catch { setHasError(true); }
     finally { setIsLoading(false); }
@@ -71,9 +91,9 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
   useEffect(() => { fetchRequests(); }, [fetchRequests]);
 
   const stats = {
-    pending: requests.filter(r => r.hrApproval === 'PENDING_HR' || r.status === 'PENDING_HR' || (r.requestType === 'VISITOR' && r.status === 'PENDING')).length,
-    approved: requests.filter(r => r.hrApproval === 'APPROVED' || (r.requestType === 'VISITOR' && r.status === 'APPROVED')).length,
-    rejected: requests.filter(r => r.hrApproval === 'REJECTED' || (r.requestType === 'VISITOR' && r.status === 'REJECTED')).length,
+    pending: requests.filter(r => r.hrApproval === 'PENDING_HR' || r.status === 'PENDING_HR' || (r.passType === 'VISITOR' && r.status === 'PENDING')).length,
+    approved: requests.filter(r => r.hrApproval === 'APPROVED' || (r.passType === 'VISITOR' && r.status === 'APPROVED')).length,
+    rejected: requests.filter(r => r.hrApproval === 'REJECTED' || (r.passType === 'VISITOR' && r.status === 'REJECTED')).length,
   };
 
   const filtered = requests.filter(r => {
@@ -82,7 +102,7 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
       (r.reason || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       (r.hodCode || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       String(r.id || '').includes(searchQuery);
-    const s = r.requestType === 'VISITOR' ? r.status : (r.hrApproval || r.status);
+    const s = r.passType === 'VISITOR' ? r.status : (r.hrApproval || r.status);
     let matchTab = false;
     if (activeTab === 'PENDING') matchTab = s === 'PENDING_HR' || s === 'PENDING';
     else if (activeTab === 'APPROVED') matchTab = s === 'APPROVED';
@@ -90,12 +110,20 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
     return matchSearch && matchTab;
   });
 
+  const toNumericId = (req: any) =>
+    typeof req.id === 'string' && req.id.startsWith('VISITOR-')
+      ? parseInt(req.id.replace('VISITOR-', ''), 10)
+      : req.id;
+
   const handleApprove = async (req: any) => {
     if (actionInFlight.current) return;
     actionInFlight.current = true;
     setProcessing(true);
     await withLock(async () => {
-      const res = await approveGatePassByHR(hrCode, req.id!);
+      const numericId = toNumericId(req);
+      const res = req.passType === 'VISITOR'
+        ? await approveVisitorByHR(numericId, hrCode)
+        : await approveGatePassByHR(hrCode, numericId);
       if (res.success) { showSuccess('Approved', 'Request approved successfully.'); setShowDetail(false); setShowBulkDetail(false); fetchRequests(); }
       else showError('Failed', res.message);
     }, 'Approving request...');
@@ -109,7 +137,10 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
     actionInFlight.current = true;
     setProcessing(true);
     await withLock(async () => {
-      const res = await rejectGatePassByHR(hrCode, req.id!, rejectReason.trim());
+      const numericId = toNumericId(req);
+      const res = req.passType === 'VISITOR'
+        ? await rejectVisitorByHR(numericId, rejectReason.trim())
+        : await rejectGatePassByHR(hrCode, numericId, rejectReason.trim());
       if (res.success) { showSuccess('Rejected', 'Request has been rejected.'); setShowReject(false); setShowDetail(false); setShowBulkDetail(false); setRejectReason(''); fetchRequests(); }
       else showError('Failed', res.message);
     }, 'Rejecting request...');
@@ -226,14 +257,14 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
                 </thead>
                 <tbody>
                   {filtered.map(req => {
-                    const isBulk = req.requestType === 'BULK';
-                    const isVisitor = req.requestType === 'VISITOR';
+                    const isBulk = req.passType === 'BULK';
+                    const isVisitor = req.passType === 'VISITOR';
                     const name = isBulk ? (req.requestedByStaffName || req.hodCode || 'Staff') : isVisitor ? (req.visitorName || req.studentName || 'Visitor') : (req.requestedByStaffName || req.studentName || req.regNo || `Request #${req.id}`);
                     const sub = isBulk ? `${req.userType || 'HOD'} - ${req.department || 'N/A'}` : isVisitor ? `${req.visitorPhone || ''} - ${req.department || 'Department'}` : `${req.requestedByStaffCode || req.regNo || 'N/A'} - ${req.department || 'Department'}`;
                     const statusVal = isVisitor ? req.status : (req.hrApproval || req.status);
                     const isPending = statusVal === 'PENDING_HR' || statusVal === 'PENDING';
                     return (
-                      <tr key={`${req.requestType}-${req.id}`} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35">
+                      <tr key={`${req.passType}-${req.id}`} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35">
                         <td>
                           <p className="font-bold text-slate-950 dark:text-white">{name}</p>
                           <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{sub}</p>
@@ -274,8 +305,8 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
         ) : (
           <AnimatePresence mode="popLayout">
             {filtered.map(req => {
-              const isBulk = req.requestType === 'BULK';
-              const isVisitor = req.requestType === 'VISITOR';
+              const isBulk = req.passType === 'BULK';
+              const isVisitor = req.passType === 'VISITOR';
               const name = isBulk ? (req.requestedByStaffName || req.hodCode || 'Staff') : isVisitor ? (req.visitorName || req.studentName || 'Visitor') : (req.requestedByStaffName || req.studentName || req.regNo || `Request #${req.id}`);
               const sub = isBulk ? `${req.userType || 'HOD'} • ${req.department || 'N/A'}` : isVisitor ? `${req.visitorPhone || ''} • ${req.department || 'Department'}` : `${req.requestedByStaffCode || req.regNo || 'N/A'} • ${req.department || 'Department'}`;
               const typeLabel = isBulk ? 'Bulk Gatepass' : isVisitor ? `${(req.role || 'VISITOR').toUpperCase()} Request` : 'Single Gatepass';
@@ -284,7 +315,7 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
               const dateStr = req.exitDateTime || req.requestDate || req.createdAt || '';
 
               return (
-                <motion.div key={`${req.requestType}-${req.id}`} layout initial={transitions.page.initial} animate={transitions.page.animate}>
+                <motion.div key={`${req.passType}-${req.id}`} layout initial={transitions.page.initial} animate={transitions.page.animate}>
                   <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 cursor-pointer active:scale-[0.99] transition-transform"
                     onClick={() => { setSelectedRequest(req); isBulk ? setShowBulkDetail(true) : setShowDetail(true); }}>
                     {/* Top row */}
@@ -363,7 +394,7 @@ export default function HRDashboard({ onNavigate }: HRDashboardProps = {}) {
               {selectedRequest.hodRemark && <div><span className="text-[10px] font-bold text-emerald-500 uppercase block mb-1">HOD Remark</span><span className="text-sm font-bold text-emerald-700 dark:text-emerald-400">"{selectedRequest.hodRemark}"</span></div>}
             </div>
             <RequestTimeline request={selectedRequest} />
-            {(selectedRequest.hrApproval === 'PENDING_HR' || selectedRequest.status === 'PENDING_HR' || (selectedRequest.requestType === 'VISITOR' && selectedRequest.status === 'PENDING')) && (
+            {(selectedRequest.hrApproval === 'PENDING_HR' || selectedRequest.status === 'PENDING_HR' || (selectedRequest.passType === 'VISITOR' && selectedRequest.status === 'PENDING')) && (
               <div className="flex gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <Button fullWidth variant="success" size="lg" onClick={() => handleApprove(selectedRequest)} disabled={processing}>Approve Request</Button>
                 <Button fullWidth variant="danger" size="lg" onClick={() => setShowReject(true)} disabled={processing}>Reject Request</Button>

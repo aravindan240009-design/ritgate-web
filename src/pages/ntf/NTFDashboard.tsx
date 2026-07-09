@@ -26,6 +26,7 @@ import TopMenuBar from '../../components/common/TopMenuBar';
 type Tab = 'PENDING' | 'APPROVED' | 'REJECTED';
 
 const getInitials = (name: string) => (name || 'NF').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+const fmtDate = (d: string) => { try { return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); } catch { return d; } };
 
 export default function NTFDashboard() {
   usePageTitle('Dashboard');
@@ -41,6 +42,8 @@ export default function NTFDashboard() {
   const [activeTab, setActiveTab] = useState<Tab>('PENDING');
   const [searchQuery, setSearchQuery] = useState('');
   const [processing, setProcessing] = useState<number | null>(null);
+  const [selectedRequest, setSelectedRequest] = useState<any | null>(null);
+  const [showDetail, setShowDetail] = useState(false);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -234,7 +237,7 @@ export default function NTFDashboard() {
                     const name = req.requesterName || req.name || 'Visitor';
                     const isProcessing = processing === id;
                     return (
-                      <tr key={id} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35">
+                      <tr key={id} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35" onClick={() => { setSelectedRequest(req); setShowDetail(true); }}>
                         <td>
                           <p className="font-bold text-slate-950 dark:text-white">{name}</p>
                           <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{req.email || req.visitorEmail || 'Website visitor'}</p>
@@ -246,11 +249,11 @@ export default function NTFDashboard() {
                         <td className="text-center">
                           {req.status === 'PENDING' ? (
                             <div className="flex justify-center gap-2">
-                              <Button variant="success" size="sm" onClick={() => handleApprove(req)} disabled={isProcessing}>Approve</Button>
-                              <Button variant="secondary" size="sm" onClick={() => handleReject(req)} disabled={isProcessing}>Reject</Button>
+                              <Button variant="success" size="sm" onClick={(e) => { e.stopPropagation(); handleApprove(req); }} disabled={isProcessing}>Approve</Button>
+                              <Button variant="secondary" size="sm" onClick={(e) => { e.stopPropagation(); handleReject(req); }} disabled={isProcessing}>Reject</Button>
                             </div>
                           ) : (
-                            <span className="text-xs font-bold text-slate-400">Reviewed</span>
+                            <Button size="sm" variant="secondary" onClick={(e) => { e.stopPropagation(); setSelectedRequest(req); setShowDetail(true); }}>View</Button>
                           )}
                         </td>
                       </tr>
@@ -280,7 +283,10 @@ export default function NTFDashboard() {
                 const isProcessing = processing === id;
                 return (
                   <motion.div key={id} layout initial={transitions.page.initial} animate={transitions.page.animate}>
-                    <Card className="p-4 border-slate-100 dark:border-slate-800 shadow-sm">
+                    <Card
+                      onClick={() => { setSelectedRequest(req); setShowDetail(true); }}
+                      className="p-4 border-slate-100 dark:border-slate-800 shadow-sm cursor-pointer"
+                    >
                       <div className="flex items-start gap-4">
                         <div className="w-11 h-11 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-400 border border-slate-100 dark:border-slate-700 text-sm uppercase shrink-0">
                           {getInitials(name)}
@@ -298,8 +304,8 @@ export default function NTFDashboard() {
                           </p>
                           {req.status === 'PENDING' && (
                             <div className="flex gap-2 mt-4">
-                              <Button variant="success" size="sm" fullWidth onClick={() => handleApprove(req)} disabled={isProcessing} className="h-9 rounded-xl text-[10px] font-black uppercase tracking-widest">Approve</Button>
-                              <Button variant="secondary" size="sm" fullWidth onClick={() => handleReject(req)} disabled={isProcessing} className="h-9 rounded-xl text-[10px] font-black uppercase tracking-widest">Reject</Button>
+                              <Button variant="success" size="sm" fullWidth onClick={(e) => { e.stopPropagation(); handleApprove(req); }} disabled={isProcessing} className="h-9 rounded-xl text-[10px] font-black uppercase tracking-widest">Approve</Button>
+                              <Button variant="secondary" size="sm" fullWidth onClick={(e) => { e.stopPropagation(); handleReject(req); }} disabled={isProcessing} className="h-9 rounded-xl text-[10px] font-black uppercase tracking-widest">Reject</Button>
                             </div>
                           )}
                         </div>
@@ -314,6 +320,33 @@ export default function NTFDashboard() {
       </div>
       )}
       </div>
+
+      {/* Detail Modal */}
+      <Modal isOpen={showDetail} onClose={() => setShowDetail(false)} title="Visitor Request Details" size="md" presentation="page">
+        {selectedRequest && (
+          <div className="space-y-5 pt-2">
+            <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
+              <div className="w-12 h-12 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-slate-600 dark:text-white text-base">{getInitials(selectedRequest.requesterName || selectedRequest.name || 'VR')}</div>
+              <div>
+                <p className="text-sm font-bold text-slate-900 dark:text-white uppercase">{selectedRequest.requesterName || selectedRequest.name || 'Visitor'}</p>
+                <p className="text-xs text-slate-400 mt-0.5">{selectedRequest.visitorEmail || selectedRequest.email || ''}</p>
+                {selectedRequest.visitorPhone && <p className="text-xs text-slate-400">{selectedRequest.visitorPhone}</p>}
+              </div>
+            </div>
+            <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-4 space-y-3">
+              {selectedRequest.purpose && <div><span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Purpose</span><span className="text-sm font-bold text-slate-900 dark:text-white">{selectedRequest.purpose}</span></div>}
+              <div><span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Requested</span><span className="text-sm text-slate-600 dark:text-slate-300">{fmtDate(selectedRequest.createdAt || '')}</span></div>
+              <div><span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Status</span><span className={cn('text-sm font-bold uppercase', selectedRequest.status === 'APPROVED' ? 'text-emerald-600' : selectedRequest.status === 'REJECTED' ? 'text-rose-600' : 'text-amber-600')}>{selectedRequest.status}</span></div>
+            </div>
+            {selectedRequest.status === 'PENDING' && (
+              <div className="flex gap-3">
+                <Button fullWidth variant="success" size="lg" onClick={() => { setShowDetail(false); handleApprove(selectedRequest); }} disabled={processing === (selectedRequest.requestId || selectedRequest.id)}>Approve</Button>
+                <Button fullWidth variant="danger" size="lg" onClick={() => { setShowDetail(false); handleReject(selectedRequest); }} disabled={processing === (selectedRequest.requestId || selectedRequest.id)}>Reject</Button>
+              </div>
+            )}
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

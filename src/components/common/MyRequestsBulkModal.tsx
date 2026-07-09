@@ -10,6 +10,7 @@ import { isPdfAttachment } from '../../utils/attachmentUtils';
 import Badge from '../ui/Badge';
 import GatePassQRModal from './GatePassQRModal';
 import Button from '../ui/Button';
+import ConfirmationModal from './ConfirmationModal';
 
 interface MyRequestsBulkModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ interface MyRequestsBulkModalProps {
   onApprove?: (req: any, remark?: string) => Promise<void>;
   onReject?: (req: any, remark: string) => Promise<void>;
   showActions?: boolean;
+  processing?: boolean;
 }
 
 export default function MyRequestsBulkModal({
@@ -35,6 +37,7 @@ export default function MyRequestsBulkModal({
   onApprove,
   onReject,
   showActions,
+  processing: externalProcessing,
 }: MyRequestsBulkModalProps) {
   const [loading, setLoading] = useState(true);
   const [details, setDetails] = useState<any>(null);
@@ -45,11 +48,18 @@ export default function MyRequestsBulkModal({
   const isPdf = isPdfAttachment(details?.attachmentUri);
   const [participants, setParticipants] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [remark, setRemark] = useState('');
+  const [processing, setProcessing] = useState(false);
+  const isProcessing = externalProcessing ?? processing;
+  const [showApproveConfirm, setShowApproveConfirm] = useState(false);
+  const [showRejectConfirm, setShowRejectConfirm] = useState(false);
+  const [showRemarkError, setShowRemarkError] = useState(false);
 
   useEffect(() => {
     if (isOpen && requestId) {
       loadDetails();
       setShowQR(false);
+      setRemark('');
     }
   }, [isOpen, requestId]);
 
@@ -284,38 +294,79 @@ export default function MyRequestsBulkModal({
         {/* Footer */}
         {!loading && !error && (
           <footer className="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 p-4 pb-safe space-y-3 shadow-[0_-8px_24px_rgba(0,0,0,0.05)] lg:p-5">
-            {isApproved && hasQR && isQROwner && (
-              <Button
-                variant="success"
-                fullWidth
-                size="xl"
-                icon={<QrCode className="w-5 h-5" />}
-                onClick={() => setShowQR(true)}
-              >
-                View QR & Manual Code
-              </Button>
+            {showActions ? (
+              <>
+                <textarea
+                  value={remark}
+                  onChange={(e) => setRemark(e.target.value)}
+                  placeholder="Add review notes (required for rejection)..."
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-blue-500 transition-all outline-none resize-none"
+                  rows={2}
+                  disabled={isProcessing}
+                />
+                <div className="flex gap-3">
+                  <Button
+                    variant="danger"
+                    fullWidth
+                    size="xl"
+                    icon={<XCircle className="w-5 h-5" />}
+                    onClick={() => {
+                      if (!remark.trim()) setShowRemarkError(true);
+                      else setShowRejectConfirm(true);
+                    }}
+                    disabled={isProcessing}
+                  >
+                    Reject
+                  </Button>
+                  <Button
+                    variant="success"
+                    fullWidth
+                    size="xl"
+                    icon={<CheckCircle2 className="w-5 h-5" />}
+                    onClick={() => setShowApproveConfirm(true)}
+                    isLoading={isProcessing}
+                    disabled={isProcessing}
+                  >
+                    Approve
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                {isApproved && hasQR && isQROwner && (
+                  <Button
+                    variant="success"
+                    fullWidth
+                    size="xl"
+                    icon={<QrCode className="w-5 h-5" />}
+                    onClick={() => setShowQR(true)}
+                  >
+                    View QR & Manual Code
+                  </Button>
+                )}
+                {participants.length > 0 && (
+                  <Button
+                    variant="primary"
+                    fullWidth
+                    size="xl"
+                    icon={<Users className="w-5 h-5" />}
+                    onClick={() => setShowParticipants(true)}
+                    className="text-white"
+                  >
+                    View Participants ({participants.length})
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  fullWidth
+                  size="xl"
+                  onClick={onClose}
+                  className="border-slate-200 bg-white/85 text-slate-700 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-300"
+                >
+                  Close
+                </Button>
+              </>
             )}
-            {participants.length > 0 && (
-              <Button
-                variant="primary"
-                fullWidth
-                size="xl"
-                icon={<Users className="w-5 h-5" />}
-                onClick={() => setShowParticipants(true)}
-                className="text-white"
-              >
-                View Participants ({participants.length})
-              </Button>
-            )}
-            <Button
-              variant="outline"
-              fullWidth
-              size="xl"
-              onClick={onClose}
-              className="border-slate-200 bg-white/85 text-slate-700 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-300"
-            >
-              Close
-            </Button>
           </footer>
         )}
         </div>
@@ -406,6 +457,48 @@ export default function MyRequestsBulkModal({
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Remark required */}
+        <ConfirmationModal
+          visible={showRemarkError}
+          title="Remark Required"
+          message="Please add a reason for rejection in the review notes before rejecting."
+          confirmText="OK"
+          cancelText=""
+          onConfirm={() => setShowRemarkError(false)}
+          onCancel={() => setShowRemarkError(false)}
+        />
+
+        {/* Approve confirmation */}
+        <ConfirmationModal
+          visible={showApproveConfirm}
+          title="Approve Bulk Pass"
+          message="Are you sure you want to approve this bulk gate pass request?"
+          confirmText="Approve"
+          onConfirm={async () => {
+            setShowApproveConfirm(false);
+            setProcessing(true);
+            if (onApprove) await onApprove(requestId, remark);
+            setProcessing(false);
+          }}
+          onCancel={() => setShowApproveConfirm(false)}
+        />
+
+        {/* Reject confirmation */}
+        <ConfirmationModal
+          visible={showRejectConfirm}
+          title="Reject Bulk Pass"
+          message="Are you sure you want to reject this bulk gate pass request?"
+          confirmText="Reject"
+          confirmColor="bg-rose-500 hover:bg-rose-600"
+          onConfirm={async () => {
+            setShowRejectConfirm(false);
+            setProcessing(true);
+            if (onReject) await onReject(requestId, remark);
+            setProcessing(false);
+          }}
+          onCancel={() => setShowRejectConfirm(false)}
+        />
       </motion.div>
     </AnimatePresence>,
     document.body,

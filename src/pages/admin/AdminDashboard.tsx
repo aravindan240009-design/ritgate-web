@@ -19,6 +19,7 @@ import EmptyState from '../../components/ui/EmptyState';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { getVisitorRequestsForStaff } from '../../services/api.service';
+import SinglePassDetailsModal from '../../components/common/SinglePassDetailsModal';
 import { relativeTime } from '../../utils/dateUtils';
 import { cn } from '../../utils/cn';
 import { transitions } from '../../design-system/animations';
@@ -47,6 +48,26 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
   const [hasError, setHasError] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('PENDING');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedRequest, setSelectedRequest] = useState<any | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+
+  const openDetail = (req: any) => {
+    setSelectedRequest({
+      id: req.requestId || req.id,
+      studentName: req.requesterName || req.name || 'Visitor',
+      regNo: req.visitorPhone || req.phone || '',
+      department: req.department || '',
+      purpose: req.purpose || '',
+      reason: req.purpose || '',
+      requestDate: req.visitDate || req.createdAt,
+      visitDate: req.visitDate,
+      status: req.status,
+      requestType: 'VISITOR',
+      role: req.role || req.type || 'VISITOR',
+      staffApproval: req.status,
+    });
+    setShowDetailModal(true);
+  };
 
   const adminName = (user as any)?.staffName || (user as any)?.name || 'Admin Officer';
 
@@ -238,7 +259,7 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
                       <td className="max-w-[360px] truncate">{req.purpose || 'Campus Visit'}</td>
                       <td>{relativeTime(req.createdAt)}</td>
                       <td><Badge status={req.status} size="sm" /></td>
-                      <td className="text-center"><Button size="sm" variant="secondary">View</Button></td>
+                      <td className="text-center"><Button size="sm" variant="secondary" onClick={() => openDetail(req)}>View</Button></td>
                     </tr>
                   ))}
                 </tbody>
@@ -273,7 +294,11 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
             <AnimatePresence mode="popLayout">
               {filtered.map((req, i) => (
                 <motion.div key={req.requestId || req.id || i} layout initial={transitions.page.initial} animate={transitions.page.animate}>
-                  <Card hover className="group active:scale-[0.99] transition-all border-slate-100 dark:border-slate-800 shadow-sm">
+                  <Card
+                    hover
+                    onClick={() => openDetail(req)}
+                    className="group active:scale-[0.99] transition-all border-slate-100 dark:border-slate-800 shadow-sm cursor-pointer"
+                  >
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-4 flex-1 min-w-0">
                         <div className="w-11 h-11 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-400 border border-slate-100 dark:border-slate-700 text-sm uppercase">
@@ -305,6 +330,16 @@ export default function AdminDashboard({ onNavigate, onLogout }: AdminDashboardP
       </div>
       )}
       </div>
+
+      {selectedRequest && (
+        <SinglePassDetailsModal
+          isOpen={showDetailModal}
+          onClose={() => setShowDetailModal(false)}
+          request={selectedRequest}
+          showActions={false}
+          viewerRole="admin"
+        />
+      )}
     </div>
   );
 }

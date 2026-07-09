@@ -8,7 +8,6 @@ import {
   BookOpen,
   ScanLine,
   Clock,
-  CalendarDays,
   LogOut,
   FileSpreadsheet,
 } from 'lucide-react';
@@ -49,7 +48,6 @@ export function getNavItems(role: string): NavItem[] {
       return [
         { path: '/dashboard', label: 'Home', icon: Home },
         { path: '/new-pass', label: 'New Pass', icon: Plus },
-        { path: '/hod-events', label: 'Events', icon: CalendarDays },
         { path: '/my-requests', label: 'My Requests', icon: Clock },
         { path: '/profile', label: 'Profile', icon: User },
       ];

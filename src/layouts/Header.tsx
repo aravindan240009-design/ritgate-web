@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CalendarDays, Plus } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
 import AppHeader from '../components/common/AppHeader';
 import NotificationBell from '../components/common/NotificationBell';
 import { useAuth } from '../context/AuthContext';
@@ -116,10 +115,6 @@ const routeCopy: Record<string, Omit<HeaderCopy, 'label'>> = {
     title: 'Bulk Student Pass',
     subtitle: 'Create and manage gate passes for multiple students at once.',
   },
-  '/hod-events': {
-    title: 'Events',
-    subtitle: 'Manage event access, participants, and visitor pass workflows.',
-  },
   '/event-csv': {
     title: 'Event CSV',
     subtitle: 'Upload and review participant data for event visitor passes.',
@@ -146,16 +141,6 @@ export default function Header({ onMenuClick, sidebarCollapsed }: HeaderProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, role } = useAuth();
-
-  // The HOD Events page reports its active sub-view ('list' | 'create' |
-  // 'coordinators'); the "New Event" button only makes sense on the list.
-  const [hodEventsView, setHodEventsView] = useState<string>('list');
-  useEffect(() => {
-    const handler = (e: Event) => setHodEventsView((e as CustomEvent).detail || 'list');
-    window.addEventListener('ritgate:hod-events-view', handler);
-    return () => window.removeEventListener('ritgate:hod-events-view', handler);
-  }, []);
-  useEffect(() => { setHodEventsView('list'); }, [location.pathname]);
 
   const userName = getUserName(user);
   const staticRoute = routeCopy[location.pathname];
@@ -201,15 +186,7 @@ export default function Header({ onMenuClick, sidebarCollapsed }: HeaderProps) {
       showBack={showBack}
       onBack={handleBack}
       actions={
-        (location.pathname === '/hod-events' && hodEventsView === 'list') ? (
-          <button
-            type="button"
-            onClick={() => window.dispatchEvent(new CustomEvent('ritgate:new-event'))}
-            className="flex h-11 items-center gap-2 rounded-2xl bg-[var(--color-primary)] px-5 text-[12px] font-black uppercase tracking-widest text-white shadow-md transition-all hover:brightness-110 active:scale-95"
-          >
-            <Plus className="h-4 w-4" /> New Event
-          </button>
-        ) : (location.pathname === '/gate-logs' && (role === 'HR' || role === 'ADMIN_OFFICER')) ? null : (
+        (location.pathname === '/gate-logs' && (role === 'HR' || role === 'ADMIN_OFFICER')) ? null : (
           <>
             <div className="hidden items-center gap-2 rounded-2xl border border-white/60 bg-white/70 px-4 py-2.5 text-sm font-bold text-slate-600 shadow-[0_14px_34px_-28px_rgba(15,23,42,0.75)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-200 dark:shadow-none lg:flex">
               <CalendarDays className="h-4 w-4 text-[var(--color-primary)]" />

@@ -39,7 +39,6 @@ const HODDashboard = lazy(() => import('../pages/hod/HODDashboard'));
 const HODMyRequests = lazy(() => import('../pages/hod/HODMyRequests'));
 const HODNewPass = lazy(() => import('../pages/hod/HODNewPass'));
 const HODBulkPass = lazy(() => import('../pages/hod/HODBulkPass'));
-const HODEvents = lazy(() => import('../pages/hod/HODEvents'));
 
 // HR
 const HRDashboard = lazy(() => import('../pages/hr/HRDashboard'));
@@ -143,9 +142,6 @@ export default function AppRoutes() {
                 : <StaffBulkPassPage />}
             </ProtectedRoute>
           } />
-
-          {/* HOD Events */}
-          <Route path="/hod-events" element={<ProtectedRoute allowedRoles={['HOD']}><HODEvents /></ProtectedRoute>} />
 
           {/* Staff Event CSV */}
           <Route path="/event-csv" element={<ProtectedRoute allowedRoles={['STAFF']}><StaffEventCSV /></ProtectedRoute>} />

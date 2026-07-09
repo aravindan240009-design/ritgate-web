@@ -750,111 +750,11 @@ export async function markAllNotificationsRead(userId: string): Promise<ApiRespo
 // EVENTS
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export async function createEvent(hodCode: string, eventName: string, eventDate: string, venue: string): Promise<ApiResponse> {
-  const payloads = [
-    { hodCode, eventName, eventDate, venue },
-    { hod_code: hodCode, event_name: eventName, event_date: eventDate, venue },
-  ];
-
-  let lastMessage = 'Could not create event';
-  for (const payload of payloads) {
-    try {
-      const { data } = await api.post('/events', payload);
-      // Backend returns { status: "SUCCESS", message, eventId, event } with no
-      // `success` field — normalize it (mirrors the mobile app) so the UI
-      // doesn't treat a successful create as a failure.
-      const ok = data?.success === true || data?.status === 'SUCCESS' ||
-        data?.status === 'success' || data?.eventId != null || data?.id != null;
-      if (ok) return { success: true, message: data?.message || 'Event created successfully', ...data };
-      lastMessage = data?.message || lastMessage;
-    }
-    catch (e) { lastMessage = extractError(e); }
-  }
-  return { success: false, message: lastMessage };
-}
-
-export async function getHODEvents(hodCode: string): Promise<{ success: boolean; events: any[] }> {
-  try {
-    const { data } = await api.get(`/events/hod/${encodeURIComponent(hodCode)}`);
-    return { success: true, events: data.events || data.data || (Array.isArray(data) ? data : []) };
-  } catch { return { success: false, events: [] }; }
-}
-
 export async function getStaffEvents(staffCode: string): Promise<{ success: boolean; events: any[] }> {
   try {
     const { data } = await api.get(`/events/coordinator/${encodeURIComponent(staffCode)}`);
     return { success: true, events: data.events || data.data || (Array.isArray(data) ? data : []) };
   } catch { return { success: false, events: [] }; }
-}
-
-export async function getEventCoordinators(eventId: number): Promise<{ success: boolean; coordinators: any[] }> {
-  try {
-    const { data } = await api.get(`/events/${eventId}/coordinators`);
-    return { success: true, coordinators: data.coordinators || data.data || (Array.isArray(data) ? data : []) };
-  } catch { return { success: false, coordinators: [] }; }
-}
-
-export async function assignCoordinators(eventId: number, hodCode: string, staffCodes: string[]): Promise<ApiResponse> {
-  const uniqueStaffCodes = [...new Set(staffCodes.map(code => code.trim()).filter(Boolean))];
-  if (uniqueStaffCodes.length === 0) {
-    return { success: false, message: 'No staff selected' };
-  }
-
-  const bulkPayloads = [
-    { hodCode, staffCodes: uniqueStaffCodes },
-    { hodCode, coordinatorCodes: uniqueStaffCodes },
-    { hod_code: hodCode, staff_codes: uniqueStaffCodes },
-    { hod_code: hodCode, coordinator_codes: uniqueStaffCodes },
-  ];
-
-  let lastMessage = 'Could not assign coordinators';
-  for (const payload of bulkPayloads) {
-    try {
-      const { data } = await api.post(`/events/${eventId}/coordinators`, payload);
-      // Backend replies { status: "SUCCESS", ... } with no `success` field.
-      if (data?.success !== false) return { success: true, message: data?.message || 'Coordinators assigned', ...data };
-      lastMessage = data?.message || lastMessage;
-    }
-    catch (e) { lastMessage = extractError(e); }
-  }
-
-  for (const staffCode of uniqueStaffCodes) {
-    const singlePayloads = [
-      { hodCode, staffCode },
-      { hodCode, coordinatorCode: staffCode },
-      { hod_code: hodCode, staff_code: staffCode },
-      { hod_code: hodCode, coordinator_code: staffCode },
-    ];
-
-    let assigned = false;
-    for (const payload of singlePayloads) {
-      try {
-        const res = (await api.post(`/events/${eventId}/coordinators`, payload)).data;
-        if (res?.success === false) {
-          lastMessage = res.message || lastMessage;
-          continue;
-        }
-        assigned = true;
-        break;
-      } catch (e) {
-        lastMessage = extractError(e);
-      }
-    }
-
-    if (!assigned) {
-      return { success: false, message: lastMessage };
-    }
-  }
-
-  return { success: true, message: 'Coordinators assigned' };
-}
-
-export async function removeCoordinator(eventId: number, staffCode: string): Promise<ApiResponse> {
-  try {
-    const { data } = await api.delete(`/events/${eventId}/coordinators/${encodeURIComponent(staffCode)}`);
-    return { success: data?.success !== false, message: data?.message || 'Coordinator removed', ...data };
-  }
-  catch (e) { return { success: false, message: extractError(e) }; }
 }
 
 export async function uploadEventCsvPreview(eventId: number, staffCode: string, file: File): Promise<{ success: boolean; rows?: any[]; message?: string }> {

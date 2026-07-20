@@ -92,30 +92,6 @@ const handleSendOTP = async (id?: string) => {
         background="/auth-bg-login.jpg"
         headline="Secure access, beautifully simple."
         subline="Sign in to manage gate passes, approvals and campus access — all in one place."
-        headerExtra={
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }}>
-            {[
-              { icon: <Fingerprint size={13} />, label: 'Biometric' },
-              { icon: <QrCode size={13} />, label: 'Badge Scan' },
-              { icon: <Zap size={13} />, label: 'Instant' },
-            ].map((chip, i) => (
-              <motion.span
-                key={i}
-                whileHover={{ y: -2, backgroundColor: '#E2E8F0' }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  padding: '6px 12px', borderRadius: 999,
-                  background: '#F1F5F9', border: '1px solid #E2E8F0',
-                  fontSize: 11, fontWeight: 700, color: '#1E293B',
-                  textTransform: 'uppercase', letterSpacing: 0.5, cursor: 'default',
-                }}
-              >
-                {chip.icon}{chip.label}
-              </motion.span>
-            ))}
-          </div>
-        }
       >
         <motion.div variants={container} initial="hidden" animate="show">
 

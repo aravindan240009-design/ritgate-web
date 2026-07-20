@@ -36,6 +36,10 @@ export default function AuthShell({ background, headline, subline, children, hea
 
   return (
     <div className="auth-shell">
+      {/* Background Glow Accents for Desktop & Tablet */}
+      <div className="auth-shell__bg-glow auth-shell__bg-glow--1" aria-hidden />
+      <div className="auth-shell__bg-glow auth-shell__bg-glow--2" aria-hidden />
+
       {/* Container for Centered Layout */}
       <div className="auth-shell__container">
         
@@ -51,27 +55,23 @@ export default function AuthShell({ background, headline, subline, children, hea
           <ArrowLeft size={20} />
         </motion.button>
 
-        {/* Branding (Centered above the card) */}
+        {/* Branding (Enlarged Logo & Clean Centered Alignment) */}
         <motion.div
           className="auth-shell__brand"
-          initial={{ opacity: 0, y: -12 }}
+          initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
         >
           <div className="auth-shell__logo-wrap">
-            <img src="/logo.png" alt="RIT Gate" className="auth-shell__logo" />
             <span className="auth-shell__logo-ring" aria-hidden />
+            <img src="/logo.png" alt="RIT Gate Logo" className="auth-shell__logo" />
           </div>
           <div className="auth-shell__brand-text">
-            <p className="auth-shell__brand-name">RIT GATE</p>
-            <p className="auth-shell__brand-tag">
-              <span className="auth-shell__live-dot" aria-hidden />
-              Secure Access Control System
-            </p>
+            <h1 className="auth-shell__brand-name">RIT GATE</h1>
           </div>
         </motion.div>
 
-        {/* Extra Header Content (e.g. Chips) */}
+        {/* Optional Header Extra (If present) */}
         {headerExtra && (
           <div className="auth-shell__header-extra">
             {headerExtra}
@@ -83,7 +83,7 @@ export default function AuthShell({ background, headline, subline, children, hea
           className="auth-shell__card"
           initial={{ opacity: 0, y: 22, scale: 0.985 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.18 }}
         >
           {children}
         </motion.div>
@@ -94,7 +94,6 @@ export default function AuthShell({ background, headline, subline, children, hea
         </div>
       </div>
 
-
       <style>{`
         .auth-shell {
           position: relative;
@@ -103,29 +102,58 @@ export default function AuthShell({ background, headline, subline, children, hea
           display: flex;
           align-items: center;
           justify-content: center;
-          background: #F6F8FC;
+          background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 50%, #E2E8F0 100%);
           color: #0F172A;
+          overflow-x: hidden;
           overflow-y: auto;
           width: 100%;
-          padding: 40px 20px;
+          padding: 48px 20px;
           box-sizing: border-box;
         }
+
         .dark .auth-shell {
-          background: #0B1120;
+          background: linear-gradient(135deg, #0B1120 0%, #0F172A 50%, #1E293B 100%);
           color: #F8FAFC;
+        }
+
+        /* Ambient Glows */
+        .auth-shell__bg-glow {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(100px);
+          pointer-events: none;
+          z-index: 0;
+          opacity: 0.45;
+        }
+        .auth-shell__bg-glow--1 {
+          width: 320px;
+          height: 320px;
+          top: 10%;
+          left: 50%;
+          transform: translateX(-50%);
+          background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+        .auth-shell__bg-glow--2 {
+          width: 400px;
+          height: 400px;
+          bottom: 5%;
+          left: 50%;
+          transform: translateX(-50%);
+          background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, rgba(255, 255, 255, 0) 70%);
         }
 
         .auth-shell__container {
           width: 100%;
-          max-width: 440px;
+          max-width: 460px;
           display: flex;
           flex-direction: column;
           align-items: center;
           position: relative;
+          z-index: 1;
         }
 
         .auth-shell__header-extra {
-          margin-bottom: 24px;
+          margin-bottom: 20px;
           display: flex;
           justify-content: center;
           width: 100%;
@@ -134,155 +162,204 @@ export default function AuthShell({ background, headline, subline, children, hea
         .auth-shell__back {
           position: absolute;
           left: 0;
-          top: -48px;
-          background: transparent;
-          border: none;
+          top: -44px;
+          background: rgba(255, 255, 255, 0.7);
+          backdrop-filter: blur(8px);
+          border: 1px solid rgba(226, 232, 240, 0.8);
           cursor: pointer;
-          color: #64748B;
+          color: #475569;
           display: flex;
           align-items: center;
           justify-content: center;
           width: 40px;
           height: 40px;
           border-radius: 50%;
-          transition: background 0.2s, color 0.2s;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+          transition: all 0.2s ease;
         }
         .auth-shell__back:hover {
-          background: rgba(148, 163, 184, 0.15);
+          background: #FFFFFF;
           color: #0F172A;
+          transform: translateX(-2px);
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
         }
         .dark .auth-shell__back {
+          background: rgba(30, 41, 59, 0.7);
+          border-color: rgba(255, 255, 255, 0.1);
           color: #94A3B8;
         }
         .dark .auth-shell__back:hover {
-          background: rgba(255, 255, 255, 0.08);
+          background: #1E293B;
           color: #FFFFFF;
         }
 
+        /* Branding: Enlarged Logo & Centered Title */
         .auth-shell__brand {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 12px;
-          margin-bottom: 24px;
+          justify-content: center;
+          gap: 16px;
+          margin-bottom: 28px;
           text-align: center;
+          width: 100%;
         }
+
         .auth-shell__logo-wrap {
           position: relative;
-          width: 60px;
-          height: 60px;
+          width: 96px;
+          height: 96px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
+
         .auth-shell__logo {
-          width: 60px;
-          height: 60px;
+          width: 96px;
+          height: 96px;
           border-radius: 50%;
           object-fit: cover;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.15), 0 4px 10px rgba(0,0,0,0.06);
           position: relative;
           z-index: 1;
+          background: #FFFFFF;
+          padding: 3px;
+          box-sizing: border-box;
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          transition: transform 0.3s ease;
         }
+        .auth-shell__logo-wrap:hover .auth-shell__logo {
+          transform: scale(1.04);
+        }
+
         .auth-shell__logo-ring {
           position: absolute;
-          inset: -4px;
+          inset: -6px;
           border-radius: 50%;
-          border: 1.5px solid rgba(37, 99, 235, 0.4);
-          animation: authPulseRing 2.8s ease-out infinite;
+          border: 2px solid rgba(37, 99, 235, 0.35);
+          animation: authPulseRing 3s ease-out infinite;
         }
         .dark .auth-shell__logo-ring {
           border-color: rgba(96, 165, 250, 0.4);
         }
         @keyframes authPulseRing {
-          0%   { transform: scale(0.85); opacity: 0.9; }
-          70%  { transform: scale(1.2); opacity: 0; }
-          100% { transform: scale(1.2); opacity: 0; }
+          0%   { transform: scale(0.92); opacity: 0.8; }
+          70%  { transform: scale(1.16); opacity: 0; }
+          100% { transform: scale(1.16); opacity: 0; }
         }
 
         .auth-shell__brand-text {
           display: flex;
           flex-direction: column;
           align-items: center;
+          justify-content: center;
         }
+
         .auth-shell__brand-name {
           margin: 0;
-          font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-          font-size: 24px;
+          font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+          font-size: 28px;
           font-weight: 800;
-          letter-spacing: 2px;
+          letter-spacing: 0.1em;
           color: #0F172A;
+          line-height: 1.1;
+          text-transform: uppercase;
         }
         .dark .auth-shell__brand-name {
           color: #FFFFFF;
         }
-        .auth-shell__brand-tag {
-          margin: 4px 0 0;
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 1px;
-          text-transform: uppercase;
-          color: #64748B;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-        .dark .auth-shell__brand-tag {
-          color: rgba(255,255,255,0.6);
-        }
-        .auth-shell__live-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: #10B981;
-          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-          animation: authLive 2s ease-out infinite;
-        }
-        @keyframes authLive {
-          0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55); }
-          70%  { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
 
+        /* Form Card */
         .auth-shell__card {
           width: 100%;
-          background: #FFFFFF;
-          border: 1px solid rgba(226, 232, 240, 0.8);
-          border-radius: 24px;
-          padding: 32px 28px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
+          background: rgba(255, 255, 255, 0.92);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          border-radius: 28px;
+          padding: 36px 32px;
+          box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.07), 0 4px 12px rgba(0, 0, 0, 0.02);
           box-sizing: border-box;
+          transition: all 0.3s ease;
         }
         .dark .auth-shell__card {
-          background: #0F172A;
+          background: rgba(15, 23, 42, 0.88);
           border-color: rgba(255, 255, 255, 0.08);
-          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 24px 56px rgba(0, 0, 0, 0.45);
         }
 
         .auth-shell__footer {
-          margin-top: 24px;
-          font-size: 9px;
+          margin-top: 28px;
+          font-size: 10px;
           font-weight: 800;
-          letter-spacing: 0.15em;
+          letter-spacing: 0.18em;
           color: #94A3B8;
           text-transform: uppercase;
+          text-align: center;
         }
         .dark .auth-shell__footer {
           color: #475569;
         }
 
-        @media (max-width: 480px) {
+        /* Breakpoints for Tablet & Phone Views */
+        @media (min-width: 768px) and (max-width: 1024px) {
+          /* Tablet View Specifics */
           .auth-shell {
-            padding: 24px 16px;
+            padding: 40px 24px;
           }
           .auth-shell__container {
-            padding-top: 40px;
+            max-width: 450px;
+          }
+          .auth-shell__logo-wrap, .auth-shell__logo {
+            width: 100px;
+            height: 100px;
+          }
+          .auth-shell__brand-name {
+            font-size: 30px;
+          }
+          .auth-shell__card {
+            padding: 36px 30px;
+          }
+        }
+
+        @media (max-width: 767px) {
+          /* Mobile Phone View Specifics */
+          .auth-shell {
+            padding: 24px 16px;
+            align-items: flex-start;
+          }
+          .auth-shell__container {
+            padding-top: 36px;
+            max-width: 100%;
           }
           .auth-shell__back {
             top: 0px;
+            left: 0px;
+            width: 38px;
+            height: 38px;
+          }
+          .auth-shell__brand {
+            gap: 14px;
+            margin-bottom: 24px;
+          }
+          .auth-shell__logo-wrap, .auth-shell__logo {
+            width: 88px;
+            height: 88px;
+          }
+          .auth-shell__brand-name {
+            font-size: 26px;
+            letter-spacing: 0.08em;
           }
           .auth-shell__card {
-            padding: 24px 20px;
+            padding: 28px 22px;
+            border-radius: 24px;
+          }
+          .auth-shell__footer {
+            margin-top: 24px;
           }
         }
       `}</style>
     </div>
   );
 }
+

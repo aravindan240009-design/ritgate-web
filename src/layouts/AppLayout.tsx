@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Bell, Clock } from 'lucide-react';
 import Sidebar from './Sidebar';
@@ -11,6 +11,7 @@ import { useAdaptive } from '../utils/useAdaptive';
 import { useScrollInputIntoView } from '../hooks/useScrollIntoView';
 
 export default function AppLayout() {
+  const navigate = useNavigate();
   const { isMobile, isTablet, isDesktop } = useAdaptive();
   const { sessionExpiringSoon, logout } = useAuth();
   useScrollInputIntoView();
@@ -27,6 +28,25 @@ export default function AppLayout() {
     '/active-persons',
     '/vehicles',
   ].some((route) => location.pathname === route || location.pathname.startsWith(`${route}/`));
+
+  // Listen for service worker notification click navigation events
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return;
+
+    const handleSWMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'NAVIGATE_NOTIFICATION') {
+        const targetUrl = event.data.url;
+        if (targetUrl) {
+          navigate(targetUrl, { replace: false });
+        }
+      }
+    };
+
+    navigator.serviceWorker.addEventListener('message', handleSWMessage);
+    return () => {
+      navigator.serviceWorker.removeEventListener('message', handleSWMessage);
+    };
+  }, [navigate]);
 
   // Auto-collapse sidebar on tablet, expand on desktop
   useEffect(() => {

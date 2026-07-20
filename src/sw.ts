@@ -26,19 +26,26 @@ self.addEventListener('push', (event) => {
 // Handle notification click
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const urlToOpen = event.notification.data?.url || '/';
+  const targetPath = event.notification.data?.url || '/requests';
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-      // Check if there is already a window open with this URL
+      // 1. Focus existing tab if available
       for (const client of windowClients) {
-        if (client.url === urlToOpen && 'focus' in client) {
-          return client.focus();
+        if ('focus' in client) {
+          client.focus();
+          if ('postMessage' in client) {
+            client.postMessage({
+              type: 'NAVIGATE_NOTIFICATION',
+              url: targetPath
+            });
+          }
+          return;
         }
       }
-      // If no window found, open a new one
+      // 2. Only if NO tab is open at all, open a new window
       if (self.clients.openWindow) {
-        return self.clients.openWindow(urlToOpen);
+        return self.clients.openWindow(targetPath);
       }
     })
   );

@@ -177,12 +177,12 @@ export default function SinglePassDetailsModal({
       {
         label: 'Staff Authorization',
         status: isStaffDone ? 'done' : isStaffRejected ? 'rejected' : 'pending',
-        remark: request?.staffRemark,
+        remark: request?.staffRemark || (isStaffDone ? 'Authorization Granted' : isStaffRejected ? 'Authorization Denied' : undefined),
       },
       {
         label: 'HOD Authorization',
         status: isHodDone ? 'done' : isHodRejected ? 'rejected' : 'pending',
-        remark: request?.hodRemark,
+        remark: request?.hodRemark || (isHodDone ? 'Authorization Granted' : isHodRejected ? 'Authorization Denied' : undefined),
       },
       {
         label: 'Campus Gate Access',
@@ -340,11 +340,11 @@ export default function SinglePassDetailsModal({
                       <div key={idx} className="relative">
                         {!isLast && (
                           <div className={cn(
-                            "absolute left-[17px] top-9 w-[2px] h-[calc(100%-12px)] transition-colors",
+                            "absolute left-[17px] top-9 bottom-2 w-[2px] transition-colors",
                             isDone ? "bg-emerald-500" : "bg-slate-200 dark:bg-slate-800"
                           )} />
                         )}
-                        <div className="flex gap-4 items-start pb-6 last:pb-0">
+                        <div className="flex gap-4 items-start pb-7 last:pb-0">
                           <div className={cn(
                             "w-9 h-9 rounded-full flex items-center justify-center shrink-0 z-10 font-bold transition-all shadow-sm",
                             isDone ? "bg-emerald-500 text-white shadow-emerald-500/20" : 
@@ -356,7 +356,7 @@ export default function SinglePassDetailsModal({
                              <Clock className="w-4 h-4 text-slate-400 dark:text-slate-500" />}
                           </div>
                           <div className="flex-1 min-w-0 pt-0.5">
-                            <div className="flex items-center justify-between gap-3 mb-1">
+                            <div className="flex items-center justify-between gap-3 mb-1.5">
                               <h4 className="text-sm font-black text-slate-900 dark:text-white">
                                 {step.label}
                               </h4>
@@ -370,7 +370,7 @@ export default function SinglePassDetailsModal({
                               </span>
                             </div>
                             {step.remark && (
-                              <div className="mt-2 bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border-l-4 border-amber-500 max-w-xl">
+                              <div className="mt-2.5 bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border-l-4 border-amber-500 w-full">
                                 <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-0.5">Note / Status:</p>
                                 <p className="text-xs font-semibold text-slate-700 dark:text-slate-200 leading-relaxed">"{step.remark}"</p>
                               </div>

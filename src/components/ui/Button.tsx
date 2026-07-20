@@ -37,7 +37,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         whileTap={transitions.feedback.tap}
         transition={{ duration: transitions.feedback.duration }}
         className={cn(
-          'inline-flex items-center justify-center font-bold tracking-tight transition-all duration-[220ms] ease-out outline-none select-none',
+          'inline-flex items-center justify-center font-bold tracking-tight transition-all duration-[220ms] ease-out outline-none select-none whitespace-nowrap',
           'focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:ring-offset-2',
           'disabled:opacity-45 disabled:cursor-not-allowed disabled:shadow-none',
           'hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]',
@@ -55,7 +55,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ) : icon ? (
           <span className="shrink-0">{icon}</span>
         ) : null}
-        {children && <span>{children}</span>}
+        {children && <span className="whitespace-nowrap">{children}</span>}
         {iconRight && <span className="shrink-0">{iconRight}</span>}
       </motion.button>
     );

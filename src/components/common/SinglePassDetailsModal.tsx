@@ -437,7 +437,7 @@ export default function SinglePassDetailsModal({
                       <Button
                         variant="primary"
                         size="xl"
-                        className="w-full sm:w-36"
+                        className="w-full sm:w-36 whitespace-nowrap shrink-0"
                         onClick={onClose}
                       >
                         Close
@@ -445,7 +445,7 @@ export default function SinglePassDetailsModal({
                       <Button
                         variant="success"
                         size="xl"
-                        className="w-full sm:w-44"
+                        className="w-full sm:w-auto px-6 whitespace-nowrap shrink-0"
                         icon={qrLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <QrCode className="w-5 h-5" />}
                         onClick={handleViewQR}
                         disabled={qrLoading}

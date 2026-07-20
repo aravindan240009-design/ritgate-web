@@ -22,6 +22,7 @@ import TopMenuBar from '../../components/common/TopMenuBar';
 import TopRefreshControl from '../../components/common/TopRefreshControl';
 import { SkeletonList } from '../../components/ui/Skeleton';
 import Badge from '../../components/ui/Badge';
+import VisitorAvatar from '../../components/common/VisitorAvatar';
 import { cn } from '../../utils/cn';
 
 interface VisitorRequest {
@@ -36,7 +37,14 @@ interface VisitorRequest {
   qrCode?: string;
   manualCode?: string;
   createdAt: string;
+  profilePhoto?: string;
+  profileImage?: string;
+  photoUrl?: string;
+  visitorPhoto?: string;
 }
+
+const getVisitorPhoto = (v: VisitorRequest) =>
+  v.profilePhoto || v.profileImage || v.photoUrl || v.visitorPhoto || undefined;
 
 export default function SecurityVisitorQR() {
   usePageTitle('Visitor QR');
@@ -59,7 +67,6 @@ export default function SecurityVisitorQR() {
 
   const loadData = async () => {
     try {
-      // In web we use the centralized apiService
       const response = await getVisitorRequestsForSecurity(securityId);
       if (response.success) {
         setVisitors(response.data || []);
@@ -168,9 +175,11 @@ export default function SecurityVisitorQR() {
                   )}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-blue-50 dark:bg-indigo-900/30 rounded-full flex items-center justify-center text-[var(--color-primary)] font-black text-lg">
-                      {visitor.name[0].toUpperCase()}
-                    </div>
+                    <VisitorAvatar
+                      name={visitor.name}
+                      photoUrl={getVisitorPhoto(visitor)}
+                      size={48}
+                    />
                     <div className="flex-1 min-w-0 text-left">
                       <h4 className="text-[16px] font-black text-slate-900 dark:text-white truncate tracking-tight uppercase">{visitor.name}</h4>
                       <div className="flex items-center gap-2 mt-0.5">

@@ -11,6 +11,7 @@ import { useToast } from '../../context/ToastContext';
 import { getActivePersons, manualExit } from '../../services/api.service';
 import { formatTime } from '../../utils/dateUtils';
 import { cn } from '../../utils/cn';
+import VisitorAvatar from '../../components/common/VisitorAvatar';
 import { transitions } from '../../design-system/animations';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useAdaptive } from '../../utils/useAdaptive';
@@ -74,6 +75,9 @@ export default function SecurityActivePersons() {
     (p.name || p.personName || '').toLowerCase().includes(search.toLowerCase()) ||
     (p.type || p.personType || '').toLowerCase().includes(search.toLowerCase())
   );
+
+  const getPersonPhoto = (person: any) =>
+    person.profileImage || person.profilePhoto || person.photoUrl || person.visitorPhoto || undefined;
 
   // 1. Loading State
   if (isLoading && activeList.length === 0) {
@@ -183,8 +187,17 @@ export default function SecurityActivePersons() {
                   {filtered.map((person, i) => (
                     <tr key={person.id || i} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35">
                       <td>
-                        <p className="font-bold text-slate-950 dark:text-white">{person.name || person.personName}</p>
-                        <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{person.userId || 'Campus person'}</p>
+                        <div className="flex items-center gap-3">
+                          <VisitorAvatar
+                            name={person.name || person.personName || '?'}
+                            photoUrl={getPersonPhoto(person)}
+                            size={36}
+                          />
+                          <div>
+                            <p className="font-bold text-slate-950 dark:text-white">{person.name || person.personName}</p>
+                            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{person.userId || 'Campus person'}</p>
+                          </div>
+                        </div>
                       </td>
                       <td>{person.type || person.personType}</td>
                       <td className="max-w-[320px] truncate">{person.purpose || 'Campus Access'}</td>
@@ -206,13 +219,12 @@ export default function SecurityActivePersons() {
                   <Card hover className="group active:scale-[0.99] transition-all border-slate-100 dark:border-slate-800 shadow-sm">
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-4 flex-1 min-w-0">
-                        <div className="w-11 h-11 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-400 border border-slate-100 dark:border-slate-700">
-                           {person.profileImage ? (
-                             <img src={person.profileImage} alt="" className="w-full h-full object-cover rounded-xl" />
-                           ) : (
-                             <User className="w-5 h-5" />
-                           )}
-                        </div>
+                        <VisitorAvatar
+                          name={person.name || person.personName || '?'}
+                          photoUrl={getPersonPhoto(person)}
+                          size={44}
+                          className="!rounded-xl"
+                        />
                         <div className="flex-1 min-w-0 text-left">
                           <p className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-tight leading-none truncate">{person.name || person.personName}</p>
                           <div className="flex items-center gap-2 mt-2">

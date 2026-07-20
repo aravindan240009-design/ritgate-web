@@ -128,6 +128,17 @@ export default function SinglePassDetailsModal({
   const getInitials = (name: string) =>
     (name || 'ST').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
 
+  const requesterPhoto =
+    request.profilePhoto ||
+    request.profileImage ||
+    request.photoUrl ||
+    request.studentPhoto ||
+    request.studentProfilePhoto ||
+    request.requesterPhoto ||
+    request.requesterProfilePhoto ||
+    request.visitorPhoto ||
+    '';
+
   const getComputedTimeline = (): TimelineStep[] => {
     if (timelineSteps && timelineSteps.length > 0) return timelineSteps;
 
@@ -230,8 +241,19 @@ export default function SinglePassDetailsModal({
           <div className="flex-1 overflow-y-auto w-full max-w-4xl mx-auto px-4 sm:px-8 py-6 space-y-6">
             {/* Student Info Card */}
             <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center gap-4">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 text-white font-black text-lg sm:text-xl flex items-center justify-center shrink-0 shadow-md">
-                {getInitials(request.studentName || request.requesterName || request.visitorName)}
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden shrink-0 shadow-md flex items-center justify-center">
+                {requesterPhoto ? (
+                  <img
+                    src={requesterPhoto}
+                    alt={request.studentName || request.requesterName || request.visitorName || 'Profile'}
+                    className="w-full h-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).parentElement!.classList.add('bg-gradient-to-tr', 'from-amber-500', 'to-orange-500'); const span = document.createElement('span'); span.className = 'text-white font-black text-lg sm:text-xl'; span.textContent = getInitials(request.studentName || request.requesterName || request.visitorName); (e.target as HTMLImageElement).parentElement!.appendChild(span); }}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white font-black text-lg sm:text-xl">
+                    {getInitials(request.studentName || request.requesterName || request.visitorName)}
+                  </div>
+                )}
               </div>
               <div className="min-w-0 flex-1">
                 <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight truncate">

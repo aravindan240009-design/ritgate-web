@@ -17,6 +17,7 @@ import { useProfile } from "../../context/ProfileContext";
 import { cn } from "../../utils/cn";
 import { useAdaptive } from "../../utils/useAdaptive";
 import TopRefreshControl from "../../components/common/TopRefreshControl";
+import VisitorAvatar from "../../components/common/VisitorAvatar";
 
 interface ProfilePageProps {
   user?: any;
@@ -143,19 +144,17 @@ export default function ProfilePage({
               <div className="px-6 sm:px-8 pb-6 flex flex-col sm:flex-row items-center sm:items-end gap-5 -mt-16 sm:-mt-20 relative z-10">
                 {/* Avatar */}
                 <div className="relative group shrink-0">
-                  <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full border-4 border-white dark:border-slate-900 bg-white dark:bg-slate-900 shadow-2xl overflow-hidden flex items-center justify-center">
-                    {profileImage ? (
-                      <img
-                        src={profileImage}
-                        alt={userName}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
+                  <VisitorAvatar
+                    name={userName}
+                    photoUrl={profileImage}
+                    size="auto"
+                    className="w-28 h-28 sm:w-36 sm:h-36 border-4 border-white dark:border-slate-900 bg-white dark:bg-slate-900 shadow-2xl"
+                    fallback={
                       <div className="w-full h-full bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center text-white text-3xl sm:text-4xl font-black">
                         {initials}
                       </div>
-                    )}
-                  </div>
+                    }
+                  />
                 </div>
 
                 {/* User Info Title */}

@@ -34,6 +34,8 @@ import { SkeletonList } from '../../components/ui/Skeleton';
 import GatePassQRModal from '../../components/common/GatePassQRModal';
 import SinglePassDetailsModal from '../../components/common/SinglePassDetailsModal';
 import MyRequestsBulkModal from '../../components/common/MyRequestsBulkModal';
+import VisitorAvatar from '../../components/common/VisitorAvatar';
+import { resolveProfilePhoto } from '../../utils/profilePhoto';
 import { cn } from '../../utils/cn';
 import type { Staff } from '../../types';
 import { formatDateTime, relativeTime, isToday } from '../../utils/dateUtils';
@@ -237,16 +239,7 @@ export default function StaffDashboard() {
   const getRequesterName = (request: any) =>
     request.studentName || request.requesterName || request.visitorName || request.name || 'Unknown';
 
-  const getRequesterPhoto = (request: any) =>
-    request.profilePhoto ||
-    request.profileImage ||
-    request.photoUrl ||
-    request.studentPhoto ||
-    request.studentProfilePhoto ||
-    request.requesterPhoto ||
-    request.requesterProfilePhoto ||
-    request.visitorPhoto ||
-    '';
+  const getRequesterPhoto = (request: any) => resolveProfilePhoto(request);
 
   const getRequesterInitials = (request: any) =>
     getRequesterName(request)
@@ -384,15 +377,17 @@ export default function StaffDashboard() {
                         >
                           <td>
                             <div className="flex items-center gap-3 min-w-0">
-                              <div className="w-11 h-11 rounded-2xl overflow-hidden shrink-0 bg-blue-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center">
-                                {requesterPhoto ? (
-                                  <img src={requesterPhoto} alt={requesterName} className="w-full h-full object-cover" />
-                                ) : (
+                              <VisitorAvatar
+                                name={requesterName}
+                                photoUrl={requesterPhoto}
+                                size={44}
+                                className="!rounded-2xl bg-blue-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700"
+                                fallback={
                                   <span className="text-[13px] font-black text-blue-700 dark:text-blue-300">
                                     {getRequesterInitials(request)}
                                   </span>
-                                )}
-                              </div>
+                                }
+                              />
                               <div className="min-w-0">
                                 <p className="font-black text-slate-950 dark:text-white truncate">{requesterName}</p>
                                 <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5 truncate">
@@ -449,13 +444,17 @@ export default function StaffDashboard() {
                   >
                     {/* Card Top Row */}
                     <div className="flex items-center gap-3.5 mb-4">
-                      <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-full overflow-hidden flex items-center justify-center text-slate-400 font-black text-[17px]">
-                        {requesterPhoto ? (
-                          <img src={requesterPhoto} alt={requesterName} className="w-full h-full object-cover" />
-                        ) : (
-                          getRequesterInitials(request)
-                        )}
-                      </div>
+                      <VisitorAvatar
+                        name={requesterName}
+                        photoUrl={requesterPhoto}
+                        size={48}
+                        className="bg-slate-50 dark:bg-slate-800"
+                        fallback={
+                          <span className="text-slate-400 font-black text-[17px]">
+                            {getRequesterInitials(request)}
+                          </span>
+                        }
+                      />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
                            <h5 className="text-[16px] font-black text-slate-900 dark:text-white truncate tracking-tight">{requesterName}</h5>

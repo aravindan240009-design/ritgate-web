@@ -20,6 +20,7 @@ import { SkeletonList } from '../../components/ui/Skeleton';
 import Modal from '../../components/ui/Modal';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import VisitorAvatar from '../../components/common/VisitorAvatar';
+import { resolveProfilePhoto } from '../../utils/profilePhoto';
 import { cn } from '../../utils/cn';
 import type { RITGateEvent } from '../../types';
 import { useAdaptive } from '../../utils/useAdaptive';
@@ -503,7 +504,7 @@ export default function StaffEventCSV() {
               {passes.map(pass => (
                 <motion.div key={pass.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                   className="bg-white dark:bg-slate-900 rounded-2xl p-4 flex items-center gap-3 shadow-sm border border-slate-100 dark:border-slate-800">
-                  <VisitorAvatar name={pass.fullName} photoUrl={pass.photoUrl} size={44} />
+                  <VisitorAvatar name={pass.fullName} photoUrl={resolveProfilePhoto(pass)} size={44} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="text-[14px] font-black text-slate-900 dark:text-white truncate">{pass.fullName}</p>

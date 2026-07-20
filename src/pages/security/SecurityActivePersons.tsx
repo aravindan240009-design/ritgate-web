@@ -12,6 +12,7 @@ import { getActivePersons, manualExit } from '../../services/api.service';
 import { formatTime } from '../../utils/dateUtils';
 import { cn } from '../../utils/cn';
 import VisitorAvatar from '../../components/common/VisitorAvatar';
+import { resolveProfilePhoto } from '../../utils/profilePhoto';
 import { transitions } from '../../design-system/animations';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useAdaptive } from '../../utils/useAdaptive';
@@ -76,8 +77,7 @@ export default function SecurityActivePersons() {
     (p.type || p.personType || '').toLowerCase().includes(search.toLowerCase())
   );
 
-  const getPersonPhoto = (person: any) =>
-    person.profileImage || person.profilePhoto || person.photoUrl || person.visitorPhoto || undefined;
+  const getPersonPhoto = (person: any) => resolveProfilePhoto(person);
 
   // 1. Loading State
   if (isLoading && activeList.length === 0) {

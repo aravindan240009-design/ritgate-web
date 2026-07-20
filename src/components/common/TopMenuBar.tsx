@@ -3,6 +3,7 @@ import { Bell, ArrowLeft } from 'lucide-react';
 import { useNotifications } from '../../context/NotificationContext';
 import { useProfile } from '../../context/ProfileContext';
 import { useAdaptive } from '../../utils/useAdaptive';
+import VisitorAvatar from './VisitorAvatar';
 
 interface TopMenuBarProps {
   greeting: string;
@@ -58,13 +59,16 @@ export default function TopMenuBar({
               onClick={() => navigate('/profile')}
               className="w-12 h-12 rounded-full overflow-hidden shrink-0 active:scale-95 transition-all shadow-sm ring-1 ring-white/60"
             >
-              {profileImage ? (
-                <img src={profileImage} alt={title} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white text-[14px] font-black">
-                  {initials}
-                </div>
-              )}
+              <VisitorAvatar
+                name={title}
+                photoUrl={profileImage}
+                size={48}
+                fallback={
+                  <div className="w-full h-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white text-[14px] font-black">
+                    {initials}
+                  </div>
+                }
+              />
             </button>
           )}
 

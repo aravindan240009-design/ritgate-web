@@ -23,6 +23,7 @@ import TopRefreshControl from '../../components/common/TopRefreshControl';
 import { SkeletonList } from '../../components/ui/Skeleton';
 import Badge from '../../components/ui/Badge';
 import VisitorAvatar from '../../components/common/VisitorAvatar';
+import { resolveProfilePhoto } from '../../utils/profilePhoto';
 import { cn } from '../../utils/cn';
 
 interface VisitorRequest {
@@ -43,8 +44,7 @@ interface VisitorRequest {
   visitorPhoto?: string;
 }
 
-const getVisitorPhoto = (v: VisitorRequest) =>
-  v.profilePhoto || v.profileImage || v.photoUrl || v.visitorPhoto || undefined;
+const getVisitorPhoto = (v: VisitorRequest) => resolveProfilePhoto(v);
 
 export default function SecurityVisitorQR() {
   usePageTitle('Visitor QR');

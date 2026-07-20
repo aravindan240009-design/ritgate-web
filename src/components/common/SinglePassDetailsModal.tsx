@@ -222,13 +222,6 @@ export default function SinglePassDetailsModal({
               
               <div className="flex items-center gap-3">
                 <Badge status={status} className="scale-105" />
-                <button
-                  onClick={onClose}
-                  className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
-                  title="Close"
-                >
-                  <X className="w-5 h-5" />
-                </button>
               </div>
             </div>
           </header>

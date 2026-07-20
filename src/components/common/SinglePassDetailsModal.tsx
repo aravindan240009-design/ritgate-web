@@ -26,6 +26,7 @@ import SectionLabel from './SectionLabel';
 import { cn } from '../../utils/cn';
 import { isPdfAttachment } from '../../utils/attachmentUtils';
 import { formatDate } from '../../utils/date';
+import { formatDateTime } from '../../utils/dateUtils';
 import { getStatusMeta, normalizeRequestStatus } from '../../utils/statusUtils';
 import Button from '../ui/Button';
 import ConfirmationModal from './ConfirmationModal';
@@ -137,6 +138,7 @@ export default function SinglePassDetailsModal({
       rawStatus === 'PENDING_HOD' ||
       rawStatus === 'APPROVED_BY_HOD' ||
       rawStatus === 'USED' ||
+      rawStatus === 'EXITED' ||
       request?.staffStatus === 'APPROVED';
 
     const isStaffRejected =
@@ -146,13 +148,30 @@ export default function SinglePassDetailsModal({
     const isHodDone =
       rawStatus === 'APPROVED' ||
       rawStatus === 'USED' ||
+      rawStatus === 'EXITED' ||
       request?.hodStatus === 'APPROVED';
 
     const isHodRejected =
       rawStatus === 'REJECTED_BY_HOD' ||
       (rawStatus === 'REJECTED' && isStaffDone);
 
-    const isGateUsed = rawStatus === 'USED' || request?.isUsed;
+    const isGateUsed =
+      rawStatus === 'USED' ||
+      rawStatus === 'EXITED' ||
+      rawStatus === 'SCANNED' ||
+      rawStatus === 'ENTERED' ||
+      Boolean(request?.isUsed) ||
+      Boolean(request?.scannedAt) ||
+      Boolean(request?.entryTime) ||
+      Boolean(request?.scannedBy);
+
+    const gateScanTime = request?.scannedAt || request?.entryTime || request?.exitTime || request?.usedAt;
+
+    const gateRemark = isGateUsed
+      ? `Gate Entry Verified by Security${gateScanTime ? ` (${formatDateTime(gateScanTime)})` : ''}`
+      : (isHodDone || isApproved)
+      ? 'QR Code ready — awaiting gate scan at campus entrance'
+      : 'Awaiting prior authorizations';
 
     return [
       {
@@ -167,8 +186,8 @@ export default function SinglePassDetailsModal({
       },
       {
         label: 'Campus Gate Access',
-        status: isGateUsed ? 'done' : isHodDone ? 'pending' : 'pending',
-        remark: isGateUsed ? 'Gate Pass Verified at Campus Gate' : isHodDone ? 'QR Code ready for gate scanning' : 'Awaiting authorizations',
+        status: isGateUsed ? 'done' : 'pending',
+        remark: gateRemark,
       },
     ];
   };
@@ -177,258 +196,248 @@ export default function SinglePassDetailsModal({
 
   return createPortal(
     <AnimatePresence mode="wait">
-      <div className="fixed inset-0 z-[130] bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-0 lg:p-6 overflow-y-auto pt-safe">
+      <div className="fixed inset-0 z-[130] bg-[#F8FAFC] dark:bg-slate-950 flex flex-col overflow-y-auto w-full min-h-screen">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 16 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 16 }}
-          transition={{ type: 'spring', damping: 26, stiffness: 300 }}
-          className="w-full h-full lg:h-auto lg:max-h-[88vh] lg:max-w-2xl bg-[#F8FAFC] dark:bg-slate-950 lg:bg-white lg:dark:bg-slate-900 lg:rounded-[28px] lg:border lg:border-slate-200/80 lg:dark:border-slate-800 lg:shadow-2xl flex flex-col overflow-hidden relative"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 12 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+          className="w-full min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-slate-950 relative"
         >
-          {/* Header */}
-          <header className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-5 h-16 flex items-center gap-3 z-20 shrink-0">
-            <button 
-              onClick={onClose}
-              className="w-9 h-9 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 transition-all"
-              aria-label="Back"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <h1 className="flex-1 text-lg font-black text-slate-900 dark:text-white tracking-tight">
-              {!showActions ? 'Request Details' : 'Pass Verification'}
-            </h1>
-            <Badge 
-              status={status}
-              className="uppercase tracking-widest text-[10px] py-1 px-3.5 font-bold"
-            />
-            <button
-              onClick={onClose}
-              className="hidden lg:flex w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors ml-1"
-              aria-label="Close dialog"
-            >
-              <X className="w-5 h-5" />
-            </button>
+          {/* Fixed Top Header Bar */}
+          <header className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 h-16 sm:h-20 flex items-center justify-between z-30 shrink-0 shadow-sm">
+            <div className="flex items-center gap-3.5 max-w-4xl mx-auto w-full justify-between">
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={onClose}
+                  className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all"
+                  aria-label="Back"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <h1 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                  {!showActions ? 'Request Details' : 'Pass Verification'}
+                </h1>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <Badge status={status} className="scale-105" />
+                <button
+                  onClick={onClose}
+                  className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+                  title="Close"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
           </header>
 
-          {/* Scrollable Body */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-4 sm:p-6 space-y-4">
-              {/* Profile Row */}
-              <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex items-center gap-4">
-                <div className={cn(
-                  "w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-black shadow-md shrink-0",
-                  statusMeta.dotClass
-                )}>
-                  {getInitials(request.studentName || request.staffName || request.regNo || 'ST')}
-                </div>
-                <div className="flex-1 min-w-0">
-                  {request.requestType === 'VISITOR' && (
-                    <div className="bg-[var(--color-primary)] inline-block px-2.5 py-0.5 rounded-md mb-1">
-                      <span className="text-[9px] font-black text-white uppercase tracking-wider">
-                        {(request.role || 'VISITOR')}
-                      </span>
-                    </div>
-                  )}
-                  <h2 className="text-lg font-extrabold text-slate-900 dark:text-white truncate">
-                    {request.studentName || request.staffName || request.regNo}
-                  </h2>
-                  <p className="text-xs text-slate-500 font-semibold truncate uppercase tracking-tight">
-                    {request.regNo || request.staffCode} • {request.department || 'N/A'}
+          {/* Content Body Container */}
+          <div className="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-8 py-6 space-y-6">
+            {/* Student Info Card */}
+            <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center gap-4">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 text-white font-black text-lg sm:text-xl flex items-center justify-center shrink-0 shadow-md">
+                {getInitials(request.studentName || request.requesterName || request.visitorName)}
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight truncate">
+                  {request.studentName || request.requesterName || request.visitorName || 'Gate Pass Requester'}
+                </h3>
+                <p className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                  {request.rollNo || request.regNo || request.id ? `${request.rollNo || request.regNo || `#${request.id}`}` : ''}
+                  {(request.department || request.dept) ? ` • ${request.department || request.dept}` : ''}
+                </p>
+              </div>
+            </div>
+
+            {/* Purpose & Date Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-white dark:bg-slate-900 p-5 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm">
+                <SectionLabel icon={Target} className="mb-1.5">PURPOSE</SectionLabel>
+                <p className="text-base font-extrabold text-slate-900 dark:text-white leading-tight">
+                  {request.purpose || request.reason || 'Campus Gate Access'}
+                </p>
+              </div>
+              <div className="bg-white dark:bg-slate-900 p-5 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm">
+                <SectionLabel icon={CalendarDays} className="mb-1.5">DATE & TIME</SectionLabel>
+                <p className="text-base font-extrabold text-slate-900 dark:text-white leading-tight">
+                  {formatDateTime(request.requestDate || request.createdAt)}
+                </p>
+              </div>
+            </div>
+
+            {/* Reason Box */}
+            {request.reason && (
+              <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-2">
+                <SectionLabel icon={FileText} className="mb-1">REASON / NOTES</SectionLabel>
+                <div className="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-relaxed italic">
+                    "{request.reason}"
                   </p>
                 </div>
               </div>
+            )}
 
-              {/* Info Grid */}
-              <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 shadow-sm">
-                <div className="p-5 sm:border-r border-b sm:border-b-0 border-slate-100 dark:border-slate-800">
-                  <SectionLabel icon={Target} className="mb-2">
-                    {request.requestType === 'VISITOR' ? 'PURPOSE OF VISIT' : 'PURPOSE'}
-                  </SectionLabel>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
-                    {request.purpose || 'General'}
-                  </p>
-                </div>
-                <div className="p-5">
-                  <SectionLabel icon={CalendarDays} className="mb-2">
-                    {request.requestType === 'VISITOR' ? 'ENTRY DATE' : 'DATE'}
-                  </SectionLabel>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
-                    {formatDate(request.visitDate || request.exitDateTime || request.requestDate)}
-                  </p>
-                </div>
-              </div>
-
-              {/* Reason */}
-              {request.requestType !== 'VISITOR' && (
-                <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                  <SectionLabel icon={StickyNote} className="mb-2.5">REASON</SectionLabel>
-                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-relaxed italic bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800">
-                    {request.reason || 'No reason provided.'}
-                  </p>
-                </div>
-              )}
-
-              {/* Attachment Preview */}
-              {attachmentUri && (
-                <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                  <SectionLabel icon={Paperclip} className="mb-3">PREVIEW</SectionLabel>
-                  <div 
-                    className="relative w-48 h-28 bg-slate-900 rounded-xl overflow-hidden cursor-pointer group shadow-sm"
-                    onClick={() => isPdf ? window.open(attachmentUri, '_blank') : setIsFullScreen(true)}
+            {/* Attachment Preview */}
+            {attachmentUri && (
+              <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
+                <SectionLabel icon={Paperclip} className="mb-1">ATTACHMENT PREVIEW</SectionLabel>
+                {isPdf ? (
+                  <a
+                    href={attachmentUri}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-3 p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-400 font-bold text-sm hover:underline"
                   >
-                    {isPdf ? (
-                      <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-slate-800">
-                        <FileIcon className="w-8 h-8 text-white" />
-                        <span className="text-[10px] font-bold text-white uppercase tracking-tighter">Open PDF</span>
-                      </div>
-                    ) : (
-                      <>
-                        <img src={attachmentUri} alt="Pass Attachment" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Maximize2 className="w-5 h-5 text-white" />
-                        </div>
-                      </>
-                    )}
+                    <FileText className="w-6 h-6 shrink-0" />
+                    <span>View PDF Attachment Document</span>
+                  </a>
+                ) : (
+                  <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 max-h-72 bg-slate-950 flex items-center justify-center group">
+                    <img 
+                      src={attachmentUri} 
+                      alt="Attachment Preview" 
+                      className="max-h-72 w-auto object-contain transition-transform group-hover:scale-105"
+                    />
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+            )}
 
-              {/* Remarks */}
-              {(request.staffRemark || request.hodRemark || request.hrRemark) && (
-                <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-3">
-                  <SectionLabel icon={MessageSquare} className="mb-1.5">REMARKS</SectionLabel>
+            {/* Remarks Section if available */}
+            {(request.staffRemark || request.hodRemark || request.hrRemark) && (
+              <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
+                <SectionLabel icon={StickyNote} className="mb-1">AUTHORIZATION REMARKS</SectionLabel>
+                <div className="space-y-3">
                   {request.staffRemark && (
-                    <div className="bg-amber-50 dark:bg-amber-900/10 border-l-4 border-amber-500 p-3.5 rounded-r-xl">
-                      <p className="text-[10px] font-black text-amber-600 uppercase mb-1">Staff</p>
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300 italic">"{request.staffRemark}"</p>
+                    <div className="bg-amber-50 dark:bg-amber-950/20 border-l-4 border-amber-500 p-3.5 rounded-r-2xl">
+                      <p className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase mb-1">Staff Note</p>
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">"{request.staffRemark}"</p>
                     </div>
                   )}
                   {request.hodRemark && (
-                    <div className="bg-blue-50 dark:bg-indigo-900/10 border-l-4 border-blue-700 p-3.5 rounded-r-xl">
-                      <p className="text-[10px] font-black text-[var(--color-primary)] uppercase mb-1">HOD</p>
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300 italic">"{request.hodRemark}"</p>
+                    <div className="bg-blue-50 dark:bg-blue-950/20 border-l-4 border-blue-500 p-3.5 rounded-r-2xl">
+                      <p className="text-[10px] font-black text-blue-700 dark:text-blue-400 uppercase mb-1">HOD Note</p>
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">"{request.hodRemark}"</p>
                     </div>
                   )}
-                  {request.hrRemark && (
-                    <div className="bg-emerald-50 dark:bg-emerald-900/10 border-l-4 border-emerald-500 p-3.5 rounded-r-xl">
-                      <p className="text-[10px] font-black text-emerald-600 uppercase mb-1">HR</p>
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300 italic">"{request.hrRemark}"</p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Approval & Tracking Status Timeline */}
-              {!showActions && activeTimeline && activeTimeline.length > 0 && (
-                <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-4">
-                  <SectionLabel icon={ListChecks} className="mb-1">APPROVAL & TRACKING STATUS</SectionLabel>
-                  <div className="space-y-0 pt-2">
-                    {activeTimeline.map((step, idx) => {
-                      const isDone = step.status === 'done';
-                      const isRejected = step.status === 'rejected';
-                      const isLast = idx === activeTimeline.length - 1;
-
-                      return (
-                        <div key={idx} className="relative">
-                          {!isLast && (
-                            <div className={cn(
-                              "absolute left-[17px] top-8 w-[2px] h-full transition-colors",
-                              isDone ? "bg-emerald-500" : "bg-slate-200 dark:bg-slate-800"
-                            )} />
-                          )}
-                          <div className="flex gap-4 items-start pb-7 last:pb-0">
-                            <div className={cn(
-                              "w-9 h-9 rounded-full flex items-center justify-center shrink-0 z-10 font-bold transition-all shadow-sm",
-                              isDone ? "bg-emerald-500 text-white shadow-emerald-500/20" : 
-                              isRejected ? "bg-rose-500 text-white shadow-rose-500/20" : 
-                              "bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700"
-                            )}>
-                              {isDone ? <Check className="w-5 h-5 stroke-[2.5]" /> : 
-                               isRejected ? <X className="w-5 h-5 stroke-[2.5]" /> : 
-                               <Clock className="w-4 h-4 text-slate-400 dark:text-slate-500" />}
-                            </div>
-                            <div className="flex-1 min-w-0 pt-0.5">
-                              <div className="flex items-center justify-between gap-2 mb-1">
-                                <h4 className="text-sm font-extrabold text-slate-900 dark:text-white leading-none">
-                                  {step.label}
-                                </h4>
-                                <span className={cn(
-                                  "text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wide",
-                                  isDone ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400" : 
-                                  isRejected ? "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400" : 
-                                  "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400"
-                                )}>
-                                  {isDone ? '✓ Approved' : isRejected ? '✗ Rejected' : '● Pending'}
-                                </span>
-                              </div>
-                              {step.remark && (
-                                <div className="mt-2 bg-slate-50 dark:bg-slate-800/80 p-3 rounded-xl border-l-3 border-amber-500">
-                                  <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-0.5">Note:</p>
-                                  <p className="text-xs font-medium text-slate-700 dark:text-slate-300 italic">"{step.remark}"</p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Footer */}
-          <footer className="bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 p-4 lg:px-6 lg:py-4 pb-safe z-30 shrink-0">
-            {showActions ? (
-              <div className="space-y-3">
-                <textarea
-                  value={remark}
-                  onChange={(e) => setRemark(e.target.value)}
-                  placeholder="Add review notes (required for rejection)..."
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-blue-500 transition-all outline-none resize-none"
-                  rows={2}
-                  disabled={processing}
-                />
-                <div className="flex gap-3 justify-end">
-                  <Button
-                    variant="danger"
-                    size="xl"
-                    className="lg:w-36"
-                    icon={<XCircle className="w-5 h-5" />}
-                    onClick={() => {
-                      if (!remark.trim()) setShowRemarkError(true);
-                      else setShowRejectConfirm(true);
-                    }}
-                    disabled={processing}
-                  >
-                    Reject
-                  </Button>
-                  <Button
-                    variant="success"
-                    size="xl"
-                    className="lg:w-36"
-                    icon={<CheckCircle2 className="w-5 h-5" />}
-                    onClick={() => setShowApproveConfirm(true)}
-                    isLoading={processing}
-                    disabled={processing}
-                  >
-                    Approve
-                  </Button>
                 </div>
               </div>
-            ) : (
-              <div className="space-y-2">
-                {qrError && (
-                  <p className="text-xs font-bold text-rose-500 text-center mb-1">{qrError}</p>
-                )}
-                <div className="flex gap-3 justify-end">
+            )}
+
+            {/* Approval & Tracking Status Timeline */}
+            {!showActions && activeTimeline && activeTimeline.length > 0 && (
+              <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-5">
+                <SectionLabel icon={ListChecks} className="mb-2">APPROVAL & TRACKING STATUS</SectionLabel>
+                <div className="space-y-0 pt-1">
+                  {activeTimeline.map((step, idx) => {
+                    const isDone = step.status === 'done';
+                    const isRejected = step.status === 'rejected';
+                    const isLast = idx === activeTimeline.length - 1;
+
+                    return (
+                      <div key={idx} className="relative">
+                        {!isLast && (
+                          <div className={cn(
+                            "absolute left-[17px] top-9 w-[2px] h-[calc(100%-12px)] transition-colors",
+                            isDone ? "bg-emerald-500" : "bg-slate-200 dark:bg-slate-800"
+                          )} />
+                        )}
+                        <div className="flex gap-4 items-start pb-6 last:pb-0">
+                          <div className={cn(
+                            "w-9 h-9 rounded-full flex items-center justify-center shrink-0 z-10 font-bold transition-all shadow-sm",
+                            isDone ? "bg-emerald-500 text-white shadow-emerald-500/20" : 
+                            isRejected ? "bg-rose-500 text-white shadow-rose-500/20" : 
+                            "bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700"
+                          )}>
+                            {isDone ? <Check className="w-5 h-5 stroke-[2.5]" /> : 
+                             isRejected ? <X className="w-5 h-5 stroke-[2.5]" /> : 
+                             <Clock className="w-4 h-4 text-slate-400 dark:text-slate-500" />}
+                          </div>
+                          <div className="flex-1 min-w-0 pt-0.5">
+                            <div className="flex items-center justify-between gap-3 mb-1">
+                              <h4 className="text-sm font-black text-slate-900 dark:text-white">
+                                {step.label}
+                              </h4>
+                              <span className={cn(
+                                "text-[10px] font-extrabold uppercase px-3 py-1 rounded-full tracking-wider shrink-0",
+                                isDone ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50" : 
+                                isRejected ? "bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400 border border-rose-200 dark:border-rose-800/50" : 
+                                "bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50"
+                              )}>
+                                {isDone ? '✓ Completed' : isRejected ? '✗ Rejected' : '● Pending'}
+                              </span>
+                            </div>
+                            {step.remark && (
+                              <div className="mt-2 bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border-l-4 border-amber-500 max-w-xl">
+                                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-0.5">Note / Status:</p>
+                                <p className="text-xs font-semibold text-slate-700 dark:text-slate-200 leading-relaxed">"{step.remark}"</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Fixed Footer Action Bar */}
+          <footer className="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-4 sm:px-8 py-4 z-30 shrink-0 shadow-lg mt-auto">
+            <div className="max-w-4xl mx-auto w-full flex items-center justify-end gap-3">
+              {showActions ? (
+                <div className="w-full flex flex-col space-y-3">
+                  <div className="w-full">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Review Notes / Remarks</label>
+                    <textarea
+                      value={remark}
+                      onChange={(e) => setRemark(e.target.value)}
+                      placeholder="Add optional notes or mandatory rejection reason..."
+                      className="w-full h-20 p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                    />
+                  </div>
+                  <div className="flex gap-3 justify-end">
+                    <Button
+                      variant="danger"
+                      size="xl"
+                      className="lg:w-36"
+                      icon={<XCircle className="w-5 h-5" />}
+                      onClick={() => {
+                        if (!remark.trim()) {
+                          setShowRemarkError(true);
+                          return;
+                        }
+                        setShowRejectConfirm(true);
+                      }}
+                      isLoading={processing}
+                      disabled={processing}
+                    >
+                      Reject
+                    </Button>
+                    <Button
+                      variant="success"
+                      size="xl"
+                      className="lg:w-36"
+                      icon={<CheckCircle2 className="w-5 h-5" />}
+                      onClick={() => setShowApproveConfirm(true)}
+                      isLoading={processing}
+                      disabled={processing}
+                    >
+                      Approve
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex gap-3 justify-end w-full sm:w-auto">
                   {isApproved ? (
                     <>
                       <Button
                         variant="primary"
                         size="xl"
-                        className="w-full lg:w-36"
+                        className="w-full sm:w-36"
                         onClick={onClose}
                       >
                         Close
@@ -436,7 +445,7 @@ export default function SinglePassDetailsModal({
                       <Button
                         variant="success"
                         size="xl"
-                        className="w-full lg:w-44"
+                        className="w-full sm:w-44"
                         icon={qrLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <QrCode className="w-5 h-5" />}
                         onClick={handleViewQR}
                         disabled={qrLoading}
@@ -448,17 +457,17 @@ export default function SinglePassDetailsModal({
                     <Button
                       variant="primary"
                       size="xl"
-                      className="w-full lg:w-36"
+                      className="w-full sm:w-36"
                       onClick={onClose}
                     >
                       Close
                     </Button>
                   )}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </footer>
-
+          
           {/* Confirmations */}
           <ConfirmationModal
             visible={showRemarkError}

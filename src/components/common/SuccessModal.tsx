@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check } from 'lucide-react';
+import { Check, ShieldCheck } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 interface SuccessModalProps {
@@ -18,7 +18,7 @@ export default function SuccessModal({
   message,
   onClose,
   autoClose = true,
-  autoCloseDelay = 2000,
+  autoCloseDelay = 2500,
 }: SuccessModalProps) {
   const [secondsRemaining, setSecondsRemaining] = useState(
     Math.max(1, Math.ceil(autoCloseDelay / 1000))
@@ -49,58 +49,98 @@ export default function SuccessModal({
   return (
     <AnimatePresence>
       {visible && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-[#0F172A]/60 backdrop-blur-sm pt-safe">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-slate-950/70 backdrop-blur-md pt-safe">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 16 }}
+            initial={{ opacity: 0, scale: 0.88, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 16 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="relative bg-white dark:bg-slate-900 rounded-[28px] shadow-2xl overflow-hidden"
-            style={{ width: 'calc(100vw - 48px)', maxWidth: 470, boxSizing: 'border-box' }}
+            exit={{ opacity: 0, scale: 0.9, y: 12 }}
+            transition={{ type: 'spring', damping: 26, stiffness: 320 }}
+            className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-emerald-500/20 dark:border-emerald-500/30 rounded-[32px] shadow-[0_25px_60px_-15px_rgba(16,185,129,0.25)] overflow-hidden w-full max-w-[420px]"
           >
-            {/* Hero Section */}
-            <div className="pt-4.5 pb-1.5 flex flex-col items-center">
-              <div className="h-1.5 w-full bg-emerald-500 absolute top-0" />
-              
-              <div className="mt-4 flex items-center justify-center">
-                <div className="w-[82px] h-[82px] rounded-full border-2 border-emerald-500/30 flex items-center justify-center">
-                  <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                    <Check className="w-9 h-9 text-emerald-500" />
-                  </div>
+            {/* Top Emerald Gradient Strip */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500" />
+            
+            {/* Animated Icon & Badge */}
+            <div className="pt-7 pb-2 flex flex-col items-center justify-center relative">
+              <div className="relative flex items-center justify-center">
+                {/* Outer pulsing ring */}
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0.6 }}
+                  animate={{ scale: [0.95, 1.25, 0.95], opacity: [0.6, 0.15, 0.6] }}
+                  transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+                  className="absolute inset-0 rounded-full bg-emerald-500/30 blur-sm"
+                />
+                {/* Middle ring */}
+                <div className="w-[88px] h-[88px] rounded-full border-2 border-emerald-500/40 bg-emerald-500/10 flex items-center justify-center relative z-10 shadow-inner">
+                  {/* Inner check icon badge */}
+                  <motion.div
+                    initial={{ scale: 0, rotate: -45 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 22, delay: 0.1 }}
+                    className="w-16 h-16 rounded-full bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-emerald-500/40"
+                  >
+                    <Check className="w-9 h-9 stroke-[3]" />
+                  </motion.div>
                 </div>
               </div>
+
+              {/* Status Badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.18 }}
+                className="mt-4 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2"
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                  Status: Dispatched
+                </span>
+              </motion.div>
             </div>
 
             {/* Content */}
-            <div className="px-7 pt-4.5 pb-2.5 flex flex-col items-center text-center">
-              <h3 className="text-[22px] font-black text-slate-900 dark:text-white leading-tight tracking-tight mb-2">
+            <div className="px-7 pt-3 pb-4 flex flex-col items-center text-center">
+              <motion.h3
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-[23px] font-black text-slate-900 dark:text-white leading-tight tracking-tight mb-2"
+              >
                 {title}
-              </h3>
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed max-w-[240px]">
+              </motion.h3>
+              <motion.p
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.24 }}
+                className="text-[14px] font-medium text-slate-600 dark:text-slate-300 leading-relaxed max-w-[320px]"
+              >
                 {message}
-              </p>
+              </motion.p>
             </div>
 
-            {/* Actions */}
-            <div className="p-5 pt-2.5">
-              <button
+            {/* Actions & Progress Button */}
+            <div className="p-6 pt-2">
+              <motion.button
                 onClick={onClose}
-                className="w-full h-16 bg-slate-50 dark:bg-slate-800 rounded-2xl flex flex-col items-center justify-center gap-2.5 active:scale-95 transition-transform"
+                whileHover={{ scale: 1.015 }}
+                whileTap={{ scale: 0.97 }}
+                className="relative overflow-hidden w-full h-14 bg-slate-900 hover:bg-slate-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white rounded-2xl font-black text-[15px] tracking-wider uppercase flex items-center justify-center gap-2 transition-all shadow-lg shadow-slate-900/20 dark:shadow-emerald-900/30"
               >
-                <div className="w-[86%] h-1 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                  {autoClose && (
-                    <motion.div
-                      initial={{ width: '0%' }}
-                      animate={{ width: '100%' }}
-                      transition={{ duration: autoCloseDelay / 1000, ease: 'linear' }}
-                      className="h-full bg-emerald-500"
-                    />
-                  )}
-                </div>
-                <span className="text-sm font-bold text-slate-500 dark:text-slate-400">
-                  {autoClose ? `OK (${secondsRemaining}s)` : 'OK'}
+                {/* Background Auto-close progress bar */}
+                {autoClose && (
+                  <motion.div
+                    initial={{ width: '0%' }}
+                    animate={{ width: '100%' }}
+                    transition={{ duration: autoCloseDelay / 1000, ease: 'linear' }}
+                    className="absolute inset-y-0 left-0 bg-emerald-500/30 dark:bg-white/20 pointer-events-none"
+                  />
+                )}
+                
+                <span className="relative z-10 flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-emerald-400 dark:text-emerald-200" />
+                  <span>{autoClose ? `OK (${secondsRemaining}s)` : 'OK'}</span>
                 </span>
-              </button>
+              </motion.button>
             </div>
           </motion.div>
         </div>

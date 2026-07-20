@@ -118,18 +118,18 @@ export default function MyRequestsBulkModal({
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="fixed inset-0 z-[120] bg-[#F8FAFC] dark:bg-slate-950 flex flex-col pt-safe"
+        className="fixed inset-0 z-[120] bg-[#F8FAFC] dark:bg-slate-950 flex flex-col pt-safe h-full overflow-hidden"
       >
-        <div className="flex min-h-0 w-full flex-1 flex-col bg-[#F8FAFC] dark:bg-slate-950">
+        <div className="flex min-h-0 w-full flex-1 flex-col bg-[#F8FAFC] dark:bg-slate-950 overflow-hidden">
         {/* Header */}
-        <header className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 h-16 flex items-center gap-3 z-20 lg:px-6">
+        <header className="sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 sm:px-8 h-16 sm:h-20 flex items-center gap-3 z-30 shrink-0 shadow-sm">
           <button 
             onClick={onClose}
-            className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-900 dark:text-white active:scale-95 transition-transform"
+            className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-900 dark:text-white active:scale-95 transition-transform"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="flex-1 text-lg font-extrabold text-slate-900 dark:text-white">Bulk Pass Details</h1>
+          <h1 className="flex-1 text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">Bulk Pass Details</h1>
           {!loading && !error && (
             <Badge variant={statusVariant} className="px-3 py-1 text-[10px] uppercase font-black tracking-widest">
               {status}

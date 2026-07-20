@@ -196,16 +196,16 @@ export default function SinglePassDetailsModal({
 
   return createPortal(
     <AnimatePresence mode="wait">
-      <div className="fixed inset-0 z-[130] bg-[#F8FAFC] dark:bg-slate-950 flex flex-col overflow-y-auto w-full min-h-screen">
+      <div className="fixed inset-0 z-[130] bg-[#F8FAFC] dark:bg-slate-950 flex flex-col w-full h-full overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 12 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
-          className="w-full min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-slate-950 relative"
+          className="w-full h-full flex flex-col bg-[#F8FAFC] dark:bg-slate-950 relative overflow-hidden"
         >
           {/* Fixed Top Header Bar */}
-          <header className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 h-16 sm:h-20 flex items-center justify-between z-30 shrink-0 shadow-sm">
+          <header className="sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 h-16 sm:h-20 flex items-center justify-between z-40 shrink-0 shadow-sm">
             <div className="flex items-center gap-3.5 max-w-4xl mx-auto w-full justify-between">
               <div className="flex items-center gap-3">
                 <button 
@@ -234,7 +234,7 @@ export default function SinglePassDetailsModal({
           </header>
 
           {/* Content Body Container */}
-          <div className="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-8 py-6 space-y-6">
+          <div className="flex-1 overflow-y-auto w-full max-w-4xl mx-auto px-4 sm:px-8 py-6 space-y-6">
             {/* Student Info Card */}
             <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center gap-4">
               <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 text-white font-black text-lg sm:text-xl flex items-center justify-center shrink-0 shadow-md">

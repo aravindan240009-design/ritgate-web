@@ -282,7 +282,19 @@ export default function SinglePassDetailsModal({
             {/* Attachment Preview */}
             {attachmentUri && (
               <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
-                <SectionLabel icon={Paperclip} className="mb-1">ATTACHMENT PREVIEW</SectionLabel>
+                <div className="flex items-center justify-between mb-1">
+                  <SectionLabel icon={Paperclip}>ATTACHMENT PREVIEW</SectionLabel>
+                  <a
+                    href={attachmentUri}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <span>Open Original</span>
+                    <Maximize2 className="w-3.5 h-3.5" />
+                  </a>
+                </div>
                 {isPdf ? (
                   <a
                     href={attachmentUri}
@@ -294,12 +306,19 @@ export default function SinglePassDetailsModal({
                     <span>View PDF Attachment Document</span>
                   </a>
                 ) : (
-                  <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 max-h-72 bg-slate-950 flex items-center justify-center group">
+                  <div 
+                    onClick={() => setIsFullScreen(true)}
+                    className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 max-h-80 bg-slate-950 flex items-center justify-center group cursor-pointer hover:border-blue-500/50 transition-all shadow-sm"
+                  >
                     <img 
                       src={attachmentUri} 
                       alt="Attachment Preview" 
-                      className="max-h-72 w-auto object-contain transition-transform group-hover:scale-105"
+                      className="max-h-80 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                     />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white font-bold text-sm backdrop-blur-[2px]">
+                      <Maximize2 className="w-5 h-5" />
+                      <span>Click to View Fullscreen</span>
+                    </div>
                   </div>
                 )}
               </div>

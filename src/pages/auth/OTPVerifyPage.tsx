@@ -128,28 +128,18 @@ export default function OTPVerifyPage() {
         background="/auth-bg-otp.jpg"
         headline="One last step to verify it's you."
         subline="We've sent a one-time code to your registered institute email. Enter it to continue."
+        showBackButton={true}
+        onBack={() => navigate('/login')}
       >
         <motion.div variants={container} initial="hidden" animate="show">
           {/* Header row */}
-          <motion.div variants={item} style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24 }}>
-            <motion.button
-              onClick={() => navigate('/login')}
-              whileHover={{ x: -2, backgroundColor: '#E2E8F0' }}
-              whileTap={{ scale: 0.92 }}
-              style={{
-                width: 38, height: 38, borderRadius: '50%', background: '#F1F5F9',
-                border: '1px solid #E2E8F0', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-              }}
-              aria-label="Back to login"
-            >
-              <ArrowLeft size={18} color="#475569" />
-            </motion.button>
-            <div>
-              <h2 style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif", fontSize: 24, fontWeight: 800, color: '#0F172A', margin: 0, letterSpacing: '-0.3px', lineHeight: 1.2 }}>Verify Identity</h2>
-              <p style={{ fontSize: 13, color: '#64748B', margin: '3px 0 0 0' }}>Enter the one-time password sent to your email.</p>
-            </div>
+          <motion.div variants={item} className="text-center mb-6">
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif", fontSize: 24, fontWeight: 800, color: '#0F172A', margin: 0, letterSpacing: '-0.3px', lineHeight: 1.2 }}>
+              Verify Identity
+            </h2>
+            <p style={{ fontSize: 13, color: '#64748B', margin: '4px 0 0 0' }}>
+              Enter the one-time password sent to your email.
+            </p>
           </motion.div>
 
           {/* OTP boxes */}
@@ -180,14 +170,14 @@ export default function OTPVerifyPage() {
                         width: '100%', height: 56,
                         background: digit ? '#FFFFFF' : '#F8FAFC',
                         border: digit
-                          ? '2px solid #0F172A'
+                          ? '2px solid #2563EB'
                           : isActive
                           ? '2px solid #3B82F6'
                           : '1.5px solid #E2E8F0',
                         borderRadius: 14,
                         fontSize: 22, fontWeight: 800, textAlign: 'center',
                         color: '#0F172A', outline: 'none', boxSizing: 'border-box',
-                        boxShadow: isActive ? '0 0 0 4px rgba(59,130,246,0.14)' : digit ? '0 2px 8px rgba(15,23,42,0.06)' : 'none',
+                        boxShadow: isActive ? '0 0 0 4px rgba(59,130,246,0.18)' : digit ? '0 2px 8px rgba(37,99,235,0.1)' : 'none',
                         transition: 'all 0.18s ease',
                         fontFamily: 'inherit',
                       }}
@@ -254,13 +244,13 @@ export default function OTPVerifyPage() {
               width: '100%', height: 54,
               background: verifyDisabled
                 ? '#94A3B8'
-                : 'linear-gradient(120deg, #0F172A 0%, #1E293B 50%, #334155 100%)',
+                : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
               borderRadius: 16, border: 'none',
               cursor: verifyDisabled ? 'not-allowed' : 'pointer',
               color: '#FFFFFF', fontSize: 15, fontWeight: 800,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
               letterSpacing: '0.1em', textTransform: 'uppercase',
-              boxShadow: verifyDisabled ? 'none' : '0 10px 24px rgba(15,23,42,0.30)',
+              boxShadow: verifyDisabled ? 'none' : '0 10px 24px rgba(37,99,235,0.35)',
             }}
           >
             {!verifyDisabled && (

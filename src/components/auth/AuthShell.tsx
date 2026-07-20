@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 
 interface AuthShellProps {
   /** Background image shown behind the form (full-bleed on phone, left panel on desktop/tablet). */
@@ -12,16 +14,45 @@ interface AuthShellProps {
   children: ReactNode;
   /** Optional extra content placed between branding and the form card. */
   headerExtra?: ReactNode;
+  /** Show top-left corner back button */
+  showBackButton?: boolean;
+  /** On click callback for back button */
+  onBack?: () => void;
 }
 
 /**
  * Responsive auth layout — clean, centered card layout.
  * Branding is placed above the card.
  */
-export default function AuthShell({ background, headline, subline, children, headerExtra }: AuthShellProps) {
+export default function AuthShell({ background, headline, subline, children, headerExtra, showBackButton, onBack }: AuthShellProps) {
+  const navigate = useNavigate();
+
+  const handleDefaultBack = () => {
+    if (window.history.state && window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/login');
+    }
+  };
 
   return (
-    <div className="auth-shell">
+    <div className="auth-shell relative">
+      {/* Top Left Corner Back Button */}
+      {showBackButton && (
+        <motion.button
+          initial={{ opacity: 0, x: -12 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+          onClick={onBack || handleDefaultBack}
+          className="fixed top-5 left-5 z-50 flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-md text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all active:scale-95"
+          aria-label="Go back"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span className="text-xs font-extrabold uppercase tracking-wider hidden sm:inline">Back</span>
+        </motion.button>
+      )}
+
+      {/* Background Glow Accents for Desktop & Tablet */}
       {/* Background Glow Accents for Desktop & Tablet */}
       <div className="auth-shell__bg-glow auth-shell__bg-glow--1" aria-hidden />
       <div className="auth-shell__bg-glow auth-shell__bg-glow--2" aria-hidden />

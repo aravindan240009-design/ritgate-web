@@ -19,7 +19,11 @@ export interface NavItem {
   icon: LucideIcon;
 }
 
-export function getNavItems(role: string): NavItem[] {
+export interface NavOptions {
+  hasAssignedEvents?: boolean;
+}
+
+export function getNavItems(role: string, options?: NavOptions): NavItem[] {
   switch (role) {
     case 'STUDENT':
       return [
@@ -28,14 +32,20 @@ export function getNavItems(role: string): NavItem[] {
         { path: '/history', label: 'History', icon: History },
         { path: '/profile', label: 'Profile', icon: User },
       ];
-    case 'STAFF':
-      return [
+    case 'STAFF': {
+      const items: NavItem[] = [
         { path: '/dashboard', label: 'Home', icon: Home },
         { path: '/new-pass', label: 'New Pass', icon: Plus },
-        { path: '/event-csv', label: 'Events', icon: FileSpreadsheet },
+      ];
+      if (options?.hasAssignedEvents) {
+        items.push({ path: '/event-csv', label: 'Events', icon: FileSpreadsheet });
+      }
+      items.push(
         { path: '/my-requests', label: 'My Requests', icon: Clock },
         { path: '/profile', label: 'Profile', icon: User },
-      ];
+      );
+      return items;
+    }
     case 'NON_TEACHING':
     case 'NON_CLASS_INCHARGE':
       return [
@@ -80,6 +90,6 @@ export function getNavItems(role: string): NavItem[] {
   }
 }
 
-export function getMobileNavItems(role: string): NavItem[] {
-  return getNavItems(role);
+export function getMobileNavItems(role: string, options?: NavOptions): NavItem[] {
+  return getNavItems(role, options);
 }

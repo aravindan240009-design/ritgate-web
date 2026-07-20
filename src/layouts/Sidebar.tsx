@@ -7,6 +7,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { getNavItems } from '../config/navigation';
+import { useStaffEventCheck } from '../hooks/useStaffEventCheck';
 import RITLogo from '../components/common/RITLogo';
 import ConfirmationModal from '../components/common/ConfirmationModal';
 import { cn } from '../utils/cn';
@@ -16,13 +17,15 @@ interface SidebarProps {
   onToggle: () => void;
 }
 
+
 export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const { role, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { hasAssignedEvents } = useStaffEventCheck();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const location = useLocation();
 
-  const navItems = getNavItems(role || 'STUDENT');
+  const navItems = getNavItems(role || 'STUDENT', { hasAssignedEvents });
 
   return (
     <motion.aside

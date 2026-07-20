@@ -131,39 +131,34 @@ export default function NotificationsPage() {
                       exit={{ opacity: 0, x: 40, scale: 0.95 }}
                       transition={{ duration: 0.18 }}
                       className={cn(
-                        'relative p-4 rounded-2xl border transition-all',
+                        'relative p-5 rounded-[24px] border transition-all shadow-sm',
                         !notif.isRead
-                          ? 'bg-white dark:bg-slate-900 border-blue-100 dark:border-indigo-900/30 shadow-sm'
-                          : 'bg-white/60 dark:bg-slate-900/60 border-slate-100 dark:border-slate-800',
+                          ? 'bg-white dark:bg-slate-900 border-blue-200 dark:border-blue-800/60 shadow-blue-500/5'
+                          : 'bg-white/80 dark:bg-slate-900/80 border-slate-200/80 dark:border-slate-800',
                       )}
                     >
                       {/* Unread dot */}
                       {!notif.isRead && (
-                        <div className="absolute top-4 left-4 w-2 h-2 bg-[var(--color-primary)] rounded-full" />
+                        <div className="absolute top-5 left-5 w-2.5 h-2.5 bg-blue-600 rounded-full shadow-sm shadow-blue-500/50" />
                       )}
 
-                      <div className="flex gap-3 pl-4">
-                        <div className={cn('w-11 h-11 rounded-2xl flex items-center justify-center shrink-0', bg)}>
-                          <Icon className={cn('w-5 h-5', color)} />
+                      <div className="flex gap-4 pl-4">
+                        <div className={cn('w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm', bg)}>
+                          <Icon className={cn('w-6 h-6 stroke-[2]', color)} />
                         </div>
                         <div className="flex-1 min-w-0 pr-8">
                           <h4 className={cn(
-                            'text-[14px] font-black truncate mb-0.5 tracking-tight',
-                            !notif.isRead ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400',
+                            'text-base font-black truncate mb-1 tracking-tight',
+                            !notif.isRead ? 'text-slate-900 dark:text-white' : 'text-slate-800 dark:text-slate-200',
                           )}>
                             {notif.title}
                           </h4>
-                          <p className={cn(
-                            'text-[12px] leading-relaxed mb-2',
-                            !notif.isRead
-                              ? 'text-slate-600 dark:text-slate-300 font-medium'
-                              : 'text-slate-400 font-medium',
-                          )}>
+                          <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 leading-relaxed mb-3">
                             {notif.message}
                           </p>
-                          <div className="flex items-center gap-1 text-[10px] font-bold text-slate-300 uppercase tracking-widest">
-                            <Clock className="w-3 h-3" />
-                            {relativeTime(notif.createdAt)}
+                          <div className="flex items-center gap-1.5 text-xs font-extrabold text-slate-500 dark:text-slate-400">
+                            <Clock className="w-3.5 h-3.5" />
+                            <span>{relativeTime(notif.createdAt)}</span>
                           </div>
                         </div>
                       </div>
@@ -171,10 +166,11 @@ export default function NotificationsPage() {
                       {/* Dismiss button */}
                       <button
                         onClick={() => markAsRead(notif.id)}
-                        className="absolute top-3 right-3 w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-600 active:scale-90 transition-all"
+                        className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white active:scale-90 transition-all"
                         aria-label="Dismiss"
+                        title="Mark as read"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <X className="w-4 h-4" />
                       </button>
                     </motion.div>
                   );

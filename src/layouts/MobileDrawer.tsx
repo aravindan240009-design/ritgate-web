@@ -7,6 +7,7 @@ import { ROLE_LABELS } from '../config/api.config';
 import { getNavItems } from '../config/navigation';
 import RITLogo from '../components/common/RITLogo';
 import { cn } from '../utils/cn';
+import { useStaffEventCheck } from '../hooks/useStaffEventCheck';
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ interface MobileDrawerProps {
 export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
   const { role, user, logout, getUserId } = useAuth();
   const { theme, setTheme } = useTheme();
+  const { hasAssignedEvents } = useStaffEventCheck();
 
   const userName = (() => {
     if (!user) return '';
@@ -24,7 +26,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
       (u.firstName ? `${u.firstName} ${u.lastName || ''}`.trim() : '') || 'User';
   })();
 
-  const navItems = getNavItems(role || 'STUDENT');
+  const navItems = getNavItems(role || 'STUDENT', { hasAssignedEvents });
 
   return (
     <AnimatePresence>

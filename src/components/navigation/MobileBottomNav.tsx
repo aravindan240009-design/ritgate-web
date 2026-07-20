@@ -4,6 +4,7 @@ import { cn } from '../../utils/cn';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import { getNavItems } from '../../config/navigation';
+import { useStaffEventCheck } from '../../hooks/useStaffEventCheck';
 
 interface MobileBottomNavProps {
   activeTab?: string;
@@ -15,8 +16,9 @@ export default function MobileBottomNav({ activeTab, onTabChange }: MobileBottom
   const navigate = useNavigate();
   const { role } = useAuth();
   const { unreadCount } = useNotifications();
+  const { hasAssignedEvents } = useStaffEventCheck();
 
-  const items = getNavItems(role || 'STUDENT');
+  const items = getNavItems(role || 'STUDENT', { hasAssignedEvents });
 
   const handleNavClick = (path: string) => {
     navigate(path);

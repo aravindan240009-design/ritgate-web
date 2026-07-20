@@ -195,7 +195,7 @@ export default function OTPVerifyPage() {
                 padding: '6px 14px', background: '#F1F5F9', border: '1px solid #E2E8F0',
                 borderRadius: 999, fontSize: 12, color: '#64748B', fontWeight: 500,
               }}>
-                <Mail size={14} color="#3B82F6" />
+                <Mail size={14} color="#0F172A" />
                 <span>Sent to <strong style={{ color: '#0F172A', fontWeight: 700 }}>{maskedEmail}</strong></span>
               </div>
             </motion.div>
@@ -213,7 +213,7 @@ export default function OTPVerifyPage() {
                 disabled={isResending}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
-                  fontSize: 13, fontWeight: 800, color: '#2563EB',
+                  fontSize: 13, fontWeight: 800, color: '#0F172A',
                   background: 'none', border: 'none', cursor: 'pointer',
                   textDecoration: 'underline', textUnderlineOffset: 4, opacity: isResending ? 0.5 : 1,
                   padding: 0,
@@ -244,13 +244,13 @@ export default function OTPVerifyPage() {
               width: '100%', height: 54,
               background: verifyDisabled
                 ? '#94A3B8'
-                : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                : 'linear-gradient(120deg, #0F172A 0%, #1E293B 50%, #334155 100%)',
               borderRadius: 16, border: 'none',
               cursor: verifyDisabled ? 'not-allowed' : 'pointer',
               color: '#FFFFFF', fontSize: 15, fontWeight: 800,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
               letterSpacing: '0.1em', textTransform: 'uppercase',
-              boxShadow: verifyDisabled ? 'none' : '0 10px 24px rgba(37,99,235,0.35)',
+              boxShadow: verifyDisabled ? 'none' : '0 10px 24px rgba(15,23,42,0.30)',
             }}
           >
             {!verifyDisabled && (

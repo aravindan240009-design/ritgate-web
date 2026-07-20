@@ -1,7 +1,5 @@
 import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
 
 interface AuthShellProps {
   /** Background image shown behind the form (full-bleed on phone, left panel on desktop/tablet). */
@@ -17,22 +15,10 @@ interface AuthShellProps {
 }
 
 /**
- * Responsive auth layout — a campus photo background has been replaced by a clean,
- * centered card layout as requested. The left image panel is removed.
- *
- * Branding and a back button are placed above the card.
+ * Responsive auth layout — clean, centered card layout.
+ * Branding is placed above the card.
  */
 export default function AuthShell({ background, headline, subline, children, headerExtra }: AuthShellProps) {
-  const navigate = useNavigate();
-
-  const handleBack = () => {
-    // If we can go back, do so; otherwise go to splash
-    if (window.history.state && window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/splash');
-    }
-  };
 
   return (
     <div className="auth-shell">
@@ -42,20 +28,8 @@ export default function AuthShell({ background, headline, subline, children, hea
 
       {/* Container for Centered Layout */}
       <div className="auth-shell__container">
-        
-        {/* Back Button */}
-        <motion.button
-          onClick={handleBack}
-          className="auth-shell__back"
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          aria-label="Go back"
-        >
-          <ArrowLeft size={20} />
-        </motion.button>
 
-        {/* Branding (Enlarged Logo & Clean Centered Alignment) */}
+        {/* Branding (Clean Centered Logo & Title) */}
         <motion.div
           className="auth-shell__brand"
           initial={{ opacity: 0, y: -16 }}
@@ -63,7 +37,6 @@ export default function AuthShell({ background, headline, subline, children, hea
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
         >
           <div className="auth-shell__logo-wrap">
-            <span className="auth-shell__logo-ring" aria-hidden />
             <img src="/logo.png" alt="RIT Gate Logo" className="auth-shell__logo" />
           </div>
           <div className="auth-shell__brand-text">

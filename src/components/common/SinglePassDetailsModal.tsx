@@ -127,6 +127,54 @@ export default function SinglePassDetailsModal({
   const getInitials = (name: string) =>
     (name || 'ST').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
 
+  const getComputedTimeline = (): TimelineStep[] => {
+    if (timelineSteps && timelineSteps.length > 0) return timelineSteps;
+
+    const rawStatus = (request?.status || request?.approvalStatus || '').toUpperCase();
+
+    const isStaffDone =
+      rawStatus === 'APPROVED' ||
+      rawStatus === 'PENDING_HOD' ||
+      rawStatus === 'APPROVED_BY_HOD' ||
+      rawStatus === 'USED' ||
+      request?.staffStatus === 'APPROVED';
+
+    const isStaffRejected =
+      rawStatus === 'REJECTED_BY_STAFF' ||
+      (rawStatus === 'REJECTED' && !request?.staffStatus && !request?.hodStatus);
+
+    const isHodDone =
+      rawStatus === 'APPROVED' ||
+      rawStatus === 'USED' ||
+      request?.hodStatus === 'APPROVED';
+
+    const isHodRejected =
+      rawStatus === 'REJECTED_BY_HOD' ||
+      (rawStatus === 'REJECTED' && isStaffDone);
+
+    const isGateUsed = rawStatus === 'USED' || request?.isUsed;
+
+    return [
+      {
+        label: 'Staff Authorization',
+        status: isStaffDone ? 'done' : isStaffRejected ? 'rejected' : 'pending',
+        remark: request?.staffRemark,
+      },
+      {
+        label: 'HOD Authorization',
+        status: isHodDone ? 'done' : isHodRejected ? 'rejected' : 'pending',
+        remark: request?.hodRemark,
+      },
+      {
+        label: 'Campus Gate Access',
+        status: isGateUsed ? 'done' : isHodDone ? 'pending' : 'pending',
+        remark: isGateUsed ? 'Gate Pass Verified at Campus Gate' : isHodDone ? 'QR Code ready for gate scanning' : 'Awaiting authorizations',
+      },
+    ];
+  };
+
+  const activeTimeline = getComputedTimeline();
+
   return createPortal(
     <AnimatePresence mode="wait">
       <div className="fixed inset-0 z-[130] bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-0 lg:p-6 overflow-y-auto pt-safe">
@@ -270,49 +318,53 @@ export default function SinglePassDetailsModal({
                 </div>
               )}
 
-              {/* Approval Timeline */}
-              {!showActions && timelineSteps && timelineSteps.length > 0 && (
-                <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-5">
-                  <SectionLabel icon={ListChecks} className="mb-1.5">APPROVAL TIMELINE</SectionLabel>
-                  <div className="space-y-0">
-                    {timelineSteps.map((step, idx) => {
+              {/* Approval & Tracking Status Timeline */}
+              {!showActions && activeTimeline && activeTimeline.length > 0 && (
+                <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-4">
+                  <SectionLabel icon={ListChecks} className="mb-1">APPROVAL & TRACKING STATUS</SectionLabel>
+                  <div className="space-y-0 pt-2">
+                    {activeTimeline.map((step, idx) => {
                       const isDone = step.status === 'done';
                       const isRejected = step.status === 'rejected';
-                      const isLast = idx === timelineSteps.length - 1;
+                      const isLast = idx === activeTimeline.length - 1;
 
                       return (
                         <div key={idx} className="relative">
                           {!isLast && (
                             <div className={cn(
-                              "absolute left-[17px] top-8 w-[2px] h-full",
-                              isDone ? "bg-emerald-500" : "bg-slate-100 dark:bg-slate-800"
+                              "absolute left-[17px] top-8 w-[2px] h-full transition-colors",
+                              isDone ? "bg-emerald-500" : "bg-slate-200 dark:bg-slate-800"
                             )} />
                           )}
-                          <div className="flex gap-4 items-start pb-8 last:pb-0">
+                          <div className="flex gap-4 items-start pb-7 last:pb-0">
                             <div className={cn(
-                              "w-9 h-9 rounded-full flex items-center justify-center shrink-0 z-10",
-                              isDone ? "bg-emerald-500 text-white" : 
-                              isRejected ? "bg-rose-500 text-white" : 
-                              "bg-slate-100 dark:bg-slate-800"
+                              "w-9 h-9 rounded-full flex items-center justify-center shrink-0 z-10 font-bold transition-all shadow-sm",
+                              isDone ? "bg-emerald-500 text-white shadow-emerald-500/20" : 
+                              isRejected ? "bg-rose-500 text-white shadow-rose-500/20" : 
+                              "bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700"
                             )}>
-                              {isDone ? <Check className="w-5 h-5" /> : 
-                               isRejected ? <X className="w-5 h-5" /> : 
-                               <div className="w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors" />}
+                              {isDone ? <Check className="w-5 h-5 stroke-[2.5]" /> : 
+                               isRejected ? <X className="w-5 h-5 stroke-[2.5]" /> : 
+                               <Clock className="w-4 h-4 text-slate-400 dark:text-slate-500" />}
                             </div>
                             <div className="flex-1 min-w-0 pt-0.5">
-                              <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-none mb-1">
-                                {step.label}
-                              </h4>
-                              <p className={cn(
-                                "text-xs font-bold uppercase tracking-wide",
-                                isDone ? "text-emerald-500" : isRejected ? "text-rose-500" : "text-slate-400"
-                              )}>
-                                {isDone ? '✓ Completed' : isRejected ? '✗ Rejected' : 'Pending'}
-                              </p>
+                              <div className="flex items-center justify-between gap-2 mb-1">
+                                <h4 className="text-sm font-extrabold text-slate-900 dark:text-white leading-none">
+                                  {step.label}
+                                </h4>
+                                <span className={cn(
+                                  "text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wide",
+                                  isDone ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400" : 
+                                  isRejected ? "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400" : 
+                                  "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400"
+                                )}>
+                                  {isDone ? '✓ Approved' : isRejected ? '✗ Rejected' : '● Pending'}
+                                </span>
+                              </div>
                               {step.remark && (
-                                <div className="mt-2 bg-slate-50 dark:bg-slate-800 p-2.5 rounded-lg border-l-2 border-amber-500">
-                                  <p className="text-[10px] font-black text-slate-500 uppercase mb-0.5">Remark:</p>
-                                  <p className="text-xs font-medium text-slate-700 dark:text-slate-300 italic">{step.remark}</p>
+                                <div className="mt-2 bg-slate-50 dark:bg-slate-800/80 p-3 rounded-xl border-l-3 border-amber-500">
+                                  <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-0.5">Note:</p>
+                                  <p className="text-xs font-medium text-slate-700 dark:text-slate-300 italic">"{step.remark}"</p>
                                 </div>
                               )}
                             </div>

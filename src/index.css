@@ -110,6 +110,12 @@
   border-color: #0F172A !important;
 }
 
+.gate-pass-qr-card {
+  max-width: 440px !important;
+  width: 100% !important;
+  margin-inline: auto !important;
+}
+
 /* ══════════════════════════════════════════════════════════
    Dashboard layer — applies to tablet AND desktop (≥769px).
    Tablet is rendered as a compact desktop for a consistent,

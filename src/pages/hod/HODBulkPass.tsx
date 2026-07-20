@@ -679,7 +679,7 @@ export default function HODBulkPass({ onBack }: HODBulkPassProps) {
         {/* ── SUBMIT ────────────────────────────────────────────────────────── */}
         <div className="pt-2">
           <button onClick={submitBulk} disabled={totalSelected === 0}
-            className="w-full h-14 bg-slate-900 hover:bg-black text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 rounded-2xl font-black text-[14px] uppercase tracking-[0.16em] shadow-[0_18px_35px_rgba(15,23,42,0.25)] border border-slate-900 dark:border-white transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2.5 sm:ml-auto sm:max-w-[20rem]">
+            className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-[14px] uppercase tracking-[0.16em] shadow-lg shadow-blue-600/30 border border-blue-500 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2.5 sm:ml-auto sm:max-w-[20rem]">
             <Send className="w-5 h-5" />
             Submit for {totalSelected} {totalSelected === 1 ? 'member' : 'members'}
           </button>

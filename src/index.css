@@ -88,28 +88,6 @@
   --container-max-wide: 1440px;
 }
 
-/* ══════════════════════════════════════════════════════════
-   Unified primary action surface (ALL screens / all pages).
-   Every filled primary button or link uses ONE mild dark
-   gradient (near-black → dark gray, left→right). Button
-   backgrounds are only ever this gradient or white — never
-   a raw accent color.
-   ══════════════════════════════════════════════════════════ */
-:where(
-  button[class*="bg-[var(--color-primary)]"],
-  a[class*="bg-[var(--color-primary)]"],
-  button[class*="bg-blue-500"],
-  button[class*="bg-blue-600"],
-  button[class*="bg-blue-700"],
-  a[class*="bg-blue-600"],
-  a[class*="bg-blue-700"]
-) {
-  background-image: linear-gradient(135deg, #0F172A 0%, #1E293B 100%) !important;
-  background-color: #0F172A !important;
-  color: #ffffff !important;
-  border-color: #0F172A !important;
-}
-
 .gate-pass-qr-card {
   max-width: 440px !important;
   width: 100% !important;
@@ -363,24 +341,26 @@
     position: sticky;
     top: 0;
     z-index: 1;
-    background: rgba(248, 251, 255, 0.78);
+    background: rgba(241, 245, 249, 0.95);
     backdrop-filter: blur(16px);
-    color: #64748b;
+    -webkit-backdrop-filter: blur(16px);
+    color: #475569;
     font-size: 11px;
     font-weight: 800;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    padding: 16px 20px;
+    padding: 14px 16px;
     text-align: left;
+    white-space: nowrap;
   }
 
   .dark .desktop-table th {
-    background: rgba(17, 25, 40, 0.98);
+    background: rgba(15, 23, 42, 0.95);
     color: #94a3b8;
   }
 
   .desktop-table td {
-    padding: 18px 20px;
+    padding: 14px 16px;
     border-top: 1px solid rgba(148, 163, 184, 0.16);
     color: #0f172a;
     font-size: 14px;
@@ -571,24 +551,6 @@
     box-shadow: 0 1px 2px rgba(244, 63, 94, 0.18), 0 0 1px rgba(15, 23, 42, 0.06) !important;
   }
 
-  /* Secondary/Ghost Buttons (White/Slate) */
-  .desktop-page :where(button[class*="bg-slate-50"], button[class*="bg-white"], button[class*="bg-slate-100"]) {
-    background: rgba(255, 255, 255, 0.72) !important;
-    border-color: rgba(148, 163, 184, 0.25) !important;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04) !important;
-  }
-
-  .desktop-page :where(button[class*="bg-slate-50"], button[class*="bg-white"], button[class*="bg-slate-100"]):hover {
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1), 0 2px 4px rgba(15, 23, 42, 0.06) !important;
-    border-color: rgba(148, 163, 184, 0.35) !important;
-  }
-
-  .desktop-page :where(button[class*="bg-slate-50"], button[class*="bg-white"], button[class*="bg-slate-100"]):active {
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08) !important;
-  }
-
   /* Dark Mode Button Shadows */
   .dark .desktop-page :where(button[class*="bg-blue-"], a[class*="bg-blue-"]) {
     box-shadow: 0 2px 8px rgba(59, 130, 246, 0.28), 0 1px 3px rgba(0, 0, 0, 0.3) !important;
@@ -624,21 +586,6 @@
 
   .dark .desktop-page :where(button[class*="bg-rose-"], a[class*="bg-rose-"]):active {
     box-shadow: 0 1px 3px rgba(244, 63, 94, 0.2), 0 0 1px rgba(0, 0, 0, 0.3) !important;
-  }
-
-  .dark .desktop-page :where(button[class*="bg-slate-"], button[class*="bg-white"]) {
-    background: rgba(30, 41, 59, 0.8) !important;
-    border-color: rgba(71, 85, 105, 0.5) !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
-  }
-
-  .dark .desktop-page :where(button[class*="bg-slate-"], button[class*="bg-white"]):hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-    border-color: rgba(71, 85, 105, 0.7) !important;
-  }
-
-  .dark .desktop-page :where(button[class*="bg-slate-"], button[class*="bg-white"]):active {
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35) !important;
   }
 
   .desktop-page :where(span[class*="bg-amber-"], div[class*="bg-amber-"]):where(.rounded-md, .rounded-lg, .rounded-xl, .rounded-full, .rounded-\[8px\]) {

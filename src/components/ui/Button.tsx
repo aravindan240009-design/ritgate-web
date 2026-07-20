@@ -14,12 +14,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants = {
-  primary: 'bg-slate-900 hover:bg-black text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 shadow-[0_16px_35px_rgba(15,23,42,0.22)] hover:shadow-[0_20px_42px_rgba(15,23,42,0.32)] border border-slate-900 dark:border-white font-extrabold',
-  secondary: 'bg-white/78 !text-slate-900 border border-slate-200/80 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.6)] backdrop-blur-xl hover:border-blue-200 hover:bg-blue-50/70 dark:bg-slate-900/72 dark:!text-slate-100 dark:border-slate-700/80 dark:hover:bg-blue-950/30',
-  danger: 'bg-gradient-to-br from-rose-500 to-rose-700 text-white shadow-[0_16px_34px_-18px_rgba(244,63,94,0.95)] hover:from-rose-400 hover:to-rose-700',
-  ghost: 'bg-transparent text-[var(--color-primary)] hover:bg-blue-50/80 dark:text-blue-400 dark:hover:bg-blue-950/30',
-  outline: 'border border-blue-300/80 bg-white/65 !text-blue-700 shadow-sm backdrop-blur-xl hover:bg-blue-50 dark:border-blue-800 dark:!text-blue-300 dark:bg-slate-950/40',
-  success: 'bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-[0_16px_34px_-18px_rgba(16,185,129,0.9)] hover:from-emerald-400 hover:to-emerald-700',
+  primary: 'bg-blue-600 hover:bg-blue-700 text-white font-black shadow-md shadow-blue-600/25 border border-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 dark:text-white dark:border-blue-500 dark:shadow-blue-950/50',
+  secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-900 font-extrabold border border-slate-200 shadow-sm dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-white dark:border-slate-700',
+  danger: 'bg-rose-600 hover:bg-rose-700 text-white font-extrabold shadow-md shadow-rose-600/25 border border-rose-600 dark:bg-rose-600 dark:hover:bg-rose-500 dark:text-white dark:border-rose-500',
+  ghost: 'bg-transparent text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40 font-extrabold',
+  outline: 'border border-blue-600 bg-transparent text-blue-600 hover:bg-blue-50 dark:border-blue-500 dark:text-blue-400 dark:hover:bg-blue-950/40 font-extrabold',
+  success: 'bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold shadow-md shadow-emerald-600/25 border border-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500 dark:text-white dark:border-emerald-500',
 };
 
 const sizes = {

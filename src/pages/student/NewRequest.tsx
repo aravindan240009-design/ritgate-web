@@ -165,7 +165,7 @@ export default function NewRequest() {
           onClick={() => setShowConfirmSubmit(true)}
           disabled={!isFormValid || isLocked}
           className={cn(
-            "w-full h-13 bg-slate-950 dark:bg-[var(--color-primary)] rounded-2xl flex items-center justify-center gap-3 text-white active:scale-95 transition-all shadow-[0_12px_28px_-20px_rgba(15,23,42,0.85)]",
+            "w-full h-13 bg-blue-600 hover:bg-blue-700 rounded-2xl flex items-center justify-center gap-3 text-white font-black active:scale-95 transition-all shadow-lg shadow-blue-600/30",
             (!isFormValid || isLocked) && "opacity-60 saturate-50 cursor-not-allowed"
           )}
         >

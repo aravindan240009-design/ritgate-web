@@ -279,7 +279,7 @@ export default function SecurityVisitorQR() {
               {/* Close */}
               <button 
                 onClick={() => setShowQRModal(false)}
-                className="w-full mt-10 h-16 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[24px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all"
+                className="w-full mt-10 h-16 bg-blue-600 hover:bg-blue-700 text-white rounded-[24px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all"
               >
                 Done
               </button>

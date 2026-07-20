@@ -194,7 +194,7 @@ export default function StudentRequests() {
                                 variant="primary"
                                 onClick={(e) => { e.stopPropagation(); handleViewQR(request); }}
                                 icon={<QrCode className="w-4 h-4" />}
-                                className="mx-auto bg-slate-900 hover:bg-black text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 border border-slate-900 dark:border-white font-extrabold shadow-sm"
+                                className="mx-auto bg-blue-600 hover:bg-blue-700 text-white font-extrabold shadow-sm border border-blue-500"
                               >
                                 View QR
                               </Button>
@@ -212,8 +212,10 @@ export default function StudentRequests() {
           ) : filteredRequests.length > 0 ? (
             <div className="space-y-4">
               {filteredRequests.map((request) => {
-                const config = getStatusConfig(request.status);
                 const isBulk = request.passType === 'BULK';
+                const isApproved = request.status === 'APPROVED';
+                const isRejected = request.status === 'REJECTED';
+                
                 return (
                   <motion.div 
                     key={request.id}
@@ -223,40 +225,44 @@ export default function StudentRequests() {
                   >
                     {/* Card Top Row */}
                     <div className="flex items-center gap-3.5 mb-4">
-                      <div className="w-12 h-12 bg-amber-50 dark:bg-amber-900/20 rounded-full flex items-center justify-center text-amber-600 font-black text-[18px]">
+                      <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center text-blue-600 font-black text-[18px]">
                         {initials}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
                            <h5 className="text-[16px] font-black text-slate-900 dark:text-white truncate tracking-tight">{studentName}</h5>
-                           <div className="px-2 py-0.5 bg-slate-50 dark:bg-slate-800 rounded-md">
-                              <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">{isBulk ? 'Bulk Pass' : 'Single Pass'}</span>
+                           <div className="px-2 py-0.5 bg-slate-50 dark:bg-slate-800 rounded-md border border-slate-100 dark:border-slate-700">
+                              <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider">
+                                {isBulk ? 'Bulk Pass' : 'Single Pass'}
+                              </span>
                            </div>
                         </div>
-                        <p className="text-[12px] font-bold text-slate-400">Student • {user?.department || 'GEN'}</p>
+                        <p className="text-[12px] font-bold text-slate-400 uppercase tracking-tight">
+                          {studentId} • {department}
+                        </p>
                       </div>
                       <span className="text-[11px] font-bold text-slate-300 whitespace-nowrap">
-                        {relativeTime(request.createdAt)}
+                        {relativeTime(request.createdAt || request.requestDate)}
                       </span>
                     </div>
 
                     {/* Info Box */}
-                    <div className="bg-slate-50 dark:bg-slate-950/50 rounded-2xl p-4 space-y-2.5 mb-4 border border-slate-100/50 dark:border-slate-800/30">
+                    <div className="bg-slate-50 dark:bg-slate-950/50 rounded-2xl p-4 space-y-2.5 mb-4">
                       <div className="flex items-center gap-3">
-                        <FileText className="w-4.5 h-4.5 text-slate-400" />
+                        <FileText className="w-4.5 h-4.5 text-slate-400 shrink-0" />
                         <span className="text-[14px] font-bold text-slate-900 dark:text-white truncate">
                           {request.purpose || request.reason || 'Gate Pass Request'}
                         </span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Calendar className="w-4.5 h-4.5 text-slate-400" />
+                        <Calendar className="w-4.5 h-4.5 text-slate-400 shrink-0" />
                         <span className="text-[14px] font-bold text-slate-900 dark:text-white">
-                          {formatDateTime(request.requestDate)}
+                          {formatDateTime(request.createdAt || request.requestDate)}
                         </span>
                       </div>
                       {isBulk && (
                         <div className="flex items-center gap-3">
-                          <Users className="w-4.5 h-4.5 text-slate-400" />
+                          <Users className="w-4.5 h-4.5 text-slate-400 shrink-0" />
                           <span className="text-[14px] font-bold text-slate-900 dark:text-white">
                             {request.participantCount || 0} Participants
                           </span>
@@ -266,10 +272,19 @@ export default function StudentRequests() {
 
                     {/* Footer Actions */}
                     <div className="flex items-center justify-between">
-                      <div className={cn("flex items-center gap-2 px-3 py-1.5 rounded-full", config.bg)}>
-                         <div className={cn("w-1.5 h-1.5 rounded-full", config.dot)} />
-                         <span className={cn("text-[11px] font-black uppercase tracking-wider", config.color)}>
-                           {config.text}
+                      <div className={cn(
+                        "flex items-center gap-2 px-3 py-1.5 rounded-full",
+                        isApproved ? "bg-emerald-500/10" : isRejected ? "bg-rose-500/10" : "bg-amber-500/10"
+                      )}>
+                         <div className={cn(
+                           "w-1.5 h-1.5 rounded-full",
+                           isApproved ? "bg-emerald-500" : isRejected ? "bg-rose-500" : "bg-amber-500"
+                         )} />
+                         <span className={cn(
+                           "text-[10px] font-black uppercase tracking-widest",
+                           isApproved ? "text-emerald-600" : isRejected ? "text-rose-600" : "text-amber-600"
+                         )}>
+                           {isApproved ? 'ACTIVE' : isRejected ? 'REJECTED' : 'PENDING'}
                          </span>
                       </div>
                       
@@ -279,7 +294,7 @@ export default function StudentRequests() {
                             e.stopPropagation();
                             handleViewQR(request);
                           }}
-                          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 border border-slate-900 dark:border-white text-[11px] font-black uppercase tracking-widest shadow-md transition-all active:scale-95"
+                          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white border border-blue-500 text-[11px] font-black uppercase tracking-widest shadow-md transition-all active:scale-95"
                         >
                           <QrCode className="w-4 h-4" />
                           <span>View QR</span>

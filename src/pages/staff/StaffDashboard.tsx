@@ -267,7 +267,7 @@ export default function StaffDashboard() {
   };
 
   return (
-    <div className="min-h-screen lg:bg-transparent lg:min-h-0 bg-[#F8FAFC] dark:bg-slate-950">
+    <div className="min-h-screen md:bg-transparent md:min-h-0 bg-[#F8FAFC] dark:bg-slate-950">
       {!isDesktop && <TopMenuBar
         greeting={getGreeting()}
         title={staffName.toUpperCase()}
@@ -281,9 +281,9 @@ export default function StaffDashboard() {
         />
       )}
 
-      <div className="px-5 pt-4 space-y-4 lg:px-0 lg:pt-0 lg:space-y-5">
+      <div className="px-4 sm:px-5 pt-4 space-y-4 md:px-0 md:pt-0 md:space-y-5">
         {/* Search Bar */}
-        <div className="relative lg:hidden">
+        <div className="relative md:hidden">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
             <Search className="w-5 h-5" />
           </div>
@@ -305,7 +305,7 @@ export default function StaffDashboard() {
         )}
 
         {/* Stats Tabs */}
-        <div className="flex bg-white dark:bg-slate-900 rounded-[24px] p-2 shadow-sm border border-slate-50 dark:border-slate-800 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all lg:hidden">
+        <div className="flex bg-white dark:bg-slate-900 rounded-[24px] p-2 shadow-sm border border-slate-50 dark:border-slate-800 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all md:hidden">
           {(['PENDING', 'APPROVED', 'REJECTED'] as ActiveTab[]).map((tab) => {
             const stats = getStats();
             const isActive = activeTab === tab;
@@ -341,7 +341,7 @@ export default function StaffDashboard() {
       </div>
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-5 pt-4 pb-28 min-h-screen flex flex-col lg:px-0 lg:pt-6 lg:pb-8 lg:min-h-0">
+        <div className="px-4 sm:px-5 pt-4 pb-28 min-h-screen flex flex-col md:px-0 md:pt-6 md:pb-8 md:min-h-0">
           {loading ? (
             <SkeletonList count={4} />
           ) : isDesktop && filteredRequests.length > 0 ? (
@@ -352,16 +352,16 @@ export default function StaffDashboard() {
                   {filteredRequests.length} {filteredRequests.length === 1 ? 'Request' : 'Requests'}
                 </span>
               </div>
-              <div className="overflow-x-auto">
-                <table className="desktop-table">
-                  <thead className="bg-slate-50/80 dark:bg-slate-900/60">
+              <div className="overflow-x-auto w-full">
+                <table className="desktop-table w-full min-w-[700px]">
+                  <thead className="bg-slate-100/70 dark:bg-slate-900/80 border-b border-slate-200/60 dark:border-slate-800">
                     <tr>
-                      <th className="w-[300px]">Requester</th>
-                      <th className="w-[160px]">Type</th>
-                      <th className="w-[230px]">Purpose</th>
-                      <th className="w-[190px]">Date</th>
-                      <th className="w-[130px] !text-center">Status</th>
-                      <th className="w-[180px] !text-center">Actions</th>
+                      <th className="w-[220px] xl:w-[280px]">Requester</th>
+                      <th className="w-[140px] xl:w-[160px]">Type</th>
+                      <th className="w-[180px] xl:w-[230px]">Purpose</th>
+                      <th className="w-[160px] xl:w-[190px]">Date</th>
+                      <th className="w-[120px] xl:w-[130px] !text-center">Status</th>
+                      <th className="w-[130px] xl:w-[160px] !text-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -381,7 +381,7 @@ export default function StaffDashboard() {
                                 name={requesterName}
                                 photoUrl={requesterPhoto}
                                 size={44}
-                                className="!rounded-2xl bg-blue-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700"
+                                className="!rounded-2xl bg-blue-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shrink-0"
                                 fallback={
                                   <span className="text-[13px] font-black text-blue-700 dark:text-blue-300">
                                     {getRequesterInitials(request)}
@@ -397,11 +397,11 @@ export default function StaffDashboard() {
                             </div>
                           </td>
                           <td className="font-bold text-slate-700 dark:text-slate-200">{isVisitor ? 'Visitor' : request.passType === 'BULK' ? 'Bulk Gate Pass' : 'Single Gate Pass'}</td>
-                          <td className="max-w-[320px] truncate font-bold text-slate-800 dark:text-slate-100">{request.purpose || request.reason || 'General'}</td>
-                          <td className="font-semibold text-slate-700 dark:text-slate-300">{formatDateTime(request.requestDate || request.createdAt)}</td>
+                          <td className="max-w-[220px] xl:max-w-[320px] truncate font-bold text-slate-800 dark:text-slate-100">{request.purpose || request.reason || 'General'}</td>
+                          <td className="font-semibold text-slate-700 dark:text-slate-300 whitespace-nowrap">{formatDateTime(request.requestDate || request.createdAt)}</td>
                           <td>
                             <span className={cn(
-                              'inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase',
+                              'inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase whitespace-nowrap',
                               request.staffApproval === 'APPROVED' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' :
                               request.staffApproval === 'REJECTED' ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300' :
                               'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300'
@@ -415,7 +415,7 @@ export default function StaffDashboard() {
                                 size="sm"
                                 variant="primary"
                                 onClick={(e) => { e.stopPropagation(); openReview(request); }}
-                                className="h-9 rounded-xl px-4 text-[11px] font-extrabold uppercase tracking-widest"
+                                className="h-9 rounded-xl px-4 text-[11px] font-extrabold uppercase tracking-widest whitespace-nowrap"
                               >
                                 View
                               </Button>

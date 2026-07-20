@@ -143,7 +143,7 @@ export default function StaffMyRequests() {
   const initials = staffName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
 
   return (
-    <div className="min-h-screen lg:bg-transparent lg:min-h-0 bg-[#F8FAFC] dark:bg-slate-950">
+    <div className="min-h-screen md:bg-transparent md:min-h-0 bg-[#F8FAFC] dark:bg-slate-950">
       {/* Header */}
       <PageHeader title="My Requests" />
       {isDesktop && (
@@ -153,9 +153,9 @@ export default function StaffMyRequests() {
         />
       )}
 
-      <div className="px-5 pt-4 space-y-4 lg:px-0 lg:pt-0 lg:mb-5">
+      <div className="px-4 sm:px-5 pt-4 space-y-4 md:px-0 md:pt-0 md:mb-5">
         {/* Search Bar */}
-        <div className="relative lg:hidden">
+        <div className="relative md:hidden">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
             <Search className="w-5 h-5" />
           </div>
@@ -177,7 +177,7 @@ export default function StaffMyRequests() {
       </div>
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-5 pt-4 pb-28 min-h-screen flex flex-col lg:px-0 lg:pt-6 lg:pb-8 lg:min-h-0">
+        <div className="px-4 sm:px-5 pt-4 pb-28 min-h-screen flex flex-col md:px-0 md:pt-6 md:pb-8 md:min-h-0">
           {loading ? (
             <SkeletonList count={4} />
           ) : isDesktop && filteredRequests.length > 0 ? (
@@ -189,8 +189,8 @@ export default function StaffMyRequests() {
                 </div>
                 <span className="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase tracking-widest">{filteredRequests.length} Records</span>
               </div>
-              <div className="overflow-x-auto">
-                <table className="desktop-table">
+              <div className="overflow-x-auto w-full">
+                <table className="desktop-table w-full min-w-[650px]">
                   <thead>
                     <tr>
                       <th>Request</th>

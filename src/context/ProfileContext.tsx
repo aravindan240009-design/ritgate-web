@@ -1,6 +1,6 @@
-import { createContext, useContext, useState, useEffect, type ReactNode, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode, useCallback } from 'react';
 import { useAuth } from './AuthContext';
-import { resolveProfilePhoto } from '../utils/profilePhoto';
+import { getProfilePhoto } from '../services/api.service';
 
 interface ProfileContextType {
   /** Locally captured photo if the user set one, otherwise their institutional photo. */
@@ -17,21 +17,33 @@ const storageKey = (userId: string | null) =>
   userId ? `profile_image_${userId}` : 'profile_image_guest';
 
 export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { getUserId, user } = useAuth();
+  const { getUserId } = useAuth();
   const userId = getUserId();
   // Device-local photo the user picked themselves. Kept separate from the
   // institutional photo so signing in on a fresh device still shows a face.
   const [localImage, setLocalImage] = useState<string | null>(null);
+  // The institutional photo. Login carries no photo field at all — the only
+  // source is GET /api/profile-photo/{code}, resolved separately per user.
+  const [serverImage, setServerImage] = useState<string | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(storageKey(userId));
     setLocalImage(saved);
   }, [userId]);
 
-  // The session already carries the institutional photo (every role type has a
-  // profilePhoto field), so no extra request is needed. A local capture is an
-  // explicit user choice, so it wins over the server photo.
-  const serverImage = useMemo(() => resolveProfilePhoto(user) ?? null, [user]);
+  useEffect(() => {
+    if (!userId) {
+      setServerImage(null);
+      return;
+    }
+    let cancelled = false;
+    getProfilePhoto(userId).then(url => {
+      if (!cancelled) setServerImage(url);
+    });
+    return () => { cancelled = true; };
+  }, [userId]);
+
+  // A local capture is an explicit user choice, so it wins over the server photo.
   const profileImage = localImage ?? serverImage;
 
   const captureImage = useCallback(async () => {

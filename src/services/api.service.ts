@@ -217,6 +217,21 @@ export async function detectRole(staffCode: string): Promise<UserRole> {
   return 'STAFF';
 }
 
+/**
+ * The login response carries no photo — /api/profile-photo/{code} is the only
+ * source, resolving a regNo/staffCode against student → staff → HR. Returns
+ * null when the endpoint is unreachable or the person has no photo on file.
+ */
+export async function getProfilePhoto(code: string): Promise<string | null> {
+  if (!code) return null;
+  try {
+    const { data } = await api.get(`/profile-photo/${encodeURIComponent(code)}`);
+    return data?.success ? (data.photoUrl ?? null) : null;
+  } catch {
+    return null;
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // GATE PASS — STUDENT
 // ═══════════════════════════════════════════════════════════════════════════════

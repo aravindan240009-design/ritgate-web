@@ -87,11 +87,6 @@ export default function AuthShell({ background, headline, subline, children, hea
         >
           {children}
         </motion.div>
-
-        {/* System footer text */}
-        <div className="auth-shell__footer" aria-hidden>
-          ACCESS VERIFICATION SYSTEM
-        </div>
       </div>
 
       <style>{`
@@ -288,19 +283,6 @@ export default function AuthShell({ background, headline, subline, children, hea
           box-shadow: 0 24px 56px rgba(0, 0, 0, 0.45);
         }
 
-        .auth-shell__footer {
-          margin-top: 28px;
-          font-size: 10px;
-          font-weight: 800;
-          letter-spacing: 0.18em;
-          color: #94A3B8;
-          text-transform: uppercase;
-          text-align: center;
-        }
-        .dark .auth-shell__footer {
-          color: #475569;
-        }
-
         /* Breakpoints for Tablet & Phone Views */
         @media (min-width: 768px) and (max-width: 1024px) {
           /* Tablet View Specifics */
@@ -353,9 +335,6 @@ export default function AuthShell({ background, headline, subline, children, hea
           .auth-shell__card {
             padding: 28px 22px;
             border-radius: 24px;
-          }
-          .auth-shell__footer {
-            margin-top: 24px;
           }
         }
       `}</style>

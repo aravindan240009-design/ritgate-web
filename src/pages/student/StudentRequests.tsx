@@ -118,14 +118,10 @@ export default function StudentRequests() {
     }
 
     setShowSingleModal(true);
-    navigate(`/requests?requestId=${request.id}`, { replace: false });
   };
 
   const closeRequestDetails = () => {
     setShowSingleModal(false);
-    if (new URLSearchParams(location.search).has('requestId')) {
-      navigate('/requests', { replace: true });
-    }
   };
 
   const filteredRequests = requests;

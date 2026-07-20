@@ -5,6 +5,11 @@ import {
   Smartphone,
   CreditCard,
   ArrowLeft,
+  Building2,
+  ShieldCheck,
+  Copy,
+  Check,
+  UserCheck
 } from "lucide-react";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { useAuth } from "../../context/AuthContext";
@@ -30,10 +35,12 @@ export default function ProfilePage({
   const { profileImage } = useProfile();
 
   const [refreshing, setRefreshing] = useState(false);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
 
   const userId = getUserId();
   const email = (user as any)?.email || (user as any)?.mail || "";
   const phone = (user as any)?.contactNo || (user as any)?.phone || (user as any)?.mobile || "";
+  
   const userName = (() => {
     if (!user) return "User";
     const u = user as any;
@@ -54,147 +61,296 @@ export default function ProfilePage({
     .join("")
     .slice(0, 2)
     .toUpperCase();
+
   const department =
     (user as any)?.department ||
     (user as any)?.branch ||
     (user as any)?.gateAssigned ||
     "General";
+
   const roleLabel = (() => {
     switch (role) {
       case "NON_TEACHING":
-        return "NON TEACHING";
+        return "Non Teaching";
       case "NON_CLASS_INCHARGE":
-        return "NON CLASS INCHARGE";
+        return "Non Class Incharge";
       case "ADMIN_OFFICER":
-        return "ADMIN OFFICER";
+        return "Admin Officer";
+      case "STUDENT":
+        return "Student";
+      case "STAFF":
+        return "Faculty Staff";
+      case "HOD":
+        return "Head of Department";
+      case "HR":
+        return "Human Resources";
+      case "SECURITY":
+        return "Security Officer";
       default:
-        return role || "USER";
+        return role || "User";
     }
   })();
 
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    setRefreshing(false);
+  const handleCopy = (text: string, fieldName: string) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldName);
+    setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const menuItems = [
-    { label: "ID", value: userId, icon: CreditCard, color: "text-blue-700" },
-    {
-      label: "EMAIL",
-      value: email,
-      icon: Mail,
-      color: "text-violet-500",
-    },
-    {
-      label: "PHONE",
-      value: phone,
-      icon: Smartphone,
-      color: "text-emerald-500",
-    },
-  ];
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 500);
+  };
 
   return (
-    <div className="flex flex-col min-h-screen lg:min-h-full bg-transparent">
+    <div className="flex flex-col min-h-screen lg:min-h-0 bg-transparent">
+      {/* Mobile Header */}
       {!isDesktop && (
         <header
-          className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shrink-0 md:hidden"
+          className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shrink-0 lg:hidden"
           style={{ paddingTop: "env(safe-area-inset-top)" }}
         >
-          <div className="px-4 h-[72px] flex items-center justify-between">
+          <div className="px-4 h-[64px] flex items-center justify-between">
             <button
               onClick={onBack || (() => navigate(-1))}
-              className="w-11 h-11 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-900 dark:text-white active:scale-95 transition-transform"
+              className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-900 dark:text-white active:scale-95 transition-transform"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-[18px] font-black text-slate-900 dark:text-white uppercase tracking-tight">
-              Profile
+            <h1 className="text-[17px] font-black text-slate-900 dark:text-white uppercase tracking-tight">
+              My Profile
             </h1>
-            <div className="w-11" />
+            <div className="w-10" />
           </div>
         </header>
       )}
 
       <TopRefreshControl refreshing={refreshing} onRefresh={handleRefresh}>
-        <div className="px-5 pt-6 pb-32 min-h-[calc(100vh-100px)] lg:grid lg:h-auto lg:min-h-0 lg:w-full lg:grid-cols-[340px_minmax(0,1fr)] lg:items-start lg:gap-6 lg:overflow-visible lg:px-0 lg:pt-0 lg:pb-0">
-          <div className="flex flex-col items-center mb-8 lg:row-span-2 lg:mb-0 lg:self-start lg:bg-white/78 lg:dark:bg-slate-900/80 lg:border lg:border-white/60 lg:dark:border-slate-800/80 lg:rounded-[24px] lg:px-10 lg:py-8 lg:shadow-[0_18px_45px_rgba(15,23,42,0.08)] lg:backdrop-blur-2xl lg:w-full lg:h-auto">
-            <div className="relative mb-4">
-              <div className="w-[110px] h-[110px] rounded-full border-2 border-blue-700 p-1 flex items-center justify-center bg-white dark:bg-slate-900 shadow-xl shadow-blue-100 lg:h-[138px] lg:w-[138px] lg:border-[3px]">
-                {profileImage ? (
-                  <img
-                    src={profileImage}
-                    alt={userName}
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-[38px] font-black text-blue-700 lg:text-[38px]">
-                    {initials}
-                  </div>
-                )}
+        <div className="px-4 pt-4 pb-28 lg:px-0 lg:pt-0 lg:pb-8 max-w-5xl mx-auto w-full">
+          
+          {/* Main Desktop/Mobile Profile Container */}
+          <div className="space-y-6">
+            
+            {/* Header Profile Hero Card */}
+            <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-200/80 dark:border-slate-800 shadow-xl overflow-hidden">
+              {/* Top Gradient Banner */}
+              <div className="h-32 sm:h-44 bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-900 relative">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-500/20 via-transparent to-transparent" />
               </div>
-            </div>
-            <h2 className="text-[21px] font-black text-slate-900 dark:text-white uppercase tracking-tight mb-2 text-center lg:text-[20px] lg:leading-none">
-              {userName}
-            </h2>
-            <p className="text-[12px] font-bold text-slate-400 opacity-80 text-center lg:text-[12px] lg:tracking-[0.1em] lg:leading-5">
-              {roleLabel} | DEPT: {department}
-            </p>
-            <div className="hidden lg:block w-full mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
-              <p className="text-[13px] font-black text-slate-400 uppercase tracking-[0.18em] mb-5">
-                Account
-              </p>
-              <div className="space-y-5 text-left">
-                <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.18em] mb-2">
-                    ID
-                  </p>
-                  <p className="text-[15px] font-black text-slate-900 dark:text-white truncate">
-                    {userId || "N/A"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.18em] mb-2">
-                    Department
-                  </p>
-                  <p className="text-[15px] font-black text-slate-900 dark:text-white truncate">
-                    {department}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div className="mb-10 lg:col-start-2 lg:mb-0 lg:min-h-0 lg:self-start">
-            <div className="mb-3 px-2 lg:px-1">
-              <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest lg:text-[15px] lg:tracking-[0.14em]">
-                Personal Information
-              </h3>
-            </div>
-            <div className="bg-white dark:bg-slate-900 rounded-[24px] lg:rounded-[24px] lg:w-full border border-slate-100 dark:border-slate-800 shadow-[0_18px_42px_-30px_rgba(15,23,42,0.5)] overflow-hidden divide-y divide-slate-50 dark:divide-slate-800/50 lg:bg-white/78 lg:border-white/60 lg:backdrop-blur-2xl">
-              {menuItems.map((item) => (
-                <div
-                  key={item.label}
-                  className="p-5 lg:min-h-[72px] lg:px-7 lg:py-4 flex items-center gap-5"
-                >
-                  <div
-                    className={cn(
-                      "w-11 h-11 lg:w-10 lg:h-10 rounded-2xl lg:rounded-xl bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center shrink-0",
-                      item.color,
+              {/* Avatar & User Details Overlap */}
+              <div className="px-6 sm:px-8 pb-6 flex flex-col sm:flex-row items-center sm:items-end gap-5 -mt-16 sm:-mt-20 relative z-10">
+                {/* Avatar */}
+                <div className="relative group shrink-0">
+                  <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full border-4 border-white dark:border-slate-900 bg-white dark:bg-slate-900 shadow-2xl overflow-hidden flex items-center justify-center">
+                    {profileImage ? (
+                      <img
+                        src={profileImage}
+                        alt={userName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center text-white text-3xl sm:text-4xl font-black">
+                        {initials}
+                      </div>
                     )}
-                  >
-                    <item.icon className="w-5.5 h-5.5 lg:w-[18px] lg:h-[18px]" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">
-                      {item.label}
-                    </p>
-                    <p className="text-[14px] font-black text-slate-900 dark:text-white truncate uppercase tracking-tight italic lg:text-[15px]">
-                      {item.value || "N/A"}
-                    </p>
                   </div>
                 </div>
-              ))}
+
+                {/* User Info Title */}
+                <div className="flex-1 text-center sm:text-left min-w-0">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
+                    <span className="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800/60 text-blue-700 dark:text-blue-300 text-xs font-extrabold uppercase tracking-wider">
+                      {roleLabel}
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      Active Account
+                    </span>
+                  </div>
+
+                  <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight truncate">
+                    {userName}
+                  </h1>
+                  
+                  <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1">
+                    {department} • ID: <span className="font-mono text-slate-800 dark:text-slate-200 font-bold">{userId || "N/A"}</span>
+                  </p>
+                </div>
+              </div>
             </div>
+
+            {/* 2-Column Info Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              {/* Personal & Contact Details Card */}
+              <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                      <UserCheck className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-tight">
+                        Contact Information
+                      </h3>
+                      <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                        Primary communication channels
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* ID Field */}
+                    <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 flex items-center justify-center shrink-0">
+                          <CreditCard className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                            Identification ID
+                          </p>
+                          <p className="text-sm font-bold text-slate-900 dark:text-white font-mono truncate">
+                            {userId || "N/A"}
+                          </p>
+                        </div>
+                      </div>
+                      {userId && (
+                        <button
+                          onClick={() => handleCopy(userId, "id")}
+                          className="w-8 h-8 rounded-lg bg-white dark:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors shrink-0 shadow-sm"
+                          title="Copy ID"
+                        >
+                          {copiedField === "id" ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Email Field */}
+                    <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="w-9 h-9 rounded-xl bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 flex items-center justify-center shrink-0">
+                          <Mail className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                            Email Address
+                          </p>
+                          <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                            {email || "N/A"}
+                          </p>
+                        </div>
+                      </div>
+                      {email && (
+                        <button
+                          onClick={() => handleCopy(email, "email")}
+                          className="w-8 h-8 rounded-lg bg-white dark:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors shrink-0 shadow-sm"
+                          title="Copy Email"
+                        >
+                          {copiedField === "email" ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Phone Field */}
+                    <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                          <Smartphone className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                            Phone Number
+                          </p>
+                          <p className="text-sm font-bold text-slate-900 dark:text-white font-mono truncate">
+                            {phone || "N/A"}
+                          </p>
+                        </div>
+                      </div>
+                      {phone && (
+                        <button
+                          onClick={() => handleCopy(phone, "phone")}
+                          className="w-8 h-8 rounded-lg bg-white dark:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors shrink-0 shadow-sm"
+                          title="Copy Phone"
+                        >
+                          {copiedField === "phone" ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Academic & Access Information Card */}
+              <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                      <Building2 className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-tight">
+                        Institutional Details
+                      </h3>
+                      <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                        Department & campus access rights
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* Department */}
+                    <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-3.5">
+                      <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0">
+                        <Building2 className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                          Department / Branch
+                        </p>
+                        <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                          {department}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* System Role */}
+                    <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-3.5">
+                      <div className="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 flex items-center justify-center shrink-0">
+                        <ShieldCheck className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                          Assigned System Role
+                        </p>
+                        <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                          {roleLabel}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Campus Verification */}
+                    <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-3.5">
+                      <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                        <UserCheck className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                          Gate Pass Access Status
+                        </p>
+                        <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 truncate flex items-center gap-1.5">
+                          <span>Verified Campus Credentials</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
           </div>
 
         </div>
@@ -202,3 +358,4 @@ export default function ProfilePage({
     </div>
   );
 }
+

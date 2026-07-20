@@ -238,7 +238,7 @@ export default function StudentRequests() {
                            </div>
                         </div>
                         <p className="text-[12px] font-bold text-slate-400 uppercase tracking-tight">
-                          {studentId} • {department}
+                          {request.regNo || user?.regNo || 'N/A'} • {request.department || user?.department || 'GEN'}
                         </p>
                       </div>
                       <span className="text-[11px] font-bold text-slate-300 whitespace-nowrap">

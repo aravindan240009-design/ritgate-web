@@ -130,7 +130,7 @@ export default function SinglePassRequestForm({
             onClick={onSubmit}
             disabled={disabled || submitting}
             className={cn(
-              'group flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 px-5 text-[14px] font-black uppercase tracking-[0.16em] text-white shadow-[0_18px_35px_rgba(37,99,235,0.30)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_22px_42px_rgba(37,99,235,0.38)] active:scale-[0.98] sm:ml-auto sm:max-w-[18rem]',
+              'group flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-slate-900 hover:bg-black text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 px-6 text-[14px] font-black uppercase tracking-[0.16em] shadow-[0_18px_35px_rgba(15,23,42,0.25)] border border-slate-900 dark:border-white transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] sm:ml-auto sm:max-w-[18rem]',
               (disabled || submitting) && 'cursor-not-allowed opacity-55 shadow-none hover:translate-y-0',
               submitDesktopOnly && 'hidden lg:flex'
             )}

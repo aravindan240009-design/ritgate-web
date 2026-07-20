@@ -137,11 +137,11 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
 
       <main className={embedded ? "w-full" : "flex-1 overflow-y-auto px-5 py-6 lg:px-0 lg:py-0"}>
         <div className={cn(
-          "space-y-5 pb-32 lg:mx-auto lg:max-w-3xl lg:pb-12",
-          embedded ? "w-full" : "max-w-lg mx-auto"
+          "space-y-5 pb-32 lg:mx-auto lg:max-w-4xl lg:pb-12",
+          embedded ? "w-full" : "max-w-xl mx-auto"
         )}>
            {/* Form Section */}
-           <div className="space-y-5 lg:rounded-[30px] lg:border lg:border-white/60 lg:bg-white/80 lg:p-7 lg:shadow-[0_22px_60px_rgba(15,23,42,0.08)] lg:backdrop-blur-xl dark:lg:border-slate-800/70 dark:lg:bg-slate-900/80">
+           <div className="space-y-5 rounded-[28px] border border-slate-200/90 bg-white/90 p-6 sm:p-8 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-900/90">
               <div>
                  <p className="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Guest Pre-Request</p>
                  <h3 className="mt-1 text-[22px] font-black tracking-tight text-slate-950 dark:text-white lg:text-[24px]">Visitor Details</h3>
@@ -155,7 +155,7 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
                     value={visitorName}
                     onChange={(e) => setVisitorName(e.target.value.toUpperCase())}
                     placeholder="FULL NAME"
-                    className="w-full h-14 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 text-[15px] font-bold outline-none uppercase shadow-sm transition-all lg:border-slate-200/80 lg:bg-white/85 lg:focus:border-emerald-400 lg:focus:ring-4 lg:focus:ring-emerald-500/10"
+                    className="w-full h-14 bg-white dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 rounded-2xl px-4 text-[15px] font-bold text-slate-900 dark:text-white outline-none uppercase shadow-sm transition-all focus:border-slate-900 focus:ring-4 focus:ring-slate-900/10 dark:focus:border-slate-400"
                  />
               </div>
 
@@ -163,25 +163,25 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
                  <div className="space-y-2">
                     <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
                     <div className="relative">
-                       <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-300" />
+                       <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
                        <input 
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder="9876543210"
-                          className="w-full h-14 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl pl-12 pr-4 text-[15px] font-bold outline-none shadow-sm transition-all lg:border-slate-200/80 lg:bg-white/85 lg:focus:border-emerald-400 lg:focus:ring-4 lg:focus:ring-emerald-500/10"
+                          className="w-full h-14 bg-white dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 rounded-2xl pl-12 pr-4 text-[15px] font-bold text-slate-900 dark:text-white outline-none shadow-sm transition-all focus:border-slate-900 focus:ring-4 focus:ring-slate-900/10 dark:focus:border-slate-400"
                        />
                     </div>
                  </div>
                  <div className="space-y-2">
                     <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Total Guests</label>
                     <div className="relative">
-                       <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-300" />
+                       <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
                        <input 
                           type="number"
                           value={numberOfPeople}
                           onChange={(e) => setNumberOfPeople(e.target.value)}
                           placeholder="1"
-                          className="w-full h-14 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl pl-12 pr-4 text-[15px] font-bold outline-none shadow-sm transition-all lg:border-slate-200/80 lg:bg-white/85 lg:focus:border-emerald-400 lg:focus:ring-4 lg:focus:ring-emerald-500/10"
+                          className="w-full h-14 bg-white dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 rounded-2xl pl-12 pr-4 text-[15px] font-bold text-slate-900 dark:text-white outline-none shadow-sm transition-all focus:border-slate-900 focus:ring-4 focus:ring-slate-900/10 dark:focus:border-slate-400"
                        />
                     </div>
                  </div>
@@ -190,12 +190,12 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
               <div className="space-y-2">
                  <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Objective Detail</label>
                  <div className="relative">
-                    <LayoutGrid className="absolute left-4 top-4 w-4.5 h-4.5 text-slate-300" />
+                    <LayoutGrid className="absolute left-4 top-4 w-4.5 h-4.5 text-slate-400" />
                     <textarea 
                         value={purpose}
                         onChange={(e) => setPurpose(e.target.value.toUpperCase())}
                         placeholder="PURPOSE OF VISIT..."
-                        className="w-full h-28 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl pl-12 pr-4 py-4 text-[14px] font-bold outline-none shadow-sm resize-none uppercase transition-all lg:min-h-[150px] lg:border-slate-200/80 lg:bg-white/85 lg:focus:border-emerald-400 lg:focus:ring-4 lg:focus:ring-emerald-500/10"
+                        className="w-full h-28 bg-white dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 rounded-2xl pl-12 pr-4 py-4 text-[14px] font-bold text-slate-900 dark:text-white outline-none shadow-sm resize-none uppercase transition-all lg:min-h-[140px] focus:border-slate-900 focus:ring-4 focus:ring-slate-900/10 dark:focus:border-slate-400"
                     />
                  </div>
               </div>
@@ -204,11 +204,11 @@ export default function GuestPreRequest({ onBack, embedded = false }: GuestPreRe
                  <button 
                     onClick={handleSubmit}
                     disabled={isSubmitting || loadingCreator}
-                    className="w-full h-15 bg-blue-900 rounded-2xl text-white font-black text-[15px] uppercase tracking-widest shadow-xl shadow-blue-300 dark:shadow-none active:scale-[0.98] transition-all flex items-center justify-center gap-2 sm:ml-auto sm:max-w-[18rem] lg:bg-blue-900 lg:shadow-[0_18px_35px_rgba(30,58,138,0.28)] lg:hover:-translate-y-0.5 disabled:opacity-60 disabled:saturate-50"
+                    className="w-full h-14 bg-slate-900 hover:bg-black text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 rounded-2xl font-black text-[14px] uppercase tracking-[0.16em] shadow-[0_18px_35px_rgba(15,23,42,0.25)] border border-slate-900 dark:border-white transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-2.5 sm:ml-auto sm:max-w-[18rem] disabled:opacity-55"
                  >
-                    {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin text-white" /> : (
+                    {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin text-current" /> : (
                        <>
-                          <ShieldCheck className="w-6 h-6" />
+                          <ShieldCheck className="w-5 h-5" />
                           Register & Generate Pass
                        </>
                     )}

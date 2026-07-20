@@ -14,7 +14,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants = {
-  primary: 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-[0_16px_32px_-18px_rgba(37,99,235,0.9)] hover:from-blue-500 hover:to-blue-700 hover:shadow-[0_20px_42px_-18px_rgba(37,99,235,0.95)]',
+  primary: 'bg-slate-900 hover:bg-black text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 shadow-[0_16px_35px_rgba(15,23,42,0.22)] hover:shadow-[0_20px_42px_rgba(15,23,42,0.32)] border border-slate-900 dark:border-white font-extrabold',
   secondary: 'bg-white/78 !text-slate-900 border border-slate-200/80 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.6)] backdrop-blur-xl hover:border-blue-200 hover:bg-blue-50/70 dark:bg-slate-900/72 dark:!text-slate-100 dark:border-slate-700/80 dark:hover:bg-blue-950/30',
   danger: 'bg-gradient-to-br from-rose-500 to-rose-700 text-white shadow-[0_16px_34px_-18px_rgba(244,63,94,0.95)] hover:from-rose-400 hover:to-rose-700',
   ghost: 'bg-transparent text-[var(--color-primary)] hover:bg-blue-50/80 dark:text-blue-400 dark:hover:bg-blue-950/30',

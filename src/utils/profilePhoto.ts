@@ -67,12 +67,33 @@ const IMS_PHOTO_BASE = (
   import.meta.env.VITE_IMS_PHOTO_BASE_URL || 'https://ims.ritchennai.edu.in/studentImages'
 ).replace(/\/+$/, '');
 
+// Base64 image payloads identified by their magic bytes, so a raw blob with no
+// data: prefix can still be rendered. Backends that return bytes from a BLOB
+// column commonly omit the prefix.
+const BASE64_SIGNATURES: ReadonlyArray<[RegExp, string]> = [
+  [/^\/9j\//, 'image/jpeg'],
+  [/^iVBORw0KGgo/, 'image/png'],
+  [/^R0lGOD/, 'image/gif'],
+  [/^UklGR/, 'image/webp'],
+  [/^Qk/, 'image/bmp'],
+];
+
+const detectBase64Image = (value: string): string | undefined => {
+  // Real URLs and filenames are short and contain separators; base64 payloads
+  // are long and restricted to the base64 alphabet.
+  if (value.length < 100 || !/^[A-Za-z0-9+/\r\n]+={0,2}$/.test(value)) return undefined;
+  const compact = value.replace(/\s+/g, '');
+  const match = BASE64_SIGNATURES.find(([signature]) => signature.test(compact));
+  return match ? `data:${match[1]};base64,${compact}` : undefined;
+};
+
 /**
  * Turns whatever shape the backend sends into something an <img> can load.
  *
  * Absolute URLs pass through untouched, including any query string — that is
  * what lets a re-upload bust the browser cache. Root-relative paths are left
- * for the browser to resolve against the current origin.
+ * for the browser to resolve against the current origin. Raw base64 gets the
+ * data: prefix it's missing.
  *
  * A bare filename ("a20ee569….PNG") is resolved against the IMS photo host. If
  * that guess is wrong the image simply 404s and the avatar falls back to
@@ -81,6 +102,12 @@ const IMS_PHOTO_BASE = (
 function normalizePhotoUrl(value: string): string | undefined {
   if (/^(https?:)?\/\//i.test(value)) return value;
   if (/^(data|blob):/i.test(value)) return value;
+
+  // Must precede the filename fallback, or a base64 blob would get the IMS host
+  // glued onto the front of it.
+  const base64Image = detectBase64Image(value);
+  if (base64Image) return base64Image;
+
   if (value.startsWith('/')) return value;
   return `${IMS_PHOTO_BASE}/${value.replace(/^\.?\//, '')}`;
 }

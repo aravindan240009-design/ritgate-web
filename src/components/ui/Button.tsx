@@ -5,7 +5,7 @@ import { cn } from '../../utils/cn';
 import { transitions } from '../../design-system/animations';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'success';
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'success' | 'dark';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   isLoading?: boolean;
   icon?: ReactNode;
@@ -20,6 +20,7 @@ const variants = {
   ghost: 'bg-transparent text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40 font-extrabold',
   outline: 'border border-blue-600 bg-transparent text-blue-600 hover:bg-blue-50 dark:border-blue-500 dark:text-blue-400 dark:hover:bg-blue-950/40 font-extrabold',
   success: 'bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold shadow-md shadow-emerald-600/25 border border-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500 dark:text-white dark:border-emerald-500',
+  dark: 'bg-slate-900 hover:bg-slate-950 text-white font-extrabold shadow-md shadow-slate-900/25 border border-slate-900 dark:bg-black dark:hover:bg-slate-900 dark:text-white dark:border-black dark:shadow-black/50',
 };
 
 const sizes = {

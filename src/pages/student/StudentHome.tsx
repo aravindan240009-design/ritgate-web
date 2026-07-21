@@ -418,15 +418,15 @@ export default function StudentHome() {
                   </div>
                 )}
               </div>
-              <button 
+              <Button 
+                variant="primary"
                 disabled={gatePassDisabled}
-                className={cn(
-                  "px-5 py-2.5 rounded-2xl text-[12px] font-black uppercase tracking-widest transition-all lg:h-12 lg:px-7",
-                  gatePassDisabled ? "bg-slate-100 text-slate-400" : "bg-[var(--color-primary)] text-white shadow-lg shadow-blue-200 dark:shadow-none active:scale-95"
-                )}
+                onClick={() => !gatePassDisabled && (window.location.href = '/new-request')}
+                className="px-5 py-2.5 rounded-2xl text-[12px] font-black uppercase tracking-widest lg:h-12 lg:px-7"
+                icon={gatePassDisabled ? <Ban className="w-5 h-5" /> : undefined}
               >
-                {gatePassDisabled ? <Ban className="w-5 h-5" /> : 'Apply Now'}
-              </button>
+                {gatePassDisabled ? 'Apply Now' : 'Apply Now'}
+              </Button>
             </div>
           </motion.div>
 
@@ -535,13 +535,14 @@ export default function StudentHome() {
                     </p>
 
                     {request.status === 'APPROVED' && request.passType !== 'BULK' && (
-                      <button
+                      <Button
+                        variant="primary"
                         onClick={(e) => { e.stopPropagation(); handleViewQR(request); }}
-                        className="w-full flex items-center justify-center gap-1.5 py-2 bg-[var(--color-primary)] rounded-xl text-white active:scale-95 transition-transform"
+                        className="w-full mt-2 rounded-xl h-10 text-[12px]"
+                        icon={<QrCode className="w-4 h-4" />}
                       >
-                        <QrCode className="w-3.5 h-3.5" />
-                        <span className="text-[12px] font-bold">View QR Code</span>
-                      </button>
+                        View QR Code
+                      </Button>
                     )}
                   </motion.div>
                 );

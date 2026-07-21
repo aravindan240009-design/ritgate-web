@@ -159,15 +159,7 @@ export default function ProfilePage({
 
                 {/* User Info Title */}
                 <div className="flex-1 text-center sm:text-left min-w-0">
-                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
-                    <span className="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800/60 text-blue-700 dark:text-blue-300 text-xs font-extrabold uppercase tracking-wider">
-                      {roleLabel}
-                    </span>
-                    <span className="px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                      Active Account
-                    </span>
-                  </div>
+
 
                   <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight truncate">
                     {userName}

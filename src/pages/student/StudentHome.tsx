@@ -41,7 +41,7 @@ const isStudentPassDisabled = () => {
   return hours >= 15;
 };
 
-function GatePassIllustration({ className }: { className?: string }) {
+function GatePassIllustration({ className, transparentBg = false }: { className?: string, transparentBg?: boolean }) {
   return (
     <svg
       viewBox="0 0 180 180"
@@ -68,8 +68,12 @@ function GatePassIllustration({ className }: { className?: string }) {
         </filter>
       </defs>
 
-      <rect x="18" y="18" width="144" height="144" rx="34" fill="#EFF6FF" stroke="#FFFFFF" strokeWidth="6" />
-      <rect x="25" y="25" width="130" height="130" rx="28" fill="none" stroke="#BFDBFE" strokeWidth="2" opacity="0.8" />
+      {!transparentBg && (
+        <>
+          <rect x="18" y="18" width="144" height="144" rx="34" fill="#EFF6FF" stroke="#FFFFFF" strokeWidth="6" />
+          <rect x="25" y="25" width="130" height="130" rx="28" fill="none" stroke="#BFDBFE" strokeWidth="2" opacity="0.8" />
+        </>
+      )}
       <g filter="url(#gate-pass-soft-shadow)">
         <rect x="50" y="48" width="82" height="92" rx="14" fill="url(#gate-pass-card)" stroke="#FFFFFF" strokeWidth="4" />
         <rect x="75" y="34" width="30" height="34" rx="6" fill="url(#gate-pass-blue)" />
@@ -384,7 +388,7 @@ export default function StudentHome() {
             className="rounded-[24px] overflow-hidden shadow-md shadow-indigo-500/10 border border-slate-100 dark:border-indigo-900/20 lg:desktop-card lg:grid lg:grid-cols-[minmax(260px,420px)_1fr] lg:rounded-[28px]"
           >
             <div className={cn(
-              "hidden sm:flex h-40 items-center justify-center relative overflow-hidden lg:h-56",
+              "flex h-40 items-center justify-center relative overflow-hidden lg:h-56 lg:hidden",
               gatePassDisabled ? "bg-slate-400" : "bg-[var(--color-primary)]"
             )}>
               <motion.div
@@ -392,9 +396,11 @@ export default function StudentHome() {
                 transition={{ duration: 3, repeat: Infinity }}
                 className="w-40 h-40 bg-white/10 rounded-full blur-3xl absolute"
               />
-              <GatePassIllustration className={cn(
-                "relative z-10 h-32 w-32 drop-shadow-[0_18px_28px_rgba(15,23,42,0.18)]",
-                gatePassDisabled && "grayscale opacity-75",
+              <GatePassIllustration 
+                transparentBg={true}
+                className={cn(
+                  "relative z-10 h-32 w-32 drop-shadow-[0_18px_28px_rgba(15,23,42,0.18)]",
+                  gatePassDisabled && "grayscale opacity-75",
               )} />
             </div>
             

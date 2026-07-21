@@ -3,6 +3,7 @@ import { CalendarDays } from 'lucide-react';
 import AppHeader from '../components/common/AppHeader';
 import NotificationBell from '../components/common/NotificationBell';
 import { useAuth } from '../context/AuthContext';
+import { getNavItems } from '../config/navigation';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -167,7 +168,9 @@ export default function Header({ onMenuClick, sidebarCollapsed }: HeaderProps) {
     month: 'short',
   });
 
-  const showBack = location.pathname !== '/dashboard';
+  // Main nav paths (sidebar / bottom nav) should NOT show a back button
+  const mainNavPaths = getNavItems(role || 'STUDENT').map(item => item.path);
+  const showBack = !mainNavPaths.includes(location.pathname);
   const handleBack = () => {
     if (window.history.length > 1) {
       navigate(-1);

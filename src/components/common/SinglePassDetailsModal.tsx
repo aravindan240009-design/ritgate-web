@@ -211,47 +211,47 @@ export default function SinglePassDetailsModal({
           className="w-full h-full flex flex-col bg-[#F8FAFC] dark:bg-slate-950 relative overflow-hidden"
         >
           {/* Fixed Top Header Bar */}
-          <header className="sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 h-16 sm:h-20 flex items-center justify-between z-40 shrink-0 shadow-sm">
-            <div className="flex items-center gap-3.5 max-w-4xl mx-auto w-full justify-between">
-              <div className="flex items-center gap-3">
+          <header className="sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 sm:px-10 lg:px-12 h-18 sm:h-22 flex items-center justify-between z-40 shrink-0 shadow-xs">
+            <div className="flex items-center gap-4 max-w-5xl lg:max-w-6xl mx-auto w-full justify-between">
+              <div className="flex items-center gap-3.5">
                 <button 
                   onClick={onClose}
-                  className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all"
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all shadow-xs"
                   aria-label="Back"
                 >
                   <ArrowLeft className="w-5 h-5" />
                 </button>
-                <h1 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                <h1 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                   {!showActions ? 'Request Details' : 'Pass Verification'}
                 </h1>
               </div>
               
               <div className="flex items-center gap-3">
-                <Badge status={status} className="scale-105" />
+                <Badge status={status} className="scale-110" />
               </div>
             </div>
           </header>
 
           {/* Content Body Container */}
-          <div className="flex-1 overflow-y-auto w-full max-w-4xl mx-auto px-4 sm:px-8 py-6 space-y-6">
+          <div className="flex-1 overflow-y-auto w-full max-w-5xl lg:max-w-6xl mx-auto px-6 sm:px-10 lg:px-12 py-8 lg:py-10 space-y-6 sm:space-y-8">
             {/* Student Info Card */}
-            <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center gap-4">
+            <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 lg:p-9 rounded-[28px] lg:rounded-[32px] border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center gap-5 sm:gap-6">
               <VisitorAvatar
                 name={requesterDisplayName}
                 photoUrl={requesterPhoto}
                 size="auto"
-                className="w-14 h-14 sm:w-16 sm:h-16 shadow-md"
+                className="w-16 h-16 sm:w-20 sm:h-20 shadow-md ring-4 ring-slate-100 dark:ring-slate-800"
                 fallback={
-                  <div className="w-full h-full bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white font-black text-lg sm:text-xl">
+                  <div className="w-full h-full bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white font-black text-xl sm:text-2xl">
                     {getInitials(requesterDisplayName)}
                   </div>
                 }
               />
               <div className="min-w-0 flex-1">
-                <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight truncate">
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight truncate">
                   {requesterDisplayName}
                 </h3>
-                <p className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                <p className="text-xs sm:text-base font-bold text-slate-500 dark:text-slate-400 mt-1">
                   {request.rollNo || request.regNo || request.id ? `${request.rollNo || request.regNo || `#${request.id}`}` : ''}
                   {(request.department || request.dept) ? ` • ${request.department || request.dept}` : ''}
                 </p>
@@ -259,16 +259,16 @@ export default function SinglePassDetailsModal({
             </div>
 
             {/* Purpose & Date Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-white dark:bg-slate-900 p-5 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm">
-                <SectionLabel icon={Target} className="mb-1.5">PURPOSE</SectionLabel>
-                <p className="text-base font-extrabold text-slate-900 dark:text-white leading-tight">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+              <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-[28px] lg:rounded-[32px] border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col justify-center">
+                <SectionLabel icon={Target} className="mb-2">PURPOSE</SectionLabel>
+                <p className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white leading-snug">
                   {request.purpose || request.reason || 'Campus Gate Access'}
                 </p>
               </div>
-              <div className="bg-white dark:bg-slate-900 p-5 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm">
-                <SectionLabel icon={CalendarDays} className="mb-1.5">DATE & TIME</SectionLabel>
-                <p className="text-base font-extrabold text-slate-900 dark:text-white leading-tight">
+              <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-[28px] lg:rounded-[32px] border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col justify-center">
+                <SectionLabel icon={CalendarDays} className="mb-2">DATE & TIME</SectionLabel>
+                <p className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white leading-snug">
                   {formatDateTime(request.requestDate || request.createdAt)}
                 </p>
               </div>
@@ -276,10 +276,10 @@ export default function SinglePassDetailsModal({
 
             {/* Reason Box */}
             {request.reason && (
-              <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-2">
+              <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 lg:p-9 rounded-[28px] lg:rounded-[32px] border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
                 <SectionLabel icon={FileText} className="mb-1">REASON / NOTES</SectionLabel>
-                <div className="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
-                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-relaxed italic">
+                <div className="bg-slate-50 dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80">
+                  <p className="text-sm sm:text-base font-medium text-slate-700 dark:text-slate-300 leading-relaxed italic">
                     "{request.reason}"
                   </p>
                 </div>
@@ -288,18 +288,18 @@ export default function SinglePassDetailsModal({
 
             {/* Attachment Preview */}
             {attachmentUri && (
-              <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
+              <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 lg:p-9 rounded-[28px] lg:rounded-[32px] border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
                 <div className="flex items-center justify-between mb-1">
                   <SectionLabel icon={Paperclip}>ATTACHMENT PREVIEW</SectionLabel>
                   <a
                     href={attachmentUri}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
+                    className="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1.5"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <span>Open Original</span>
-                    <Maximize2 className="w-3.5 h-3.5" />
+                    <Maximize2 className="w-4 h-4" />
                   </a>
                 </div>
                 {isPdf ? (
@@ -307,20 +307,20 @@ export default function SinglePassDetailsModal({
                     href={attachmentUri}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-3 p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-400 font-bold text-sm hover:underline"
+                    className="flex items-center gap-3.5 p-5 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-400 font-bold text-sm sm:text-base hover:underline"
                   >
-                    <FileText className="w-6 h-6 shrink-0" />
+                    <FileText className="w-7 h-7 shrink-0" />
                     <span>View PDF Attachment Document</span>
                   </a>
                 ) : (
                   <div 
                     onClick={() => setIsFullScreen(true)}
-                    className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 max-h-80 bg-slate-950 flex items-center justify-center group cursor-pointer hover:border-blue-500/50 transition-all shadow-sm"
+                    className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 max-h-96 bg-slate-950 flex items-center justify-center group cursor-pointer hover:border-blue-500/50 transition-all shadow-sm"
                   >
                     <img 
                       src={attachmentUri} 
                       alt="Attachment Preview" 
-                      className="max-h-80 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                      className="max-h-96 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white font-bold text-sm backdrop-blur-[2px]">
                       <Maximize2 className="w-5 h-5" />
@@ -333,19 +333,19 @@ export default function SinglePassDetailsModal({
 
             {/* Remarks Section if available */}
             {(request.staffRemark || request.hodRemark || request.hrRemark) && (
-              <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
+              <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 lg:p-9 rounded-[28px] lg:rounded-[32px] border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
                 <SectionLabel icon={StickyNote} className="mb-1">AUTHORIZATION REMARKS</SectionLabel>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {request.staffRemark && (
-                    <div className="bg-amber-50 dark:bg-amber-950/20 border-l-4 border-amber-500 p-3.5 rounded-r-2xl">
-                      <p className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase mb-1">Staff Note</p>
-                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">"{request.staffRemark}"</p>
+                    <div className="bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/80 p-4 rounded-2xl">
+                      <p className="text-[11px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-1">Staff Note</p>
+                      <p className="text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-200">"{request.staffRemark}"</p>
                     </div>
                   )}
                   {request.hodRemark && (
-                    <div className="bg-blue-50 dark:bg-blue-950/20 border-l-4 border-blue-500 p-3.5 rounded-r-2xl">
-                      <p className="text-[10px] font-black text-blue-700 dark:text-blue-400 uppercase mb-1">HOD Note</p>
-                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">"{request.hodRemark}"</p>
+                    <div className="bg-blue-50/80 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-800/80 p-4 rounded-2xl">
+                      <p className="text-[11px] font-black text-blue-700 dark:text-blue-400 uppercase tracking-wider mb-1">HOD Note</p>
+                      <p className="text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-200">"{request.hodRemark}"</p>
                     </div>
                   )}
                 </div>
@@ -354,9 +354,9 @@ export default function SinglePassDetailsModal({
 
             {/* Approval & Tracking Status Timeline */}
             {!showActions && activeTimeline && activeTimeline.length > 0 && (
-              <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-[24px] border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-5">
-                <SectionLabel icon={ListChecks} className="mb-2">APPROVAL & TRACKING STATUS</SectionLabel>
-                <div className="space-y-0 pt-1">
+              <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 lg:p-10 rounded-[28px] lg:rounded-[32px] border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-6">
+                <SectionLabel icon={ListChecks} className="mb-3">APPROVAL & TRACKING STATUS</SectionLabel>
+                <div className="space-y-0 pt-2">
                   {activeTimeline.map((step, idx) => {
                     const isDone = step.status === 'done';
                     const isRejected = step.status === 'rejected';
@@ -366,28 +366,28 @@ export default function SinglePassDetailsModal({
                       <div key={idx} className="relative">
                         {!isLast && (
                           <div className={cn(
-                            "absolute left-[17px] top-9 bottom-2 w-[2px] transition-colors",
+                            "absolute left-[21px] top-12 bottom-3 w-[2.5px] transition-colors",
                             isDone ? "bg-emerald-500" : "bg-slate-200 dark:bg-slate-800"
                           )} />
                         )}
-                        <div className="flex gap-4 items-start pb-7 last:pb-0">
+                        <div className="flex gap-5 sm:gap-6 items-start pb-8 sm:pb-9 lg:pb-10 last:pb-0">
                           <div className={cn(
-                            "w-9 h-9 rounded-full flex items-center justify-center shrink-0 z-10 font-bold transition-all shadow-sm",
-                            isDone ? "bg-emerald-500 text-white shadow-emerald-500/20" : 
-                            isRejected ? "bg-rose-500 text-white shadow-rose-500/20" : 
+                            "w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 z-10 font-bold transition-all shadow-md",
+                            isDone ? "bg-emerald-500 text-white shadow-emerald-500/25" : 
+                            isRejected ? "bg-rose-500 text-white shadow-rose-500/25" : 
                             "bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700"
                           )}>
-                            {isDone ? <Check className="w-5 h-5 stroke-[2.5]" /> : 
-                             isRejected ? <X className="w-5 h-5 stroke-[2.5]" /> : 
-                             <Clock className="w-4 h-4 text-slate-400 dark:text-slate-500" />}
+                            {isDone ? <Check className="w-6 h-6 stroke-[2.5]" /> : 
+                             isRejected ? <X className="w-6 h-6 stroke-[2.5]" /> : 
+                             <Clock className="w-5 h-5 text-slate-400 dark:text-slate-500" />}
                           </div>
-                          <div className="flex-1 min-w-0 pt-0.5">
-                            <div className="flex items-center justify-between gap-3 mb-1.5">
-                              <h4 className="text-sm font-black text-slate-900 dark:text-white">
+                          <div className="flex-1 min-w-0 pt-1">
+                            <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
+                              <h4 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
                                 {step.label}
                               </h4>
                               <span className={cn(
-                                "text-[10px] font-extrabold uppercase px-3 py-1 rounded-full tracking-wider shrink-0",
+                                "text-xs font-extrabold uppercase px-3.5 py-1.5 rounded-full tracking-wider shrink-0 shadow-2xs",
                                 isDone ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50" : 
                                 isRejected ? "bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400 border border-rose-200 dark:border-rose-800/50" : 
                                 "bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50"
@@ -396,9 +396,12 @@ export default function SinglePassDetailsModal({
                               </span>
                             </div>
                             {step.remark && (
-                              <div className="mt-2.5 bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border-l-4 border-amber-500 w-full">
-                                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-0.5">Note / Status:</p>
-                                <p className="text-xs font-semibold text-slate-700 dark:text-slate-200 leading-relaxed">"{step.remark}"</p>
+                              <div className="mt-3 bg-slate-50 dark:bg-slate-800/70 p-4 sm:p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 w-full shadow-xs">
+                                <div className="flex items-center gap-2 mb-1.5">
+                                  <div className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                                  <p className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">Note / Status:</p>
+                                </div>
+                                <p className="text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-200 leading-relaxed italic">"{step.remark}"</p>
                               </div>
                             )}
                           </div>
@@ -412,8 +415,8 @@ export default function SinglePassDetailsModal({
           </div>
 
           {/* Fixed Footer Action Bar */}
-          <footer className="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-4 sm:px-8 py-4 z-30 shrink-0 shadow-lg mt-auto">
-            <div className="max-w-4xl mx-auto w-full flex items-center justify-end gap-3">
+          <footer className="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-5 sm:px-10 lg:px-12 py-5 z-30 shrink-0 shadow-lg mt-auto">
+            <div className="max-w-5xl lg:max-w-6xl mx-auto w-full flex items-center justify-end gap-4">
               {showActions ? (
                 <div className="w-full flex flex-col space-y-3">
                   <div className="w-full">

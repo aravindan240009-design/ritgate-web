@@ -384,7 +384,7 @@ export default function StudentHome() {
             className="rounded-[24px] overflow-hidden shadow-md shadow-indigo-500/10 border border-slate-100 dark:border-indigo-900/20 lg:desktop-card lg:grid lg:grid-cols-[minmax(260px,420px)_1fr] lg:rounded-[28px]"
           >
             <div className={cn(
-              "h-40 flex items-center justify-center relative overflow-hidden lg:h-56",
+              "hidden sm:flex h-40 items-center justify-center relative overflow-hidden lg:h-56",
               gatePassDisabled ? "bg-slate-400" : "bg-[var(--color-primary)]"
             )}>
               <motion.div

@@ -393,14 +393,9 @@ export default function SinglePassDetailsModal({
                     const isLast = idx === activeTimeline.length - 1;
 
                     return (
-                      <div key={idx} className="relative">
-                        {!isLast && (
-                          <div className={cn(
-                            "absolute left-[21px] top-12 bottom-3 w-[2.5px] transition-colors",
-                            isDone ? "bg-emerald-500" : "bg-slate-200 dark:bg-slate-800"
-                          )} />
-                        )}
-                        <div className="flex gap-5 sm:gap-6 items-start pb-8 sm:pb-9 lg:pb-10 last:pb-0">
+                      <div key={idx} className="flex gap-4 sm:gap-5 items-stretch min-h-[80px]">
+                        {/* Left Column: Icon + Line */}
+                        <div className="flex flex-col items-center shrink-0 w-11 sm:w-12">
                           <div className={cn(
                             "w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 z-10 font-bold transition-all shadow-md",
                             isDone ? "bg-emerald-500 text-white shadow-emerald-500/25" : 
@@ -411,30 +406,38 @@ export default function SinglePassDetailsModal({
                              isRejected ? <X className="w-6 h-6 stroke-[2.5]" /> : 
                              <Clock className="w-5 h-5 text-slate-400 dark:text-slate-500" />}
                           </div>
-                          <div className="flex-1 min-w-0 pt-1">
-                            <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
-                              <h4 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
-                                {step.label}
-                              </h4>
-                              <span className={cn(
-                                "text-xs font-extrabold uppercase px-3.5 py-1.5 rounded-full tracking-wider shrink-0 shadow-2xs",
-                                isDone ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50" : 
-                                isRejected ? "bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400 border border-rose-200 dark:border-rose-800/50" : 
-                                "bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50"
-                              )}>
-                                {isDone ? '✓ Completed' : isRejected ? '✗ Rejected' : '● Pending'}
-                              </span>
-                            </div>
-                            {step.remark && (
-                              <div className="mt-3 bg-slate-50 dark:bg-slate-800/70 p-4 sm:p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 w-full shadow-xs">
-                                <div className="flex items-center gap-2 mb-1.5">
-                                  <div className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                                  <p className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">Note / Status:</p>
-                                </div>
-                                <p className="text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-200 leading-relaxed italic">"{step.remark}"</p>
-                              </div>
-                            )}
+                          {!isLast && (
+                            <div className={cn(
+                              "w-[2.5px] flex-1 my-2 rounded-full transition-colors min-h-[20px]",
+                              isDone ? "bg-emerald-500" : "bg-slate-200 dark:bg-slate-800"
+                            )} />
+                          )}
+                        </div>
+
+                        {/* Right Column: Content */}
+                        <div className="flex-1 min-w-0 pt-1 pb-8 sm:pb-9 last:pb-2">
+                          <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
+                            <h4 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                              {step.label}
+                            </h4>
+                            <span className={cn(
+                              "text-[10px] sm:text-xs font-extrabold uppercase px-3 py-1.5 rounded-full tracking-wider shrink-0 shadow-2xs whitespace-nowrap",
+                              isDone ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50" : 
+                              isRejected ? "bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400 border border-rose-200 dark:border-rose-800/50" : 
+                              "bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50"
+                            )}>
+                              {isDone ? '✓ Completed' : isRejected ? '✗ Rejected' : '● Pending'}
+                            </span>
                           </div>
+                          {step.remark && (
+                            <div className="mt-3 bg-slate-50 dark:bg-slate-800/70 p-3 sm:p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 w-full shadow-xs">
+                              <div className="flex items-center gap-2 mb-1.5">
+                                <div className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                                <p className="text-[10px] sm:text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">Note / Status:</p>
+                              </div>
+                              <p className="text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-200 leading-relaxed italic">"{step.remark}"</p>
+                            </div>
+                          )}
                         </div>
                       </div>
                     );

@@ -134,6 +134,8 @@ export default function SinglePassDetailsModal({
     request.studentName || request.requesterName || request.visitorName || 'Gate Pass Requester';
   const requesterPhoto = resolveProfilePhoto(request);
 
+  const isOwner = getUserId() === request.regNo || getUserId() === request.staffCode || getUserId() === request.hodCode || getUserId() === request.hrCode || getUserId() === request.requestedByStaffCode;
+  
   const getComputedTimeline = (): TimelineStep[] => {
     if (timelineSteps && timelineSteps.length > 0) return timelineSteps;
 
@@ -457,7 +459,7 @@ export default function SinglePassDetailsModal({
                 </div>
               ) : (
                 <div className="flex gap-3 justify-end w-full sm:w-auto">
-                  {isApproved ? (
+                  {isApproved && (onViewQR || isOwner) ? (
                     <>
                       <Button
                         variant="primary"

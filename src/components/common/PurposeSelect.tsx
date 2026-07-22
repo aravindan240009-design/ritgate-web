@@ -99,7 +99,7 @@ export default function PurposeSelect({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute left-0 right-0 top-full mt-2 z-[200] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[20px] shadow-xl overflow-hidden">
+        <div className="absolute left-0 right-0 top-full mt-2 z-[200] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[20px] shadow-xl overflow-hidden solid-dropdown">
           {PURPOSE_OPTIONS.map(opt => {
             const isSelected = value === opt.value;
             return (

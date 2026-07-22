@@ -140,6 +140,17 @@ export default function StaffMyRequests() {
   const staffName = (user as any)?.staffName || (user as any)?.name || 'Staff Member';
   const initials = staffName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
 
+  const getStatusConfig = (status: string) => {
+    const s = String(status || '').toUpperCase();
+    if (s === 'APPROVED' || s === 'APPROVED_BY_HOD') return { text: 'APPROVED', color: 'text-emerald-700 dark:text-emerald-300', bg: 'bg-emerald-50 dark:bg-emerald-950/30' };
+    if (s === 'REJECTED') return { text: 'REJECTED', color: 'text-rose-700 dark:text-rose-300', bg: 'bg-rose-50 dark:bg-rose-950/30' };
+    if (s === 'PENDING_HOD') return { text: 'PENDING HOD', color: 'text-blue-700 dark:text-blue-300', bg: 'bg-blue-50 dark:bg-blue-950/30' };
+    if (s === 'PENDING_HR') return { text: 'PENDING HR', color: 'text-purple-700 dark:text-purple-300', bg: 'bg-purple-50 dark:bg-purple-950/30' };
+    if (s === 'USED') return { text: 'USED', color: 'text-slate-600 dark:text-slate-300', bg: 'bg-slate-100 dark:bg-slate-800/50' };
+    if (s === 'EXITED') return { text: 'EXITED', color: 'text-slate-600 dark:text-slate-300', bg: 'bg-slate-100 dark:bg-slate-800/50' };
+    return { text: 'PENDING', color: 'text-amber-700 dark:text-amber-300', bg: 'bg-amber-50 dark:bg-amber-950/30' };
+  };
+
   return (
     <div className="min-h-screen md:bg-transparent md:min-h-0 bg-[#F8FAFC] dark:bg-slate-950">
       {/* Header */}
@@ -201,8 +212,7 @@ export default function StaffMyRequests() {
                   <tbody>
                     {filteredRequests.map((request) => {
                       const isBulk = request.passType === 'BULK';
-                      const isApproved = request.status === 'APPROVED' || request.status === 'APPROVED_BY_HOD';
-                      const isRejected = request.status === 'REJECTED';
+                      const config = getStatusConfig(request.status);
                       return (
                         <tr key={request.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/35 transition-colors">
                           <td>
@@ -216,11 +226,9 @@ export default function StaffMyRequests() {
                           <td>
                             <span className={cn(
                               'inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase',
-                              isApproved ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' :
-                              isRejected ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300' :
-                              'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300'
+                              config.bg, config.color
                             )}>
-                              {isApproved ? 'Approved' : isRejected ? 'Rejected' : 'Pending'}
+                              {config.text}
                             </span>
                           </td>
                           <td className="text-center">
@@ -238,7 +246,6 @@ export default function StaffMyRequests() {
               {filteredRequests.map((request) => {
                 const isBulk = request.passType === 'BULK';
                 const isApproved = request.status === 'APPROVED' || request.status === 'APPROVED_BY_HOD';
-                const isRejected = request.status === 'REJECTED';
                 
                 return (
                   <motion.div 
@@ -303,21 +310,28 @@ export default function StaffMyRequests() {
 
                     {/* Footer Actions */}
                     <div className="flex items-center justify-between">
-                      <div className={cn(
-                        "flex items-center gap-2 px-3 py-1.5 rounded-full",
-                        isApproved ? "bg-emerald-500/10" : isRejected ? "bg-rose-500/10" : "bg-amber-500/10"
-                      )}>
-                         <div className={cn(
-                           "w-1.5 h-1.5 rounded-full",
-                           isApproved ? "bg-emerald-500" : isRejected ? "bg-rose-500" : "bg-amber-500"
-                         )} />
-                         <span className={cn(
-                           "text-[10px] font-black uppercase tracking-widest",
-                           isApproved ? "text-emerald-600" : isRejected ? "text-rose-600" : "text-amber-600"
-                         )}>
-                           {isApproved ? 'ACTIVE' : isRejected ? 'REJECTED' : 'PENDING'}
-                         </span>
-                      </div>
+                       {(() => {
+                         const config = getStatusConfig(request.status);
+                         const isEmerald = config.text === 'APPROVED';
+                         const isRose = config.text === 'REJECTED';
+                         return (
+                           <div className={cn(
+                             "flex items-center gap-2 px-3 py-1.5 rounded-full",
+                             isEmerald ? "bg-emerald-500/10" : isRose ? "bg-rose-500/10" : "bg-amber-500/10"
+                           )}>
+                              <div className={cn(
+                                "w-1.5 h-1.5 rounded-full",
+                                isEmerald ? "bg-emerald-500" : isRose ? "bg-rose-500" : "bg-amber-500"
+                              )} />
+                              <span className={cn(
+                                "text-[10px] font-black uppercase tracking-widest",
+                                isEmerald ? "text-emerald-600" : isRose ? "text-rose-600" : "text-amber-600"
+                              )}>
+                                {config.text}
+                              </span>
+                           </div>
+                         );
+                       })()}
                       
                       {isApproved && (
                         <button 

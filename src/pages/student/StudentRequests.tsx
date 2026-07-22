@@ -124,9 +124,12 @@ export default function StudentRequests() {
   const filteredRequests = requests;
 
   const getStatusConfig = (status: string) => {
-    if (status === 'APPROVED') return { text: 'ACTIVE', color: 'text-emerald-600', bg: 'bg-emerald-50', dot: 'bg-emerald-500' };
-    if (status === 'REJECTED') return { text: 'REJECTED', color: 'text-rose-600', bg: 'bg-rose-50', dot: 'bg-rose-500' };
-    if (status === 'PENDING_HOD') return { text: 'AWAITING HOD', color: 'text-[var(--color-primary)]', bg: 'bg-blue-50', dot: 'bg-blue-500' };
+    const s = String(status || '').toUpperCase();
+    if (s === 'APPROVED' || s === 'APPROVED_BY_HOD') return { text: 'ACTIVE', color: 'text-emerald-600', bg: 'bg-emerald-50', dot: 'bg-emerald-500' };
+    if (s === 'REJECTED') return { text: 'REJECTED', color: 'text-rose-600', bg: 'bg-rose-50', dot: 'bg-rose-500' };
+    if (s === 'PENDING_HOD') return { text: 'AWAITING HOD', color: 'text-blue-600', bg: 'bg-blue-50', dot: 'bg-blue-500' };
+    if (s === 'USED') return { text: 'USED', color: 'text-slate-600', bg: 'bg-slate-100', dot: 'bg-slate-500' };
+    if (s === 'EXITED') return { text: 'EXITED', color: 'text-slate-600', bg: 'bg-slate-100', dot: 'bg-slate-500' };
     return { text: 'AWAITING STAFF', color: 'text-amber-600', bg: 'bg-amber-50', dot: 'bg-amber-500' };
   };
 

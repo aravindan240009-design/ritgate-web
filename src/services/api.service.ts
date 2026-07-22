@@ -4,6 +4,10 @@ import { storage } from '../utils/storage';
 import { timeHeaders } from '../utils/dateUtils';
 import type { UserRole, OTPResponse, LoginResponse, ApiResponse, GatePassRequest } from '../types';
 
+// Drops the `data:image/...;base64,` prefix so a backend that decodes raw
+// base64 bytes gets a payload it can read.
+const stripDataUrl = (value: string): string => value.replace(/^data:[^;]+;base64,/, '');
+
 // ── Axios Instance ────────────────────────────────────────────────────────────
 const api: AxiosInstance = axios.create({
   baseURL: API_CONFIG.BASE_URL,
@@ -639,7 +643,13 @@ export async function registerVisitor(d: {
   purpose: string; vehicleNumber?: string; vehicleType?: string; securityId: string;
   visitorPhoto?: string;
 }): Promise<ApiResponse> {
-  try { return (await api.post('/security/register-visitor', d)).data; }
+  try {
+    const { visitorPhoto, ...rest } = d;
+    const payload = visitorPhoto
+      ? { ...rest, visitorPhoto, photo: visitorPhoto, image: visitorPhoto, photoBase64: stripDataUrl(visitorPhoto) }
+      : rest;
+    return (await api.post('/security/register-visitor', payload)).data;
+  }
   catch (e) { return { success: false, message: extractError(e) }; }
 }
 
@@ -690,7 +700,14 @@ export async function createInstantGuestPass(d: {
   visitorPhoto?: string;
 }): Promise<{ success: boolean; id?: number; qrCode?: string; manualCode?: string; message?: string }> {
   try {
-    const { data } = await api.post('/unified-visitors/instant-guest', d);
+    // The uploaded guest photo is mirrored across the field names the backend
+    // may validate against; unknown keys are ignored server-side. photoBase64
+    // carries the prefix-stripped bytes for backends that decode raw base64.
+    const { visitorPhoto, ...rest } = d;
+    const payload = visitorPhoto
+      ? { ...rest, visitorPhoto, photo: visitorPhoto, guestPhoto: visitorPhoto, image: visitorPhoto, photoBase64: stripDataUrl(visitorPhoto) }
+      : rest;
+    const { data } = await api.post('/unified-visitors/instant-guest', payload);
     if (data.success === false) return { success: false, message: data.message };
     return { success: true, id: data.id, qrCode: data.qrCode, manualCode: data.manualCode, message: data.message };
   } catch (e) { return { success: false, message: extractError(e) }; }

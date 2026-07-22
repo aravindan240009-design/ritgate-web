@@ -112,7 +112,7 @@ export default function HODDashboard() {
       PENDING: dashboardRequests.filter(r => 
         r.status === 'PENDING_HOD' || (r.passType === 'VISITOR' && r.status === 'PENDING')
       ).length,
-      APPROVED: dashboardRequests.filter(r => r.status === 'APPROVED').length,
+      APPROVED: dashboardRequests.filter(r => r.status === 'APPROVED' || r.status === 'APPROVED_BY_HOD').length,
       REJECTED: dashboardRequests.filter(r => r.status === 'REJECTED').length,
     };
   };
@@ -127,7 +127,7 @@ export default function HODDashboard() {
     if (activeTab === 'PENDING') {
       matchesTab = r.status === 'PENDING_HOD' || (r.passType === 'VISITOR' && r.status === 'PENDING');
     } else if (activeTab === 'APPROVED') {
-      matchesTab = r.status === 'APPROVED';
+      matchesTab = r.status === 'APPROVED' || r.status === 'APPROVED_BY_HOD';
     } else if (activeTab === 'REJECTED') {
       matchesTab = r.status === 'REJECTED';
     }
@@ -314,11 +314,11 @@ export default function HODDashboard() {
                           <td>{formatDateTime(request.exitDateTime || request.requestDate || request.createdAt)}</td>
                           <td>
                             <span className={cn('inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase',
-                              request.status === 'APPROVED' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' :
+                              (request.status === 'APPROVED' || request.status === 'APPROVED_BY_HOD') ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' :
                               request.status === 'REJECTED' ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300' :
                               'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300'
                             )}>
-                              {(request.status === 'PENDING_HOD' || request.status === 'PENDING') ? 'PENDING' : request.status}
+                              {(request.status === 'APPROVED' || request.status === 'APPROVED_BY_HOD') ? 'APPROVED' : (request.status === 'PENDING_HOD' || request.status === 'PENDING') ? 'PENDING' : request.status}
                             </span>
                           </td>
                           <td className="text-center py-5">
@@ -404,15 +404,15 @@ export default function HODDashboard() {
                       <div className="flex items-center gap-2">
                          <div className={cn(
                            "w-1.5 h-1.5 rounded-full",
-                           request.status === 'APPROVED' ? "bg-emerald-500" :
+                           (request.status === 'APPROVED' || request.status === 'APPROVED_BY_HOD') ? "bg-emerald-500" :
                            request.status === 'REJECTED' ? "bg-rose-500" : "bg-amber-500"
                          )} />
                          <span className={cn(
                            "text-[10px] font-black uppercase tracking-widest",
-                           request.status === 'APPROVED' ? "text-emerald-600" :
+                           (request.status === 'APPROVED' || request.status === 'APPROVED_BY_HOD') ? "text-emerald-600" :
                            request.status === 'REJECTED' ? "text-rose-600" : "text-amber-600"
                          )}>
-                           {(request.status === 'PENDING_HOD' || request.status === 'PENDING') ? 'PENDING' : request.status}
+                           {(request.status === 'APPROVED' || request.status === 'APPROVED_BY_HOD') ? 'APPROVED' : (request.status === 'PENDING_HOD' || request.status === 'PENDING') ? 'PENDING' : request.status}
                          </span>
                       </div>
                       

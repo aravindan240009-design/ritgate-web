@@ -90,7 +90,7 @@ export default function HODMyRequests() {
   });
 
   const handleViewQR = async (request: any) => {
-    if (request.status !== 'APPROVED') return;
+    if (request.status !== 'APPROVED' && request.status !== 'APPROVED_BY_HOD') return;
     setSelectedRequest(request);
     setShowQRModal(true);
     try {
@@ -177,7 +177,7 @@ export default function HODMyRequests() {
                   <tbody>
                     {filteredRequests.map((request) => {
                       const isBulk = request.passType === 'BULK';
-                      const isApproved = request.status === 'APPROVED';
+                      const isApproved = request.status === 'APPROVED' || request.status === 'APPROVED_BY_HOD';
                       const isRejected = request.status === 'REJECTED';
                       return (
                         <tr key={request.id} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/35" onClick={() => { setSelectedRequest(request); if (isBulk) setShowBulkModal(true); else setShowDetailModal(true); }}>
@@ -212,7 +212,7 @@ export default function HODMyRequests() {
             <div className="space-y-4">
               {filteredRequests.map((request) => {
                 const isBulk = request.passType === 'BULK';
-                const isApproved = request.status === 'APPROVED';
+                const isApproved = request.status === 'APPROVED' || request.status === 'APPROVED_BY_HOD';
                 const isRejected = request.status === 'REJECTED';
                 
                 return (

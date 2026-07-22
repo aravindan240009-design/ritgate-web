@@ -100,7 +100,7 @@ export default function StaffMyRequests() {
   });
 
   const handleViewQR = async (request: any) => {
-    if (request.status !== 'APPROVED') return;
+    if (request.status !== 'APPROVED' && request.status !== 'APPROVED_BY_HOD') return;
     setSelectedRequest(request);
     setShowQRModal(true);
     try {
@@ -203,7 +203,7 @@ export default function StaffMyRequests() {
                   <tbody>
                     {filteredRequests.map((request) => {
                       const isBulk = request.passType === 'BULK';
-                      const isApproved = request.status === 'APPROVED';
+                      const isApproved = request.status === 'APPROVED' || request.status === 'APPROVED_BY_HOD';
                       const isRejected = request.status === 'REJECTED';
                       return (
                         <tr key={request.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/35 transition-colors">
@@ -239,7 +239,7 @@ export default function StaffMyRequests() {
             <div className="space-y-4">
               {filteredRequests.map((request) => {
                 const isBulk = request.passType === 'BULK';
-                const isApproved = request.status === 'APPROVED';
+                const isApproved = request.status === 'APPROVED' || request.status === 'APPROVED_BY_HOD';
                 const isRejected = request.status === 'REJECTED';
                 
                 return (

@@ -188,7 +188,7 @@ export default function StudentRequests() {
                           <td>{formatDateTime(request.requestDate || request.createdAt)}</td>
                           <td><span className={cn('inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase', config.bg, config.color)}>{config.text}</span></td>
                           <td className="text-center">
-                            {request.status === 'APPROVED' && !isBulk ? (
+                            {(request.status === 'APPROVED' || request.status === 'APPROVED_BY_HOD') && !isBulk ? (
                               <Button
                                 size="sm"
                                 variant="primary"
@@ -213,7 +213,7 @@ export default function StudentRequests() {
             <div className="space-y-4">
               {filteredRequests.map((request) => {
                 const isBulk = request.passType === 'BULK';
-                const isApproved = request.status === 'APPROVED';
+                const isApproved = request.status === 'APPROVED' || request.status === 'APPROVED_BY_HOD';
                 const isRejected = request.status === 'REJECTED';
                 
                 return (
@@ -288,7 +288,7 @@ export default function StudentRequests() {
                          </span>
                       </div>
                       
-                      {request.status === 'APPROVED' && !isBulk && (
+                      {(request.status === 'APPROVED' || request.status === 'APPROVED_BY_HOD') && !isBulk && (
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();

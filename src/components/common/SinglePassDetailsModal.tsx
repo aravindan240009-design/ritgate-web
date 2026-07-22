@@ -187,6 +187,7 @@ export default function SinglePassDetailsModal({
 
     const isHodDone =
       rawStatus === 'APPROVED' ||
+      rawStatus === 'APPROVED_BY_HOD' ||
       rawStatus === 'USED' ||
       rawStatus === 'EXITED' ||
       request?.hodStatus === 'APPROVED';

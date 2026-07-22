@@ -477,7 +477,7 @@ export default function StudentHome() {
                             </span>
                           </td>
                           <td className="text-center">
-                            {request.status === 'APPROVED' && request.passType !== 'BULK' ? (
+                            {(request.status === 'APPROVED' || request.status === 'APPROVED_BY_HOD') && request.passType !== 'BULK' ? (
                               <Button size="sm" onClick={(e) => { e.stopPropagation(); handleViewQR(request); }} icon={<QrCode className="w-4 h-4" />}>View QR</Button>
                             ) : (
                               <Button size="sm" variant="dark" onClick={(e) => { e.stopPropagation(); setSelectedRequest(request); setShowDetailsModal(true); }}>View</Button>
@@ -534,7 +534,7 @@ export default function StudentHome() {
                       {formatDateTime(request.requestDate || request.createdAt)}
                     </p>
 
-                    {request.status === 'APPROVED' && request.passType !== 'BULK' && (
+                    {(request.status === 'APPROVED' || request.status === 'APPROVED_BY_HOD') && request.passType !== 'BULK' && (
                       <Button
                         variant="dark"
                         onClick={(e) => { e.stopPropagation(); handleViewQR(request); }}

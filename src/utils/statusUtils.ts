@@ -31,10 +31,14 @@ export function normalizeRequestStatus(requestOrStatus: unknown): string {
   const hodApproval = cleanStatus(request.hodApproval || request.hod_approval);
   const hrApproval = cleanStatus(request.hrApproval || request.hr_approval);
 
+  const isStudentRequest = !!(request.regNo || request.studentCount || request.students || (!request.staffCode && !request.hodCode));
+
   if (['REJECTED', 'APPROVED', 'USED', 'EXITED', 'CANCELLED', 'COMPLETED'].includes(status)) return status;
   if (hrApproval === 'REJECTED' || hodApproval === 'REJECTED' || staffApproval === 'REJECTED') return 'REJECTED';
   if (hrApproval === 'APPROVED') return 'APPROVED';
-  if (status === 'PENDING_HR' || status === 'APPROVED_BY_HOD' || hodApproval === 'APPROVED') return 'PENDING_HR';
+  if (status === 'PENDING_HR' || status === 'APPROVED_BY_HOD' || hodApproval === 'APPROVED') {
+    return isStudentRequest ? 'APPROVED' : 'PENDING_HR';
+  }
   if (status === 'PENDING_HOD' || status === 'APPROVED_BY_STAFF' || staffApproval === 'APPROVED') return 'PENDING_HOD';
   if (status === 'PENDING_STAFF') return 'PENDING_STAFF';
 

@@ -221,9 +221,7 @@ export default function SinglePassDetailsModal({
       {
         label: 'Campus Gate Access',
         status: isGateUsed ? 'done' : 'pending',
-        remark: isGateUsed
-          ? `Gate Entry Verified by Security${gateScanTime ? ` (${formatDateTime(gateScanTime)})` : ''}`
-          : undefined,
+        remark: undefined,
       },
     ];
   };

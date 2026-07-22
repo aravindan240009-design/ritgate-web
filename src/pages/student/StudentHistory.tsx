@@ -64,20 +64,23 @@ export default function StudentHistory() {
 
       // Process raw gate logs
       entryHistory.forEach((item: any) => {
-        if (item.entryTime) {
+        const entryTimestamp = item.entryTime || item.entry_time || item.entryDateTime || item.entry_date_time;
+        if (entryTimestamp) {
+          const isLate = !!(item.lateEntry || item.late_entry || item.isLate || item.is_late || item.late);
           combinedHistory.push({
             id: `entry-${item.id || Date.now()}-${Math.random()}`,
-            type: item.lateEntry ? 'LATE_ENTRY' : 'ENTRY',
-            timestamp: item.entryTime,
-            reason: item.lateReason || undefined,
+            type: isLate ? 'LATE_ENTRY' : 'ENTRY',
+            timestamp: entryTimestamp,
+            reason: item.lateReason || item.reason || undefined,
             location: 'Main Gate',
           });
         }
-        if (item.exitTime) {
+        const exitTimestamp = item.exitTime || item.exit_time || item.exitDateTime || item.exit_date_time;
+        if (exitTimestamp) {
           combinedHistory.push({
             id: `exit-${item.id || Date.now()}-${Math.random()}`,
             type: 'EXIT',
-            timestamp: item.exitTime,
+            timestamp: exitTimestamp,
             location: 'Main Gate',
           });
         }
@@ -86,12 +89,16 @@ export default function StudentHistory() {
       // Process used gate passes
       if (gatePasses && Array.isArray(gatePasses)) {
         gatePasses
-          .filter((pass: any) => (pass.status === 'APPROVED' || pass.status === 'USED') && pass.usedAt)
+          .filter((pass: any) => {
+            const status = String(pass.status || '').toUpperCase();
+            const hasTime = pass.usedAt || pass.exitTime || pass.exit_time || pass.scannedAt || pass.entryTime || pass.entry_time || pass.exitDateTime;
+            return ['APPROVED', 'USED', 'EXITED', 'ENTERED', 'COMPLETED'].includes(status) && hasTime;
+          })
           .forEach((pass: any) => {
             combinedHistory.push({
               id: `gatepass-${pass.id}`,
               type: 'GATE_PASS',
-              timestamp: pass.usedAt,
+              timestamp: pass.exitTime || pass.exit_time || pass.usedAt || pass.scannedAt || pass.entryTime || pass.entry_time || pass.exitDateTime,
               passId: `GP-${pass.id}`,
               reason: pass.purpose || pass.reason,
               location: 'Main Gate',
@@ -104,7 +111,7 @@ export default function StudentHistory() {
       
       setStats({
         entries: combinedHistory.filter(i => i.type === 'ENTRY' || i.type === 'LATE_ENTRY').length,
-        exits: combinedHistory.filter(i => i.type === 'EXIT').length
+        exits: combinedHistory.filter(i => i.type === 'EXIT' || i.type === 'GATE_PASS').length
       });
     } catch (err) {
       console.error('Failed to load history:', err);

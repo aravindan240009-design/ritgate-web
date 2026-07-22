@@ -60,12 +60,7 @@ export default function HODMyRequests() {
       const res = await apiService.getHODMyGatePassRequests(hodCode);
       if (res.success) {
         const list = res.requests || [];
-        // Same logic as mobile: filter out used and not today
-        const filtered = list.filter((r: any) => {
-            const isUsed = r.qrUsed === true || r.status === 'USED' || r.status === 'EXITED';
-            return !isUsed && isToday(r.createdAt || r.requestDate);
-        });
-        const sorted = filtered.sort((a: any, b: any) => new Date(b.createdAt || b.requestDate).getTime() - new Date(a.createdAt || a.requestDate).getTime());
+        const sorted = list.sort((a: any, b: any) => new Date(b.createdAt || b.requestDate).getTime() - new Date(a.createdAt || a.requestDate).getTime());
         setRequests(sorted);
       }
     } catch (err) {

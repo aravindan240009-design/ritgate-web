@@ -68,12 +68,9 @@ export default function StudentRequests() {
     try {
       const response = await getStudentGatePassRequests(user.regNo);
       if (response.success) {
-        // Core mobile logic: show only non-used requests that are from today for the primary list
-        const filtered = response.requests
-          .filter((r: any) => r.status !== 'USED' && r.status !== 'EXITED')
-          .filter((r: any) => isToday(r.requestDate || r.createdAt))
-          .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        setRequests(filtered);
+        const sorted = (response.requests || [])
+          .sort((a: any, b: any) => new Date(b.createdAt || b.requestDate).getTime() - new Date(a.createdAt || a.requestDate).getTime());
+        setRequests(sorted);
       }
     } catch (err) {
       console.error('Failed to load student requests:', err);

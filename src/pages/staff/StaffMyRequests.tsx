@@ -73,9 +73,7 @@ export default function StaffMyRequests() {
         }
       });
       const unique = Array.from(uniqueMap.values());
-      // Only show today's requests
-      const todayOnly = unique.filter((r: any) => isToday(r.createdAt || r.requestDate));
-      const sorted = todayOnly.sort((a, b) => new Date(b.createdAt || b.requestDate).getTime() - new Date(a.createdAt || a.requestDate).getTime());
+      const sorted = unique.sort((a, b) => new Date(b.createdAt || b.requestDate).getTime() - new Date(a.createdAt || a.requestDate).getTime());
       
       setRequests(sorted);
     } catch (err) {

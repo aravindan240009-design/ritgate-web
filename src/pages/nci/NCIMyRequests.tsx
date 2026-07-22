@@ -41,7 +41,6 @@ export default function NCIMyRequests() {
         const res = await getNTFOwnRequests(staffCode);
         if (res.success) {
           const sorted = (res.requests || [])
-            .filter((r: any) => isToday(r.createdAt || r.requestDate))
             .sort(
               (a: any, b: any) => new Date(b.createdAt || b.requestDate).getTime() - new Date(a.createdAt || a.requestDate).getTime()
             );

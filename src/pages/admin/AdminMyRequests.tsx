@@ -49,7 +49,6 @@ export default function AdminMyRequests({ onBack }: AdminMyRequestsProps = {}) {
       const res = await getNTFOwnRequests(adminCode);
       if (res.success) {
         const sorted = (res.requests || [])
-          .filter((r: any) => isToday(r.createdAt || r.requestDate))
           .sort(
             (a: any, b: any) => new Date(b.createdAt || b.requestDate).getTime() - new Date(a.createdAt || a.requestDate).getTime()
           );

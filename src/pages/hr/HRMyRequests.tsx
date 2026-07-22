@@ -45,9 +45,7 @@ export default function HRMyRequests() {
     try {
       const res = await getStaffOwnRequests(hrCode);
       if (res.success) {
-        // Only show today's requests
-        const todayOnly = (res.requests || []).filter((r: any) => isToday(r.requestDate || r.createdAt));
-        const sorted = todayOnly.sort((a: any, b: any) => new Date(b.createdAt || b.requestDate).getTime() - new Date(a.createdAt || a.requestDate).getTime());
+        const sorted = (res.requests || []).sort((a: any, b: any) => new Date(b.createdAt || b.requestDate).getTime() - new Date(a.createdAt || a.requestDate).getTime());
         setRequests(sorted);
       } else setHasError(true);
     } catch { setHasError(true); }
